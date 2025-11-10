@@ -1,0 +1,89 @@
+<!-- TEA Home Page - Página inicial do módulo TEA -->
+<div class="tea-container">
+  <!-- Welcome Section -->
+  <section class="welcome-section">
+    <div class="welcome-content">
+      <h1 class="welcome-title">Bem-vindo ao Módulo TEA!</h1>
+      <p class="welcome-subtitle">Terapia e Acompanhamento para Transtorno do Espectro Autista</p>
+      <div class="user-greeting" *ngIf="userProfile">
+        <p class="greeting-text">Olá, <strong>{{userProfile.nome}}</strong>!</p>
+        <p class="role-text">Especialista TEA - {{userProfile.perfil}}</p>
+      </div>
+    </div>
+    <div class="welcome-image">
+      <!-- Placeholder para imagem ou ilustração -->
+      <div class="image-placeholder tea-theme">
+        <i class="icon-brain"></i>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Actions -->
+  <section class="quick-actions">
+    <h2 class="section-title">Ferramentas TEA</h2>
+    <div class="actions-grid">
+      <div class="action-card" 
+           *ngFor="let action of teaActions" 
+           [class]="'action-' + action.color"
+           [class.clickable]="action.clickable"
+           (click)="action.clickable ? navigateTo(action.route) : null">
+        <div class="action-icon">
+          <i [class]="'icon-' + action.icon"></i>
+        </div>
+        <div class="action-content">
+          <h3 class="action-title">{{action.title}}</h3>
+          <p class="action-description">{{action.description}}</p>
+        </div>
+        <div class="action-arrow" *ngIf="action.clickable">
+          <i class="icon-arrow-right"></i>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEA Resources -->
+  <section class="tea-resources">
+    <h2 class="section-title">Recursos Especializados</h2>
+    <div class="resources-grid">
+      <div class="resource-card" *ngFor="let resource of teaResources">
+        <div class="resource-header">
+          <div class="resource-icon" [style.background-color]="resource.color + '20'">
+            <i [class]="'icon-' + resource.icon" [style.color]="resource.color"></i>
+          </div>
+          <h3 class="resource-title">{{resource.title}}</h3>
+        </div>
+        <p class="resource-description">{{resource.description}}</p>
+        <div class="resource-stats">
+          <span class="resource-count">{{resource.count}} itens</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sessões de Hoje -->
+  <section class="todays-sessions">
+    <div class="sessions-header">
+      <h2 class="section-title">Sessões de Hoje</h2>
+      <button class="view-all-btn" (click)="navigateTo('/tea/calendario')">Ver Todas</button>
+    </div>
+    
+    <div class="sessions-list">
+      <div *ngFor="let session of recentSessions" class="session-item">
+        <div class="session-info">
+          <div class="session-patient">
+            <i class="icon-user"></i>
+            {{session.patient}}
+          </div>
+          <div class="session-details">
+            <span class="session-type">{{session.type}}</span>
+            <span class="session-time">{{session.time}}</span>
+            <span class="session-therapist">Dr. {{session.therapist}}</span>
+          </div>
+        </div>
+        <div class="session-status" [class]="'status-' + session.status">
+          {{getStatusLabel(session.status)}}
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

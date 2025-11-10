@@ -1,0 +1,154 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Empresas</h1>
+      <p class="page-subtitle">Gerencie as empresas do sistema</p>
+    </div>
+  </div>
+
+  <div class="company-card">
+    <div class="card-header">
+      <div class="header-info">
+        <h3 class="card-title">Gerenciar Empresas</h3>
+      </div>
+      <button class="btn btn-primary" (click)="openDialog()">
+        <i class="icon-plus">➕</i>
+        Nova Empresa
+      </button>
+    </div>
+
+    <div class="card-content">
+      <div *ngIf="loading" class="loading-container">
+        <p>Carregando empresas...</p>
+      </div>
+
+      <div *ngIf="!loading" class="table-container">
+        <table class="companies-table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>CNPJ</th>
+              <th>E-mail</th>
+              <th>Telefone</th>
+              <th class="actions-header">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="empresas.length === 0">
+              <td colspan="5" class="empty-state">
+                Nenhuma empresa cadastrada
+              </td>
+            </tr>
+            <tr *ngFor="let empresa of empresas" class="company-row">
+              <td class="company-name">{{ empresa.nome }}</td>
+              <td>{{ getDisplayValue(empresa.cnpj) }}</td>
+              <td>{{ getDisplayValue(empresa.email) }}</td>
+              <td>{{ getDisplayValue(empresa.telefone) }}</td>
+              <td class="actions-cell">
+                <div class="action-buttons">
+                  <button 
+                    class="btn-icon btn-edit" 
+                    (click)="handleEdit(empresa)"
+                    title="Editar"
+                  >
+                    ✏️
+                  </button>
+                  <button 
+                    class="btn-icon btn-delete" 
+                    (click)="handleDelete(empresa.id, empresa.nome)"
+                    title="Excluir"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Company Form Dialog -->
+  <div *ngIf="isDialogOpen" class="dialog-overlay" (click)="closeDialog()">
+    <div class="dialog-content" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <h3 class="dialog-title">
+          {{ editingCompany ? 'Editar Empresa' : 'Nova Empresa' }}
+        </h3>
+      </div>
+      
+      <form (ngSubmit)="handleSubmit($event)" class="company-form">
+        <div class="form-group">
+          <label for="nome" class="form-label">Nome da Empresa *</label>
+          <input
+            id="nome"
+            type="text"
+            class="form-input"
+            [(ngModel)]="formData.nome"
+            name="nome"
+            placeholder="Digite o nome da empresa"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="cnpj" class="form-label">CNPJ</label>
+          <input
+            id="cnpj"
+            type="text"
+            class="form-input"
+            [(ngModel)]="formData.cnpj"
+            name="cnpj"
+            placeholder="00.000.000/0000-00"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email" class="form-label">E-mail</label>
+          <input
+            id="email"
+            type="email"
+            class="form-input"
+            [(ngModel)]="formData.email"
+            name="email"
+            placeholder="empresa@email.com"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="telefone" class="form-label">Telefone</label>
+          <input
+            id="telefone"
+            type="text"
+            class="form-input"
+            [(ngModel)]="formData.telefone"
+            name="telefone"
+            placeholder="(00) 00000-0000"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="endereco" class="form-label">Endereço</label>
+          <input
+            id="endereco"
+            type="text"
+            class="form-input"
+            [(ngModel)]="formData.endereco"
+            name="endereco"
+            placeholder="Endereço completo"
+          />
+        </div>
+
+        <div class="dialog-footer">
+          <button type="button" class="btn btn-outline" (click)="closeDialog()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            {{ editingCompany ? 'Atualizar' : 'Criar' }} Empresa
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

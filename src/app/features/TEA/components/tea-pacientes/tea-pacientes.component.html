@@ -1,0 +1,102 @@
+
+<div class="pacientes-container">
+  <div class="pacientes-header">
+    <div class="header-info">
+      <h1 class="pacientes-title">Pacientes TEA</h1>
+      <p class="pacientes-subtitle">Gerenciar pacientes do módulo TEA</p>
+    </div>
+    <button class="add-paciente-btn" (click)="openAddPatientModal()">
+      <span class="icon-plus"></span>
+      Novo Paciente
+    </button>
+  </div>
+
+  <div class="filters-section">
+    <div class="filters-container">
+      <div class="search-group">
+        <span class="icon-search"></span>
+        <input 
+          type="text" 
+          placeholder="Buscar por nome..."
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()"
+          class="search-input">
+      </div>
+      <select class="filter-select" [(ngModel)]="selectedStatus" (change)="onStatusChange()">
+        <option value="">Todos os Status</option>
+        <option value="active">Ativo</option>
+        <option value="inactive">Inativo</option>
+        <option value="waiting">Em espera</option>
+      </select>
+      <button class="clear-filters-btn" (click)="clearFilters()">
+        <span class="icon-refresh"></span>
+        Limpar Filtros
+      </button>
+    </div>
+  </div>
+
+  <div class="pacientes-grid">
+    <div *ngFor="let patient of filteredPatients" class="paciente-card">
+      <div class="paciente-header">
+        <div class="paciente-avatar">
+          <img *ngIf="patient.avatar" [src]="patient.avatar" [alt]="patient.nome" class="avatar-image">
+          <div *ngIf="!patient.avatar" class="avatar-placeholder">
+            {{patient.nome.charAt(0).toUpperCase()}}
+          </div>
+        </div>
+        <div class="paciente-basic-info">
+          <h3 class="paciente-name">{{patient.nome}}</h3>
+        </div>
+        <div class="paciente-badges">
+          <span class="status-badge" [class]="getStatusClass(patient.status)">
+            {{getStatusLabel(patient.status)}}
+          </span>
+        </div>
+      </div>
+      <div class="paciente-actions">
+        <button class="action-btn action-view" (click)="viewPatientDetails(patient)">
+          Detalhes
+        </button>
+        <button class="action-btn action-edit" (click)="editPatient(patient)">
+          Editar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="filteredPatients.length === 0" class="empty-state">
+    <h3>Nenhum paciente encontrado</h3>
+    <p *ngIf="searchTerm || selectedStatus">
+      Tente ajustar os filtros de busca ou limpar os filtros para ver todos os pacientes.
+    </p>
+    <p *ngIf="!searchTerm && !selectedStatus">
+      Nenhum paciente foi cadastrado ainda. Clique em "Novo Paciente" para começar.
+    </p>
+    <button class="add-paciente-btn" (click)="openAddPatientModal()">
+      <span class="icon-plus"></span>
+      Novo Paciente
+    </button>
+  </div>
+
+  <app-patient-details-modal
+    [show]="showPatientDetailsModal"
+    [paciente]="selectedPatient"
+    (close)="closePatientDetailsModal()"
+    (editPaciente)="editPatient($event)">
+  </app-patient-details-modal>
+
+  <app-patient-form-modal
+    [show]="showPatientFormModal"
+    [patient]="selectedPatient"
+    [mode]="formMode"
+    (close)="closePatientFormModal()"
+    (save)="onSavePatient($event)">
+  </app-patient-form-modal>
+
+  <app-patient-details-modal
+    [show]="showPatientDetailsModal"
+    [paciente]="selectedPatient"
+    (close)="closePatientDetailsModal()"
+    (editPaciente)="editPatient($event)">
+  </app-patient-details-modal>
+</div>

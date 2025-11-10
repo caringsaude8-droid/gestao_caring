@@ -1,0 +1,47 @@
+<div class="tea-dashboard-container">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">Dashboard TEA</h1>
+    <p class="dashboard-subtitle">Visão geral do módulo de Transtorno do Espectro Autista</p>
+  </div>
+
+  <!-- Metrics Cards -->
+  <div class="metrics-grid">
+    <div *ngFor="let metric of metrics" class="metric-card" [class]="'metric-' + metric.color">
+      <div class="metric-icon">
+        <i [class]="'icon-' + metric.icon"></i>
+      </div>
+      <div class="metric-content">
+        <h3 class="metric-title">{{metric.title}}</h3>
+        <div class="metric-value">{{metric.value}}</div>
+        <div class="metric-change" [class]="'trend-' + metric.trend">
+          <i [class]="'icon-' + (metric.trend === 'up' ? 'arrow-up' : metric.trend === 'down' ? 'arrow-down' : 'minus')"></i>
+          {{metric.change}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <h2>Ações Rápidas</h2>
+    <div class="actions-grid">
+      <button class="action-btn action-primary">
+        <i class="icon-plus"></i>
+        Nova Sessão
+      </button>
+      <button class="action-btn action-secondary">
+        <i class="icon-user-plus"></i>
+        Novo Paciente
+      </button>
+      <button class="action-btn action-tertiary">
+        <i class="icon-calendar"></i>
+        Agendar Avaliação
+      </button>
+      <button class="action-btn action-quaternary">
+        <i class="icon-chart"></i>
+        Relatórios
+      </button>
+    </div>
+  </div>
+</div>

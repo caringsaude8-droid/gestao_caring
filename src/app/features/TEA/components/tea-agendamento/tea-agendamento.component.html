@@ -1,0 +1,229 @@
+<div class="agendamento-page">
+  <header class="page-header">
+    <h1>Agendamento</h1>
+    <p>Organize horários por especialidade e profissional</p>
+  </header>
+
+  <div class="content-with-sidebar">
+    <aside class="calendar-sidebar">
+      <div class="sidebar-filter">
+        <label>Filtro por Especialidade</label>
+        <select [(ngModel)]="filtroEspecialidade" (change)="onPeriodoChange()">
+          <option value="">Todas as Agendas</option>
+          <option *ngFor="let esp of especialidadesFiltradas" [value]="esp.id">{{esp.nome}}</option>
+        </select>
+      </div>
+
+      <div class="sidebar-filter">
+        <label>Selecione a Agenda</label>
+        <select [(ngModel)]="filtroProfissional" (change)="onPeriodoChange()">
+          <option value="">Usuário Teste</option>
+          <option *ngFor="let p of profissionaisFiltrados" [value]="p.id">{{p.nome}}</option>
+        </select>
+      </div>
+
+      <div class="calendar-header">
+        <button class="cal-nav" (click)="prevMonth()">‹</button>
+        <div class="cal-title">{{ getMesLabel(calCurrent) }} <span>{{ calCurrent | date:'y' }}</span></div>
+        <button class="cal-nav" (click)="nextMonth()">›</button>
+      </div>
+
+      <div class="calendar-weekdays">
+        <span *ngFor="let w of weekDays">{{w}}</span>
+      </div>
+
+      <div class="calendar-grid">
+        <div class="calendar-row" *ngFor="let week of calendarWeeks">
+          <button
+            *ngFor="let day of week"
+            class="cal-cell"
+            [class.out-month]="!day.inMonth"
+            [class.today]="day.isToday"
+            [class.selected]="day.isSelected"
+            (click)="selectCalendarDay(day.iso)"
+          >
+            {{day.day}}
+            <span class="availability-dot" *ngIf="day.availableCount > 0"></span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-column">
+  <section class="filters">
+    <div class="filter-card">
+      <label>Especialidade</label>
+      <select [(ngModel)]="filtroEspecialidade" (change)="onPeriodoChange()">
+        <option value="">Todas</option>
+        <option *ngFor="let esp of especialidadesFiltradas" [value]="esp.id">{{esp.nome}}</option>
+      </select>
+    </div>
+
+    <div class="filter-card">
+      <label>Profissional</label>
+      <select [(ngModel)]="filtroProfissional" (change)="onPeriodoChange()">
+        <option value="">Todos</option>
+        <option *ngFor="let p of profissionaisFiltrados" [value]="p.id">{{p.nome}}</option>
+      </select>
+    </div>
+
+    <div class="filter-card">
+      <label>Início</label>
+      <input type="date" [(ngModel)]="filtroDataInicio" (change)="onPeriodoChange()" />
+    </div>
+    <div class="filter-card">
+      <label>Fim</label>
+      <input type="date" [(ngModel)]="filtroDataFim" (change)="onPeriodoChange()" />
+    </div>
+  </section>
+
+  <div class="agenda-toolbar">
+    <div class="left">
+      <button class="btn-primary" (click)="openNewAgendamento()">Novo Agendamento</button>
+      <button class="icon-btn" title="Imprimir">🖨️</button>
+      <button class="icon-btn" title="Exportar">📄</button>
+      <button class="icon-btn" title="Configurações">⚙️</button>
+    </div>
+    <div class="right">
+      <input class="search" type="text" placeholder="Buscar" />
+    </div>
+  </div>
+
+  <section class="list-view" *ngIf="viewMode==='list'">
+    <div class="list-controls">
+      <div class="control">
+        <label>Dia</label>
+        <input type="date" [(ngModel)]="diaSelecionado" (change)="setDiaSelecionado(diaSelecionado)" />
+      </div>
+      <div class="control">
+        <label>Filtrar por Status</label>
+        <select>
+          <option value="">Todos</option>
+          <option value="agendado">Agendado</option>
+          <option value="confirmado">Confirmado</option>
+          <option value="cancelado">Cancelado</option>
+        </select>
+      </div>
+      <div class="control">
+        <label>&nbsp;</label>
+        <button class="danger-btn" (click)="solicitarExclusaoSelecionados()" [disabled]="!algumSelecionado()">Excluir Selecionados</button>
+      </div>
+    </div>
+
+  <table class="agenda-table">
+    <colgroup>
+      <col style="width:3%">
+      <col style="width:8%">
+      <col style="width:18%">
+      <col style="width:14%">
+      <col style="width:8%">
+      <col style="width:9%">
+      <col style="width:8%">
+      <col style="width:9%">
+      <col style="width:7%">
+    </colgroup>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Hora</th>
+          <th>Nome</th>
+          <th>Procedimento</th>
+          <th>Sala</th>
+          <th>Por</th>
+          <th>Status</th>
+          <th>Check-in</th>
+          <th>Detalhes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let slot of slotsFiltradosPorDia(diaSelecionado)">
+          <td><input type="checkbox" [checked]="slot.selecionado" (change)="onSelecionadoChange(slot, $event.target.checked)" /></td>
+          <td>{{slot.hora}}</td>
+          <td [title]="slot.paciente || 'Horário Livre'">{{ slot.paciente || 'Horário Livre' }}</td>
+          <td>{{ getEspecialidadeNome(slot.especialidadeId) }}</td>
+          <td>–</td>
+          <td>{{ getProfissionalNome(slot.profissionalId) }}</td>
+          <td>
+            <span class="status-badge"
+                  [class.agendado]="slot.status==='agendado'"
+                  [class.confirmado]="slot.status==='confirmado'"
+                  [class.cancelado]="slot.status==='cancelado'">
+              {{slot.status}}
+            </span>
+          </td>
+          <td>
+            <div class="checkin-cell">
+              <select class="checkin-select" [ngModel]="slot.status" (ngModelChange)="onCheckinChange(slot, $event)">
+                <option value="agendado">Agendado</option>
+                <option value="confirmado">Confirmado</option>
+                <option value="cancelado">Cancelado</option>
+              </select>
+              <button class="status-action editar" (click)="openMarcar(slot)">Editar</button>
+              <button class="status-action liberar" *ngIf="slot.status==='confirmado'" (click)="liberar(slot)">Liberar</button>
+              <button class="status-action excluir" (click)="solicitarExclusaoSlot(slot)">Excluir</button>
+            </div>
+          </td>
+          <td>
+            <button class="status-action" (click)="abrirDetalhes(slot)">Detalhes</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <!-- Painel de Detalhes do Agendamento -->
+    <div class="details-backdrop" *ngIf="detalhesSlot">
+      <div class="details-panel">
+        <div class="details-header">
+          <h3>Detalhes do Agendamento</h3>
+          <button class="close-btn" (click)="fecharDetalhes()">✕</button>
+        </div>
+        <div class="details-grid">
+          <div><strong>Data:</strong> {{detalhesSlot?.data}}</div>
+          <div><strong>Hora:</strong> {{detalhesSlot?.hora}}</div>
+          <div><strong>Nome:</strong> {{detalhesSlot?.paciente || '—'}}</div>
+          <div><strong>Celular:</strong> {{'—'}}</div>
+          <div><strong>Idade:</strong> {{'—'}}</div>
+          <div><strong>Procedimento:</strong> {{ getEspecialidadeNome(detalhesSlot?.especialidadeId || '') }}</div>
+          <div><strong>Local:</strong> {{'—'}}</div>
+          <div><strong>Sala:</strong> {{'—'}}</div>
+          <div><strong>Por:</strong> {{ getProfissionalNome(detalhesSlot?.profissionalId || '') }}</div>
+          <div><strong>Status:</strong> {{detalhesSlot?.status}}</div>
+          <div *ngIf="detalhesSlot?.status==='cancelado'"><strong>Cancelado em:</strong> {{detalhesSlot?.canceladoEm}}</div>
+        </div>
+        <div class="details-actions">
+          <button class="status-action editar" (click)="openMarcar(detalhesSlot!)">Editar</button>
+          <button class="status-action liberar" *ngIf="detalhesSlot?.status==='confirmado'" (click)="liberar(detalhesSlot!)">Liberar</button>
+          <button class="status-action" (click)="fecharDetalhes()">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal de confirmação de exclusão do sistema -->
+  <div class="confirm-backdrop" *ngIf="confirmModalOpen">
+    <div class="confirm-modal">
+      <h3>Confirmar Exclusão</h3>
+      <p>Você está prestes a excluir {{confirmCount}} agendamento(s). Esta ação removerá os itens da agenda.</p>
+      <div class="confirm-actions">
+        <button class="status-action" (click)="cancelarExclusao()">Cancelar</button>
+        <button class="status-action excluir" (click)="confirmarExclusao()">Excluir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grade removida para manter apenas a visão em lista -->
+
+    </div> <!-- /.main-column -->
+  </div> <!-- /.content-with-sidebar -->
+
+  <app-tea-agendamento-form-modal
+    [show]="showFormModal"
+    [dia]="diaSelecionado"
+    [horas]="horasVisiveis"
+    [profissionais]="profissionaisFiltrados"
+    [especialidadeId]="filtroEspecialidade"
+    [slot]="slotSelecionado ? { hora: slotSelecionado.hora, profissionalId: slotSelecionado.profissionalId, especialidadeId: slotSelecionado.especialidadeId } : null"
+    (close)="closeForm()"
+    (save)="saveAgendamento($event)"
+  ></app-tea-agendamento-form-modal>
+</div>

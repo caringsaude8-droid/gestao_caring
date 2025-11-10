@@ -1,0 +1,60 @@
+import { Injectable } from '@angular/core';
+
+export interface Clinica {
+  id: string;
+  nome: string;
+  endereco: string;
+  telefone: string;
+  email: string;
+  status: 'ativo' | 'inativo';
+  dataCadastro?: string;
+  cnpj?: string;
+  responsavel?: string;
+  website?: string;
+}
+
+@Injectable({ providedIn: 'root' })
+export class TeaClinicasService {
+  private clinicas: Clinica[] = [
+    {
+      id: '1',
+      nome: 'Clínica Esperança',
+      endereco: 'Rua das Flores, 123 - São Paulo, SP',
+      telefone: '(11) 3456-7890',
+      email: 'contato@clinicaesperanca.com.br',
+      status: 'ativo',
+      dataCadastro: '2023-04-10'
+    },
+    {
+      id: '2',
+      nome: 'Centro de Terapia Integrada',
+      endereco: 'Av. Paulista, 1000 - São Paulo, SP',
+      telefone: '(11) 2345-6789',
+      email: 'contato@centroterapia.com.br',
+      status: 'ativo',
+      dataCadastro: '2023-05-22'
+    },
+    {
+      id: '3',
+      nome: 'Instituto Desenvolvimento',
+      endereco: 'Rua Augusta, 500 - São Paulo, SP',
+      telefone: '(11) 3456-7891',
+      email: 'contato@instituto.com.br',
+      status: 'inativo',
+      dataCadastro: '2023-06-15'
+    }
+  ];
+
+  getClinicas(): Clinica[] {
+    return [...this.clinicas];
+  }
+
+  addClinica(c: Clinica): void {
+    const novo = { ...c, id: c.id || String(this.clinicas.length + 1) };
+    this.clinicas.push(novo);
+  }
+
+  updateClinica(c: Clinica): void {
+    this.clinicas = this.clinicas.map(item => item.id === c.id ? { ...item, ...c } : item);
+  }
+}

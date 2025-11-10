@@ -1,0 +1,50 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Relatórios de Aniversários</h1>
+      <p class="page-subtitle">Acompanhe aniversários por mês e exporte a lista</p>
+    </div>
+    <button class="btn btn-primary" (click)="exportCSV()">Exportar CSV</button>
+  </div>
+
+  <div class="filters-card">
+    <div class="filters-grid">
+      <div class="form-group">
+        <label>Mês</label>
+        <select class="form-select" [(ngModel)]="filtroMes">
+          <option *ngFor="let m of [1,2,3,4,5,6,7,8,9,10,11,12]" [ngValue]="m">{{ m }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Nome</label>
+        <ui-input [(ngModel)]="filtroNome" name="nome" placeholder="Buscar por nome"></ui-input>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Data de Nascimento</th>
+          <th>Idade</th>
+          <th>Próximo Aniversário</th>
+          <th>Convênio</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of filtered">
+          <td>{{ p.nome }}</td>
+          <td>{{ p.dataNascimento | date:'dd/MM/yyyy' }}</td>
+          <td>{{ p.idade }}</td>
+          <td>{{ p.proxAniversario | date:'dd/MM/yyyy' }}</td>
+          <td>{{ p.convenio || '—' }}</td>
+        </tr>
+        <tr *ngIf="filtered.length === 0">
+          <td colspan="5" class="empty">Nenhuma pessoa encontrada para os filtros</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

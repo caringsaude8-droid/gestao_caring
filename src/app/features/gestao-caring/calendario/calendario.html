@@ -1,0 +1,205 @@
+<div class="page-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Calendário</h1>
+      <p class="page-subtitle">Gerencie compromissos e eventos</p>
+    </div>
+    <div class="header-actions">
+      <div class="filter-section">
+        <i class="icon-filter"></i>
+        <select 
+          [value]="filtroVisibilidade"
+          (change)="alterarFiltroVisibilidade($any($event.target).value)"
+          class="filter-select">
+          <option value="todos">Todos os eventos</option>
+          <option value="meus">Meus eventos</option>
+        </select>
+      </div>
+      <ui-button>
+        <i class="icon-plus"></i>
+        Novo Evento
+      </ui-button>
+    </div>
+  </div>
+
+  <!-- Calendar and Events Grid -->
+  <div class="calendar-grid">
+    <!-- Calendar Widget -->
+    <ui-card class="calendar-card">
+      <ui-card-header>
+        <ui-card-title>
+          <i class="icon-calendar"></i>
+          Calendário
+        </ui-card-title>
+      </ui-card-header>
+      <ui-card-content class="caring-card-content">
+        <div class="calendar-widget">
+          <!-- Calendar Navigation -->
+          <div class="calendar-nav">
+            <button class="btn-secondary nav-btn" (click)="previousMonth()">‹</button>
+            <h3 class="calendar-month">{{getMonthYearDisplay()}}</h3>
+            <button class="btn-secondary nav-btn" (click)="nextMonth()">›</button>
+          </div>
+
+          <!-- Calendar Grid -->
+          <div class="calendar-grid-widget">
+            <!-- Day headers -->
+            <div class="calendar-header">
+              <div class="day-header" *ngFor="let day of diasSemana">{{day}}</div>
+            </div>
+
+            <!-- Calendar days -->
+            <div class="calendar-days">
+              <div 
+                *ngFor="let day of calendarDays" 
+                class="calendar-day"
+                [class.other-month]="!day.isCurrentMonth"
+                [class.today]="day.isToday"
+                [class.selected]="day.isSelected"
+                [class.has-events]="day.hasEvents"
+                (click)="selectDate(day)"
+              >
+                <span class="day-number">{{day.date}}</span>
+                <div *ngIf="day.hasEvents" class="event-indicators">
+                  <div 
+                    *ngFor="let event of day.events.slice(0, 3)" 
+                    class="event-dot"
+                    [title]="event.titulo"
+                  ></div>
+                  <span *ngIf="day.events.length > 3" class="more-events">+{{day.events.length - 3}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="calendar-actions">
+            <button class="btn-primary quick-action-btn" (click)="goToToday()">
+              <i class="icon-calendar"></i>
+              Hoje
+            </button>
+            <button class="btn-primary quick-action-btn" (click)="openNewEventModal()">
+              <i class="icon-plus-circle"></i>
+              Novo Evento
+            </button>
+          </div>
+        </div>
+      </ui-card-content>
+    </ui-card>
+
+    <!-- Próximos Eventos -->
+    <ui-card class="caring-card events-card">
+      <ui-card-header class="caring-card-header">
+        <ui-card-title>
+          <i class="icon-clock"></i>
+          Próximos Eventos
+        </ui-card-title>
+      </ui-card-header>
+      <ui-card-content class="caring-card-content">
+        <div class="events-list" *ngIf="!loading; else loadingTemplate">
+          <div 
+            *ngFor="let evento of proximosEventos" 
+            class="event-item"
+            [class.shared-event]="isEventSharedByOthers(evento)">
+            
+            <div class="event-header">
+              <div class="event-info">
+                <h4 class="event-title">{{evento.titulo}}</h4>
+                <div class="event-badges">
+                  <span class="badge badge-primary">Evento</span>
+                  <span 
+                    *ngIf="isEventSharedByOthers(evento)" 
+                    class="badge badge-shared">
+                    <i class="icon-user-check"></i>
+                    Compartilhado
+                  </span>
+                </div>
+              </div>
+              <button class="event-actions-btn">⋮</button>
+            </div>
+
+            <div class="event-details">
+              <div class="event-detail">
+                <i class="icon-calendar"></i>
+                <span>{{formatDate(evento.data_inicio)}}</span>
+              </div>
+              <div class="event-detail">
+                <i class="icon-clock"></i>
+                <span>{{formatTime(evento.data_inicio)}}</span>
+              </div>
+              <div class="event-detail" *ngIf="evento.participantes && evento.participantes.length > 0">
+                <i class="icon-users"></i>
+                <span>{{evento.participantes.join(", ")}}</span>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="proximosEventos.length === 0" class="empty-state">
+            <i class="icon-calendar empty-icon"></i>
+            <p>Nenhum evento próximo</p>
+          </div>
+        </div>
+
+        <ng-template #loadingTemplate>
+          <div class="loading-spinner">
+            <div class="spinner"></div>
+          </div>
+        </ng-template>
+      </ui-card-content>
+    </ui-card>
+  </div>
+
+  <!-- Today's Schedule -->
+  <ui-card class="today-schedule">
+    <ui-card-header>
+      <ui-card-title>
+        <i class="icon-calendar"></i>
+        Agenda de Hoje
+      </ui-card-title>
+    </ui-card-header>
+    <ui-card-content>
+      <div class="schedule-list" *ngIf="!loading; else loadingSchedule">
+        <div 
+          *ngFor="let evento of eventosHoje" 
+          class="schedule-item"
+          [class.shared-event]="isEventSharedByOthers(evento)">
+          
+          <div class="schedule-time">
+            <div class="start-time">{{formatTime(evento.data_inicio)}}</div>
+            <div class="end-time">{{formatTime(evento.data_fim)}}</div>
+          </div>
+
+          <div class="schedule-content">
+            <h4 class="schedule-title">{{evento.titulo}}</h4>
+            <p class="schedule-description">{{evento.descricao || 'Sem descrição'}}</p>
+          </div>
+
+          <div class="schedule-actions">
+            <div class="schedule-badges">
+              <span class="badge badge-primary">Evento</span>
+              <span 
+                *ngIf="isEventSharedByOthers(evento)" 
+                class="badge badge-shared">
+                <i class="icon-user-check"></i>
+                Compartilhado
+              </span>
+            </div>
+            <button class="event-actions-btn">⋮</button>
+          </div>
+        </div>
+
+        <div *ngIf="eventosHoje.length === 0" class="empty-state large">
+          <i class="icon-calendar empty-icon large"></i>
+          <p>Nenhum evento agendado para hoje</p>
+        </div>
+      </div>
+
+      <ng-template #loadingSchedule>
+        <div class="loading-spinner large">
+          <div class="spinner"></div>
+        </div>
+      </ng-template>
+    </ui-card-content>
+  </ui-card>
+</div>

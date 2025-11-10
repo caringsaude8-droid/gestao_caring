@@ -1,0 +1,214 @@
+<div class="config-container">
+  <!-- Header -->
+  <div class="config-header">
+    <h1 class="config-title">Configurações</h1>
+    <p class="config-subtitle">Gerencie as configurações do sistema</p>
+  </div>
+
+  <!-- Main Tabs -->
+  <div class="caring-card tabs">
+    <div class="tab-list">
+      <button 
+        class="tab-trigger" 
+        [class.active]="activeTab === 'geral'"
+        (click)="setActiveTab('geral')">
+        Geral
+      </button>
+      <button 
+        class="tab-trigger" 
+        [class.active]="activeTab === 'sistema'"
+        (click)="setActiveTab('sistema')">
+        Sistema
+      </button>
+    </div>
+
+    <!-- Geral Tab Content -->
+    <div class="tab-content" *ngIf="activeTab === 'geral'">
+      <div class="sub-tabs">
+        <div class="sub-tab-list">
+          <button 
+            class="sub-tab-trigger" 
+            [class.active]="activeSubTab === 'identidade'"
+            (click)="setActiveSubTab('identidade')">
+            Identidade Visual
+          </button>
+          <button 
+            class="sub-tab-trigger" 
+            [class.active]="activeSubTab === 'email'"
+            (click)="setActiveSubTab('email')">
+            Configurações de E-mail
+          </button>
+        </div>
+
+        <!-- Identidade Visual -->
+        <div class="sub-tab-content" *ngIf="activeSubTab === 'identidade'">
+          <ui-card class="caring-card">
+            <ui-card-header class="caring-card-header">
+              <ui-card-title>Identidade Visual</ui-card-title>
+              <p class="text-muted">Gerencie a logo da sua empresa no sistema</p>
+            </ui-card-header>
+            <ui-card-content class="caring-card-content identity-content">
+              <div class="current-logo" *ngIf="logoUrl">
+                <img [src]="logoUrl" alt="Logo atual" class="logo-preview">
+                <div class="logo-info">
+                  <span class="logo-label">Logo atual</span>
+                  <p class="logo-description">Esta logo será exibida em todas as telas do sistema</p>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="logo">Selecionar nova logo</label>
+                <p class="form-hint">Formatos aceitos: PNG, JPG, JPEG, GIF, SVG (máximo 5MB)</p>
+                <input 
+                  id="logo" 
+                  type="file" 
+                  accept="image/png,image/jpeg,image/jpg,image/gif,image/svg+xml"
+                  (change)="onLogoFileSelected($event)"
+                  class="file-input">
+              </div>
+              
+              <div class="action-buttons">
+                <ui-button 
+                  [disabled]="!logoFile || uploading"
+                  (click)="handleLogoUpload()"
+                  class="btn-primary upload-btn"
+                  *ngIf="logoFile">
+                  <i class="icon-upload"></i>
+                  {{uploading ? 'Salvando...' : 'Salvar Logo'}}
+                </ui-button>
+                
+                <ui-button 
+                  *ngIf="logoUrl && logoUrl !== 'assets/logoCaring.png'"
+                  variant="outline"
+                  (click)="resetLogo()"
+                  class="btn-secondary reset-btn"
+                  [disabled]="uploading">
+                  <i class="icon-refresh"></i>
+                  Restaurar Logo Padrão
+                </ui-button>
+              </div>
+
+              <div class="upload-info">
+                <div class="info-item">
+                  <i class="icon-info"></i>
+                  <span>A logo será redimensionada automaticamente para se adequar ao design do sistema</span>
+                </div>
+                <div class="info-item">
+                  <i class="icon-warning"></i>
+                  <span>Recomendamos logos em formato horizontal para melhor visualização</span>
+                </div>
+              </div>
+            </ui-card-content>
+          </ui-card>
+        </div>
+
+        <!-- Email Configuration -->
+        <div class="sub-tab-content" *ngIf="activeSubTab === 'email'">
+          <ui-card class="caring-card">
+            <ui-card-header class="caring-card-header">
+              <ui-card-title>Configurações de E-mail</ui-card-title>
+            </ui-card-header>
+            <ui-card-content class="caring-card-content email-config">
+              <div class="form-group">
+                <label for="smtp-host">Servidor SMTP</label>
+                <ui-input 
+                  id="smtp-host"
+                  [(ngModel)]="emailConfig.host"
+                  placeholder="smtp.exemplo.com">
+                </ui-input>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="smtp-port">Porta</label>
+                  <ui-input 
+                    id="smtp-port"
+                    type="number"
+                    [(ngModel)]="emailConfig.port"
+                    placeholder="587">
+                  </ui-input>
+                </div>
+                <div class="form-group">
+                  <label for="smtp-security">Segurança</label>
+                  <select [(ngModel)]="emailConfig.security" class="select-input">
+                    <option value="tls">TLS</option>
+                    <option value="ssl">SSL</option>
+                    <option value="none">Nenhuma</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="smtp-user">Usuário</label>
+                <ui-input 
+                  id="smtp-user"
+                  type="email"
+                  [(ngModel)]="emailConfig.user"
+                  placeholder="usuario@exemplo.com">
+                </ui-input>
+              </div>
+
+              <div class="form-group">
+                <label for="smtp-password">Senha</label>
+                <ui-input 
+                  id="smtp-password"
+                  type="password"
+                  [(ngModel)]="emailConfig.password"
+                  placeholder="********">
+                </ui-input>
+              </div>
+
+              <ui-button (click)="salvarConfiguracoes()" class="btn-primary save-btn">
+                Salvar Configurações de E-mail
+              </ui-button>
+              
+              <!-- Email Test Section -->
+              <div class="email-test-section">
+                <div class="test-header">
+                  <i class="icon-mail"></i>
+                  <span>Teste de E-mail</span>
+                </div>
+                <div class="form-group">
+                  <label for="email-teste">E-mail para Teste</label>
+                  <ui-input 
+                    id="email-teste"
+                    type="email"
+                    [(ngModel)]="emailTeste"
+                    placeholder="teste@exemplo.com">
+                  </ui-input>
+                </div>
+                <ui-button 
+                  variant="outline"
+                  [disabled]="enviandoTeste || !emailTeste.trim()"
+                  (click)="enviarEmailTeste()"
+                  class="btn-secondary test-btn">
+                  <i class="icon-send"></i>
+                  {{enviandoTeste ? 'Enviando...' : 'Enviar E-mail Teste'}}
+                </ui-button>
+              </div>
+            </ui-card-content>
+          </ui-card>
+        </div>
+
+
+      </div>
+    </div>
+
+    <!-- System Tab Content -->
+    <div class="tab-content" *ngIf="activeTab === 'sistema'">
+      <ui-card>
+        <ui-card-content class="system-info">
+          <div class="info-item">
+            <strong>Versão:</strong> 1.0.0
+          </div>
+          <div class="info-item">
+            <strong>Sistema:</strong> Gestão Caring
+          </div>
+          <div class="info-item">
+            <strong>Última atualização:</strong> {{getCurrentDate()}}
+          </div>
+        </ui-card-content>
+      </ui-card>
+    </div>
+  </div>
+</div>

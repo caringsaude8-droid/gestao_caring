@@ -1,0 +1,207 @@
+<div class="tea-calendario-container">
+  <!-- Header -->
+  <div class="calendario-header">
+    <div class="header-info">
+      <h1 class="calendario-title">Calendário TEA</h1>
+      <p class="calendario-subtitle">Agendamento e acompanhamento de sessões</p>
+    </div>
+    <button class="new-appointment-btn" (click)="openNewAppointment()">
+      <i class="icon-plus"></i>
+      Nova Sessão
+    </button>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-card stat-scheduled">
+        <div class="stat-icon">
+          <i class="icon-calendar"></i>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-title">Agendadas</h3>
+          <p class="stat-value">{{getMonthStats().scheduled}}</p>
+        </div>
+      </div>
+      
+      <div class="stat-card stat-completed">
+        <div class="stat-icon">
+          <i class="icon-check"></i>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-title">Concluídas</h3>
+          <p class="stat-value">{{getMonthStats().completed}}</p>
+        </div>
+      </div>
+      
+      <div class="stat-card stat-cancelled">
+        <div class="stat-icon">
+          <i class="icon-x"></i>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-title">Canceladas</h3>
+          <p class="stat-value">{{getMonthStats().cancelled}}</p>
+        </div>
+      </div>
+      
+      <div class="stat-card stat-no-show">
+        <div class="stat-icon">
+          <i class="icon-alert"></i>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-title">Faltas</h3>
+          <p class="stat-value">{{getMonthStats().noShow}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conteúdo com Sidebar (igual ao Agendamento) -->
+  <div class="content-with-sidebar">
+    <aside class="calendar-sidebar">
+      <div class="sidebar-filter">
+        <label>Filtro por Especialidade</label>
+        <select [(ngModel)]="filtroEspecialidade" (change)="onPeriodoChange()">
+          <option value="">Todas as Agendas</option>
+          <option *ngFor="let esp of especialidadesFiltradas" [value]="esp.id">{{esp.nome}}</option>
+        </select>
+      </div>
+      <div class="calendar-header">
+        <button class="cal-nav" (click)="previousMonth()">‹</button>
+        <div class="cal-title">{{getCurrentMonthYear()}}</div>
+        <button class="cal-nav" (click)="nextMonth()">›</button>
+      </div>
+
+      <!-- Submenu: Por pacientes / Por profissionais -->
+      <div class="submenu-tabs" role="tablist" aria-label="Submenu de filtros">
+        <button class="submenu-tab" [class.active]="submenuMode==='pacientes'" (click)="setSubmenuMode('pacientes')">Por pacientes</button>
+        <button class="submenu-tab" [class.active]="submenuMode==='profissionais'" (click)="setSubmenuMode('profissionais')">Por profissionais</button>
+      </div>
+
+      <!-- Submenu de pacientes -->
+      <div class="pac-submenu" *ngIf="submenuMode==='pacientes'">
+        <button class="pro-pill" [class.active]="!filtroPaciente" (click)="setPaciente('')">Todos</button>
+        <button *ngFor="let pac of pacientesFiltrados" class="pro-pill" [class.active]="filtroPaciente===pac" (click)="setPaciente(pac)">{{pac}}</button>
+      </div>
+
+      <!-- Submenu de profissionais -->
+      <div class="pro-submenu" *ngIf="submenuMode==='profissionais'">
+        <button class="pro-pill" [class.active]="!filtroProfissional" (click)="setProfissional('')">Todos</button>
+        <button *ngFor="let p of profissionaisFiltrados" class="pro-pill" [class.active]="filtroProfissional===p.id" (click)="setProfissional(p.id)">{{p.nome}}</button>
+      </div>
+
+      <div class="calendar-weekdays">
+        <span *ngFor="let w of weekDays">{{w}}</span>
+      </div>
+
+      <div class="calendar-grid">
+        <div *ngFor="let day of calendarDays" 
+             class="calendar-day cal-cell"
+             [class.other-month]="!day.isCurrentMonth"
+             [class.out-month]="!day.isCurrentMonth"
+             [class.today]="day.isToday"
+             [class.selected]="day.date.toISOString().split('T')[0] === selectedDayISO"
+             (click)="selectDay(day)">
+          <div class="day-number">{{day.date.getDate()}}</div>
+          <span class="availability-dot" *ngIf="day.appointments.length > 0"></span>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-column">
+
+      <!-- Toolbar removida conforme solicitação: Nova Sessão, Imprimir, Exportar, Configurações -->
+
+      <!-- Visualização Completa dos Agendamentos (dia selecionado) -->
+      <div class="full-view-section">
+        <div class="sessions-header">
+          <h3 class="section-title">Visualização Completa ({{selectedDayISO}})</h3>
+          <div class="header-actions">
+            <label class="status-filter-label">Filtrar por Status</label>
+            <select class="status-filter-select" [(ngModel)]="statusFilter">
+              <option>Todos</option>
+              <option>Agendado</option>
+              <option>Confirmado</option>
+              <option>Cancelado</option>
+            </select>
+          </div>
+        </div>
+
+        <table class="agenda-table">
+          <colgroup>
+            <col style="width:4%">
+            <col style="width:10%">
+            <col style="width:32%">
+            <col style="width:20%">
+            <col style="width:8%">
+            <col style="width:12%">
+            <col style="width:14%">
+          </colgroup>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Hora</th>
+              <th>Nome</th>
+              <th>Procedimento</th>
+              <th>Sala</th>
+              <th>Por</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let s of filteredDaySlots">
+              <td><input type="checkbox" /></td>
+              <td>{{ s.hora }}</td>
+              <td [title]="s.paciente || 'Horário Livre'">{{ s.paciente || 'Horário Livre' }}</td>
+              <td>{{ getEspecialidadeNome(s.especialidadeId) }}</td>
+              <td>–</td>
+              <td>{{ getProfissionalNome(s.profissionalId) }}</td>
+              <td>
+                <span class="status-badge" [class]="'badge-' + (s.status === 'cancelado' ? 'cancelled' : s.status === 'confirmado' ? 'completed' : 'scheduled')">
+                  {{ getSlotStatusLabel(s.status) | uppercase }}
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="filteredDaySlots.length === 0">
+              <td colspan="7">Nenhum agendamento para o dia selecionado.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div> <!-- /.main-column -->
+  </div> <!-- /.content-with-sidebar -->
+
+  <!-- Today's Appointments -->
+  <div class="todays-appointments" *ngIf="todaysAppointments.length > 0">
+    <h3 class="section-title">Sessões de Hoje</h3>
+    <div class="appointments-list">
+      <div *ngFor="let appointment of todaysAppointments" 
+           class="appointment-card"
+           [class]="'status-' + appointment.status">
+        
+        <div class="appointment-time-badge">
+          <span class="time">{{appointment.time}}</span>
+          <span class="duration">{{appointment.duration}}min</span>
+        </div>
+        
+        <div class="appointment-info">
+          <h4 class="patient-name">{{appointment.patientName}}</h4>
+          <p class="appointment-details">
+            <span class="therapy-type">{{appointment.type}}</span>
+            <span class="therapist">{{appointment.therapistName}}</span>
+            <span class="room">{{appointment.room}}</span>
+          </p>
+          <p *ngIf="appointment.notes" class="appointment-notes">{{appointment.notes}}</p>
+        </div>
+        
+        <div class="appointment-status">
+          <span class="status-badge" [class]="'badge-' + appointment.status">
+            {{appointment.status === 'scheduled' ? 'Agendada' : 
+              appointment.status === 'completed' ? 'Concluída' : 
+              appointment.status === 'cancelled' ? 'Cancelada' : 'Falta'}}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

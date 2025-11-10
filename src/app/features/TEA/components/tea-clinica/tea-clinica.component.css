@@ -1,0 +1,432 @@
+.tea-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+
+/* Welcome Section */
+.welcome-section {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2rem;
+  align-items: center;
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #3b82f6;
+}
+
+.welcome-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.welcome-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+.welcome-subtitle {
+  font-size: 1.2rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.user-greeting {
+  margin-top: 1rem;
+}
+
+.greeting-text {
+  font-size: 1.1rem;
+  color: #334155;
+  margin: 0 0 0.25rem 0;
+}
+
+.role-text {
+  font-size: 0.9rem;
+  color: #3b82f6;
+  font-weight: 600;
+  margin: 0;
+}
+
+.welcome-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-placeholder {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 3rem;
+}
+
+.tea-theme {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+}
+
+/* Section Titles */
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+}
+
+/* Quick Actions */
+.quick-actions {
+  margin-bottom: 3rem;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.action-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.action-card.clickable {
+  cursor: pointer;
+}
+
+.action-card.clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.action-card:not(.clickable) {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.action-blue { border-left-color: #3b82f6; }
+.action-green { border-left-color: #10b981; }
+.action-purple { border-left-color: #8b5cf6; }
+.action-orange { border-left-color: #f59e0b; }
+.action-teal { border-left-color: #06b6d4; }
+.action-pink { border-left-color: #ec4899; }
+
+.action-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.action-blue .action-icon { background: #dbeafe; color: #3b82f6; }
+.action-green .action-icon { background: #d1fae5; color: #10b981; }
+.action-purple .action-icon { background: #ede9fe; color: #8b5cf6; }
+.action-orange .action-icon { background: #fef3c7; color: #f59e0b; }
+.action-teal .action-icon { background: #cffafe; color: #06b6d4; }
+.action-pink .action-icon { background: #fce7f3; color: #ec4899; }
+
+.action-content {
+  flex: 1;
+}
+
+.action-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.25rem 0;
+}
+
+.action-description {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.action-arrow {
+  color: #94a3b8;
+  font-size: 1.2rem;
+}
+
+/* TEA Resources */
+.tea-resources {
+  margin-bottom: 3rem;
+}
+
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.resource-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.resource-card:hover {
+  transform: translateY(-2px);
+}
+
+.resource-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.resource-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.resource-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.resource-description {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0 0 1rem 0;
+  line-height: 1.4;
+}
+
+.resource-stats {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.resource-count {
+  font-size: 0.8rem;
+  color: #3b82f6;
+  font-weight: 500;
+  background: #dbeafe;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+}
+
+/* Sessões de Hoje */
+.todays-sessions {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid #3b82f6;
+  margin-bottom: 2rem;
+}
+
+.sessions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.sessions-header .section-title {
+  font-size: 1.5rem;
+  color: #1e293b;
+  font-weight: 600;
+  margin: 0;
+}
+
+.view-all-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.875rem;
+}
+
+.view-all-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.sessions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.session-item {
+  background: #f8fafc;
+  padding: 1.25rem;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.session-item:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+  background: white;
+}
+
+.session-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.session-patient {
+  font-weight: 600;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+}
+
+.session-patient .icon-user::before {
+  content: "👤";
+  color: #3b82f6;
+}
+
+.session-details {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.session-type {
+  font-weight: 500;
+  color: #3b82f6;
+}
+
+.session-time {
+  color: #10b981;
+  font-weight: 500;
+}
+
+.session-therapist {
+  color: #8b5cf6;
+}
+
+.session-status {
+  padding: 0.375rem 0.875rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-scheduled {
+  background: #dbeafe;
+  color: #3b82f6;
+}
+
+.status-completed {
+  background: #d1fae5;
+  color: #10b981;
+}
+
+.status-cancelled {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tea-container {
+    padding: 1rem;
+  }
+
+  .welcome-section {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .welcome-title {
+    font-size: 2rem;
+  }
+
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .resources-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Sessions responsive */
+  .sessions-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .session-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .session-details {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-title {
+    font-size: 1.75rem;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+  }
+
+  .action-card {
+    padding: 1rem;
+  }
+
+  .resource-card {
+    padding: 1rem;
+  }
+}

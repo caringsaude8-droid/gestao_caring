@@ -1,0 +1,227 @@
+<div class="professionals-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Profissionais Médicos</h1>
+      <p class="page-subtitle">Gerencie os profissionais de saúde do sistema</p>
+    </div>
+  </div>
+
+  <!-- Table Container -->
+  <div class="table-container">
+    <div class="table-header">
+      <h2 class="table-title">Gerenciamento de Profissionais</h2>
+      <button class="btn btn-primary" (click)="openProfessionalForm()">
+        <span class="btn-icon">+</span>
+        Novo Profissional
+      </button>
+    </div>
+
+    <!-- Data Table -->
+    <div class="data-table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>CRM/Especialidade</th>
+            <th>Especialidade</th>
+            <th>Status</th>
+            <th>Telefone</th>
+            <th>Email</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let profissional of profissionais">
+            <td class="professional-name-cell">{{ profissional.nome }}</td>
+            <td class="professional-crm-cell">{{ profissional.crm }}</td>
+            <td class="professional-specialty-cell">{{ profissional.especialidade }}</td>
+            <td class="professional-status-cell">
+              <span class="status-badge" [class.status-active]="profissional.ativo">
+                {{ profissional.ativo ? 'Ativo' : 'Inativo' }}
+              </span>
+            </td>
+            <td class="professional-phone-cell">{{ profissional.telefone }}</td>
+            <td class="professional-email-cell">{{ profissional.email }}</td>
+            <td class="professional-actions-cell">
+              <div class="action-buttons">
+                <button class="action-btn view-btn" (click)="viewProfessional(profissional)" title="Visualizar">
+                  👁️
+                </button>
+                <button class="action-btn edit-btn" (click)="editProfessional(profissional)" title="Editar">
+                  ✏️
+                </button>
+                <button class="action-btn delete-btn" (click)="deleteProfessional(profissional)" title="Excluir">
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Professional Form Modal -->
+<div *ngIf="showProfessionalForm" class="modal-overlay" (click)="closeProfessionalForm()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Novo Profissional Médico</h2>
+      <button class="btn btn-ghost" (click)="closeProfessionalForm()">
+        ❌
+      </button>
+    </div>
+    <div class="modal-body">
+      <form class="professional-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="professionalName">Nome Completo</label>
+            <input 
+              id="professionalName"
+              type="text" 
+              [(ngModel)]="newProfessional.nome"
+              placeholder="Digite o nome completo do profissional"
+              class="form-input">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="professionalCRM">CRM</label>
+            <input 
+              id="professionalCRM"
+              type="text" 
+              [(ngModel)]="newProfessional.crm"
+              placeholder="12345/SP"
+              class="form-input">
+          </div>
+          <div class="form-group half">
+            <label for="professionalCPF">CPF</label>
+            <input 
+              id="professionalCPF"
+              type="text" 
+              [(ngModel)]="newProfessional.cpf"
+              placeholder="000.000.000-00"
+              class="form-input">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="professionalEmail">Email</label>
+            <input 
+              id="professionalEmail"
+              type="email" 
+              [(ngModel)]="newProfessional.email"
+              placeholder="medico@exemplo.com"
+              class="form-input">
+          </div>
+          <div class="form-group half">
+            <label for="professionalPhone">Telefone</label>
+            <input 
+              id="professionalPhone"
+              type="tel" 
+              [(ngModel)]="newProfessional.telefone"
+              placeholder="(11) 99999-9999"
+              class="form-input">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="professionalSpecialty">Especialidade</label>
+            <select id="professionalSpecialty" class="form-select" [(ngModel)]="newProfessional.especialidade">
+              <option value="">Selecione a especialidade</option>
+              <option value="cardiologia">Cardiologia</option>
+              <option value="neurologia">Neurologia</option>
+              <option value="ortopedia">Ortopedia</option>
+              <option value="pediatria">Pediatria</option>
+              <option value="ginecologia">Ginecologia</option>
+              <option value="dermatologia">Dermatologia</option>
+              <option value="psiquiatria">Psiquiatria</option>
+              <option value="oftalmologia">Oftalmologia</option>
+              <option value="urologia">Urologia</option>
+              <option value="clinica_geral">Clínica Geral</option>
+            </select>
+          </div>
+          <div class="form-group half">
+            <label for="professionalStatus">Status</label>
+            <select id="professionalStatus" class="form-select" [(ngModel)]="newProfessional.ativo">
+              <option [value]="true" selected>Ativo</option>
+              <option [value]="false">Inativo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="professionalAddress">Endereço</label>
+            <input 
+              id="professionalAddress"
+              type="text" 
+              [(ngModel)]="newProfessional.endereco"
+              placeholder="Rua, número, bairro"
+              class="form-input">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group third">
+            <label for="professionalCity">Cidade</label>
+            <input 
+              id="professionalCity"
+              type="text" 
+              [(ngModel)]="newProfessional.cidade"
+              placeholder="São Paulo"
+              class="form-input">
+          </div>
+          <div class="form-group third">
+            <label for="professionalState">Estado</label>
+            <select id="professionalState" class="form-select" [(ngModel)]="newProfessional.estado">
+              <option value="SP">SP</option>
+              <option value="RJ">RJ</option>
+              <option value="MG">MG</option>
+              <option value="RS">RS</option>
+              <option value="PR">PR</option>
+              <option value="SC">SC</option>
+              <option value="BA">BA</option>
+              <option value="GO">GO</option>
+              <option value="PE">PE</option>
+              <option value="CE">CE</option>
+            </select>
+          </div>
+          <div class="form-group third">
+            <label for="professionalZIP">CEP</label>
+            <input 
+              id="professionalZIP"
+              type="text" 
+              [(ngModel)]="newProfessional.cep"
+              placeholder="00000-000"
+              class="form-input">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="professionalNotes">Observações</label>
+            <textarea 
+              id="professionalNotes"
+              class="form-textarea"
+              [(ngModel)]="newProfessional.observacoes"
+              placeholder="Informações adicionais sobre o profissional"
+              rows="3">
+            </textarea>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" (click)="closeProfessionalForm()">Cancelar</button>
+      <button class="btn btn-primary" (click)="createProfessional()" [disabled]="!newProfessional.nome || !newProfessional.crm">
+        <span class="btn-icon">+</span>
+        Salvar Profissional
+      </button>
+    </div>
+  </div>
+</div>

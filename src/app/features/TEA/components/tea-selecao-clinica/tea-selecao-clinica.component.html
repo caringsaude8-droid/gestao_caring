@@ -1,0 +1,15 @@
+<div class="selecao-container">
+  <div class="card">
+    <div class="card-header">Escolha a unidade que deseja acessar</div>
+    <div class="card-body">
+      <label class="field-label">Unidade *</label>
+      <div class="field-row">
+        <select class="field-select" [(ngModel)]="selectedClinicaId">
+          <option value="" disabled>Selecione...</option>
+          <option *ngFor="let c of clinicas" [value]="c.id">{{ c.nome }}</option>
+        </select>
+      </div>
+      <button class="btn-acessar" [disabled]="!selectedClinicaId" (click)="acessar()">Acessar</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,389 @@
+<div class="clients-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Clientes</h1>
+      <p class="page-subtitle">Gerencie os clientes do sistema</p>
+    </div>
+  </div>
+
+  <!-- Table Container -->
+  <div class="table-container">
+    <div class="table-header">
+      <h2 class="table-title">Gerenciamento de Clientes</h2>
+      <button class="btn btn-primary" (click)="openClientForm()">
+        <span class="btn-icon">+</span>
+        Novo Cliente
+      </button>
+    </div>
+
+    <!-- Data Table -->
+    <div class="data-table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>CNPJ</th>
+            <th>Tipo Faturamento</th>
+            <th>Status</th>
+            <th>Faturamos</th>
+            <th>Comissão</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cliente of clientes">
+            <td class="client-name-cell">{{ cliente.nome }}</td>
+            <td class="client-document-cell">{{ cliente.documento }}</td>
+            <td class="client-billing-cell">{{ cliente.tipoFaturamento }}</td>
+            <td class="client-status-cell">
+              <span class="status-badge" [class.status-active]="cliente.ativo">
+                {{ cliente.ativo ? 'Ativo' : 'Inativo' }}
+              </span>
+            </td>
+            <td class="client-billing-cell">{{ cliente.faturamos }}</td>
+            <td class="client-commission-cell">{{ cliente.comissao }}</td>
+            <td class="client-actions-cell">
+              <div class="action-buttons">
+                <button class="action-btn view-btn" (click)="viewClient(cliente)" title="Visualizar">
+                  👁️
+                </button>
+                <button class="action-btn edit-btn" (click)="editClient(cliente)" title="Editar">
+                  ✏️
+                </button>
+                <button class="action-btn delete-btn" (click)="deleteClient(cliente)" title="Excluir">
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Client Form Modal (Simplified placeholder) -->
+<div *ngIf="showClientForm" class="modal-overlay" (click)="closeClientForm()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Novo Cliente</h2>
+      <button class="btn btn-ghost" (click)="closeClientForm()">
+        <i class="icon-x"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form class="client-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="clientName">Nome Completo</label>
+            <ui-input 
+              id="clientName"
+              type="text" 
+              [(ngModel)]="newClient.nome"
+              placeholder="Digite o nome completo do cliente">
+            </ui-input>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="clientEmail">Email</label>
+            <ui-input 
+              id="clientEmail"
+              type="email" 
+              [(ngModel)]="newClient.email"
+              placeholder="cliente@exemplo.com">
+            </ui-input>
+          </div>
+          <div class="form-group half">
+            <label for="clientPhone">Telefone</label>
+            <ui-input 
+              id="clientPhone"
+              type="tel" 
+              [(ngModel)]="newClient.telefone"
+              placeholder="(11) 99999-9999">
+            </ui-input>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="clientCPF">CPF/CNPJ</label>
+            <ui-input 
+              id="clientCPF"
+              type="text" 
+              [(ngModel)]="newClient.cpfCnpj"
+              placeholder="000.000.000-00">
+            </ui-input>
+          </div>
+          <div class="form-group half">
+            <label for="clientType">Tipo de Cliente</label>
+            <select id="clientType" class="form-select" [(ngModel)]="newClient.tipo">
+              <option value="pessoa_fisica">Pessoa Física</option>
+              <option value="pessoa_juridica">Pessoa Jurídica</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="clientAddress">Endereço</label>
+            <ui-input 
+              id="clientAddress"
+              type="text" 
+              [(ngModel)]="newClient.endereco"
+              placeholder="Rua, número, bairro">
+            </ui-input>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group third">
+            <label for="clientCity">Cidade</label>
+            <ui-input 
+              id="clientCity"
+              type="text" 
+              [(ngModel)]="newClient.cidade"
+              placeholder="São Paulo">
+            </ui-input>
+          </div>
+          <div class="form-group third">
+            <label for="clientState">Estado</label>
+            <select id="clientState" class="form-select" [(ngModel)]="newClient.estado">
+              <option value="SP">SP</option>
+              <option value="RJ">RJ</option>
+              <option value="MG">MG</option>
+              <option value="RS">RS</option>
+              <option value="PR">PR</option>
+              <option value="SC">SC</option>
+              <option value="BA">BA</option>
+              <option value="GO">GO</option>
+              <option value="PE">PE</option>
+              <option value="CE">CE</option>
+            </select>
+          </div>
+          <div class="form-group third">
+            <label for="clientZIP">CEP</label>
+            <ui-input 
+              id="clientZIP"
+              type="text" 
+              [(ngModel)]="newClient.cep"
+              placeholder="00000-000">
+            </ui-input>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="clientCompany">Empresa Associada</label>
+            <select id="clientCompany" class="form-select" [(ngModel)]="newClient.empresaId">
+              <option value="">Selecione a empresa</option>
+              <option *ngFor="let empresa of empresas" [value]="empresa.id">{{empresa.nome}}</option>
+            </select>
+          </div>
+          <div class="form-group half">
+            <label for="clientStatus">Status</label>
+            <select id="clientStatus" class="form-select" [(ngModel)]="newClient.status">
+              <option value="ativo" selected>Ativo</option>
+              <option value="inativo">Inativo</option>
+              <option value="pendente">Pendente</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="clientNotes">Observações</label>
+            <textarea 
+              id="clientNotes"
+              class="form-textarea"
+              [(ngModel)]="newClient.observacoes"
+              placeholder="Informações adicionais sobre o cliente"
+              rows="3">
+            </textarea>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" [(ngModel)]="newClient.notificarEmail">
+                <span class="checkbox-custom"></span>
+                Enviar email de boas-vindas
+              </label>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" (click)="closeClientForm()">Cancelar</button>
+      <button class="btn btn-primary" (click)="createClient()" [disabled]="!newClient.nome || !newClient.email">
+        <i class="icon-plus"></i>
+        Salvar Cliente
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Client Details Modal -->
+<div *ngIf="showClientDetails && selectedClient" class="modal-overlay" (click)="closeClientDetails()">
+  <div class="modal-content client-details-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="client-header-info">
+        <div class="client-icon">
+          🏥
+        </div>
+        <div class="client-title-info">
+          <h2>{{ selectedClient.nome }}</h2>
+          <span class="status-badge" [class.status-active]="selectedClient.ativo">
+            {{ selectedClient.ativo ? 'Ativo' : 'Inativo' }}
+          </span>
+        </div>
+      </div>
+      <button class="btn btn-ghost close-btn" (click)="closeClientDetails()">
+        ❌
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="details-section">
+        <div class="section-header">
+          <h3>📋 Informações Básicas</h3>
+        </div>
+        <div class="details-grid">
+          <div class="detail-item">
+            <div class="detail-icon">📄</div>
+            <div class="detail-content">
+              <span class="detail-label">CNPJ:</span>
+              <span class="detail-value">{{ selectedClient.documento || 'Não informado' }}</span>
+            </div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-icon">📧</div>
+            <div class="detail-content">
+              <span class="detail-label">E-mail:</span>
+              <span class="detail-value">{{ selectedClient.email || 'Não informado' }}</span>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-icon">📱</div>
+            <div class="detail-content">
+              <span class="detail-label">Telefone:</span>
+              <span class="detail-value">{{ selectedClient.telefone || 'Não informado' }}</span>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-icon">🏢</div>
+            <div class="detail-content">
+              <span class="detail-label">Empresa:</span>
+              <span class="detail-value">{{ selectedClient.empresa || 'Caring Saúde Ltda' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="details-section">
+        <div class="section-header">
+          <h3>💰 Informações Comerciais</h3>
+        </div>
+        <div class="details-grid">
+          <div class="detail-item">
+            <div class="detail-icon">📋</div>
+            <div class="detail-content">
+              <span class="detail-label">Tipo de Faturamento:</span>
+              <span class="detail-value">{{ selectedClient.tipoFaturamento || 'Não informado' }}</span>
+            </div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-icon">✅</div>
+            <div class="detail-content">
+              <span class="detail-label">Faturamos:</span>
+              <span class="detail-value">
+                <span class="status-badge" [class.status-active]="selectedClient.faturamos === 'Sim'">
+                  {{ selectedClient.faturamos || 'Não' }}
+                </span>
+              </span>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-icon">💵</div>
+            <div class="detail-content">
+              <span class="detail-label">Comissão:</span>
+              <span class="detail-value">{{ selectedClient.comissao || '0%' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="details-section" *ngIf="selectedClient.endereco || selectedClient.cidade || selectedClient.observacoes">
+        <div class="section-header">
+          <h3>📍 Informações Adicionais</h3>
+        </div>
+        <div class="details-grid">
+          <div class="detail-item full-width" *ngIf="selectedClient.endereco">
+            <div class="detail-icon">🏠</div>
+            <div class="detail-content">
+              <span class="detail-label">Endereço:</span>
+              <span class="detail-value">{{ selectedClient.endereco }}</span>
+            </div>
+          </div>
+          
+          <div class="detail-item" *ngIf="selectedClient.cidade">
+            <div class="detail-icon">🏙️</div>
+            <div class="detail-content">
+              <span class="detail-label">Cidade:</span>
+              <span class="detail-value">{{ selectedClient.cidade }}</span>
+            </div>
+          </div>
+
+          <div class="detail-item full-width" *ngIf="selectedClient.observacoes">
+            <div class="detail-icon">📝</div>
+            <div class="detail-content">
+              <span class="detail-label">Observações:</span>
+              <span class="detail-value">{{ selectedClient.observacoes }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="details-section">
+        <div class="section-header">
+          <h3>📅 Informações do Sistema</h3>
+        </div>
+        <div class="details-grid">
+          <div class="detail-item">
+            <div class="detail-icon">📅</div>
+            <div class="detail-content">
+              <span class="detail-label">Cadastro:</span>
+              <span class="detail-value">{{ formatDate(selectedClient.dataCadastro) }}</span>
+            </div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-icon">🔄</div>
+            <div class="detail-content">
+              <span class="detail-label">Última atualização:</span>
+              <span class="detail-value">{{ formatDate(selectedClient.dataUltimaAtualizacao) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" (click)="closeClientDetails()">Fechar</button>
+      <button class="btn btn-primary" (click)="editClient(selectedClient)">
+        <span class="btn-icon">✏️</span>
+        Editar Cliente
+      </button>
+    </div>
+  </div>
+</div>

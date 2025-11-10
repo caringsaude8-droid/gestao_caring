@@ -1,0 +1,230 @@
+<div class="pacientes-container">
+  <div class="pacientes-header">
+    <div class="header-info">
+      <h1 class="pacientes-title">Profissionais TEA</h1>
+      <p class="pacientes-subtitle">Gerenciar profissionais do módulo TEA</p>
+    </div>
+    <button class="add-paciente-btn" (click)="openAddProfissionalModal()">
+      <span class="icon-plus"></span>
+      Novo Profissional
+    </button>
+  </div>
+
+  <div class="filters-section">
+    <div class="filters-container">
+      <div class="search-group">
+        <span class="icon-search"></span>
+        <input 
+          type="text" 
+          placeholder="Buscar por nome..."
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()"
+          class="search-input">
+      </div>
+      <select class="filter-select" [(ngModel)]="selectedStatus" (change)="onStatusChange()">
+        <option value="">Todos os Status</option>
+        <option value="ativo">Ativo</option>
+        <option value="inativo">Inativo</option>
+      </select>
+      <button class="clear-filters-btn" (click)="clearFilters()">
+        <span class="icon-refresh"></span>
+        Limpar Filtros
+      </button>
+    </div>
+  </div>
+
+  <div class="pacientes-grid">
+    <div *ngFor="let profissional of filteredProfissionais" class="paciente-card">
+      <div class="paciente-header">
+        <div class="paciente-avatar">
+          <div class="avatar-placeholder">{{profissional.nome.charAt(0).toUpperCase()}}</div>
+        </div>
+        <div class="paciente-basic-info">
+          <h3 class="paciente-name">{{profissional.nome}}</h3>
+        </div>
+        <div class="paciente-badges">
+          <span class="status-badge" [class]="getStatusClass(profissional.status)">
+            {{getStatusLabel(profissional.status)}}
+          </span>
+        </div>
+      </div>
+      <div class="paciente-actions">
+        <button class="action-btn action-view" (click)="viewProfissionalDetails(profissional)">
+          Detalhes
+        </button>
+        <button class="action-btn action-edit" (click)="editProfissional(profissional)">
+          Editar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="filteredProfissionais.length === 0" class="empty-state">
+    <h3>Nenhum profissional encontrado</h3>
+    <p *ngIf="searchTerm || selectedStatus">
+      Tente ajustar os filtros de busca ou limpar os filtros para ver todos os profissionais.
+    </p>
+    <p *ngIf="!searchTerm && !selectedStatus">
+      Nenhum profissional foi cadastrado ainda. Clique em "Novo Profissional" para começar.
+    </p>
+    <button class="add-paciente-btn" (click)="openAddProfissionalModal()">
+      <span class="icon-plus"></span>
+      Novo Profissional
+    </button>
+  </div>
+</div>
+
+<!-- Modal de Formulário de Profissional -->
+<div class="modal" *ngIf="showProfissionalFormModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>{{formMode === 'create' ? 'Novo Profissional' : 'Editar Profissional'}}</h2>
+      <button class="close-btn" (click)="closeProfissionalFormModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form #profissionalForm="ngForm">
+        <div class="form-group">
+          <label for="nome">Nome</label>
+          <input type="text" id="nome" name="nome" [ngModel]="selectedProfissional?.nome || ''" (ngModelChange)="selectedProfissional ? selectedProfissional.nome = $event : null" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" [ngModel]="selectedProfissional?.email || ''" (ngModelChange)="selectedProfissional ? selectedProfissional.email = $event : null" required>
+        </div>
+        <div class="form-group">
+          <label for="telefone">Telefone</label>
+          <input type="tel" id="telefone" name="telefone" [ngModel]="selectedProfissional?.telefone || ''" (ngModelChange)="selectedProfissional ? selectedProfissional.telefone = $event : null" required>
+        </div>
+        <div class="form-group">
+          <label for="cpf">CPF</label>
+          <input type="text" id="cpf" name="cpf" [ngModel]="selectedProfissional?.cpf || ''" (ngModelChange)="selectedProfissional ? selectedProfissional.cpf = $event : null">
+        </div>
+        <div class="form-group">
+          <label for="crm">Registro Profissional (CRM/CRP/etc)</label>
+          <input type="text" id="crm" name="crm" [ngModel]="selectedProfissional?.crm || ''" (ngModelChange)="selectedProfissional ? selectedProfissional.crm = $event : null">
+        </div>
+        <div class="form-group">
+          <label for="endereco">Endereço</label>
+          <input type="text" id="endereco" name="endereco" [ngModel]="selectedProfissional?.endereco || ''" (ngModelChange)="selectedProfissional ? selectedProfissional.endereco = $event : null">
+        </div>
+        <div class="form-group">
+          <label for="especialidade">Especialidade</label>
+          <select id="especialidade" name="especialidade" [ngModel]="selectedProfissional?.especialidade || ''" (ngModelChange)="selectedProfissional ? selectedProfissional.especialidade = $event : null" required>
+            <option value="">Selecione uma especialidade</option>
+            <option value="Psicóloga">Psicóloga</option>
+            <option value="Fonoaudióloga">Fonoaudióloga</option>
+            <option value="Terapeuta Ocupacional">Terapeuta Ocupacional</option>
+            <option value="Neurologista">Neurologista</option>
+            <option value="Psiquiatra">Psiquiatra</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" name="status" [ngModel]="selectedProfissional?.status || 'ativo'" (ngModelChange)="selectedProfissional ? selectedProfissional.status = $event : null" required>
+            <option value="ativo">Ativo</option>
+            <option value="inativo">Inativo</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="closeProfissionalFormModal()">Cancelar</button>
+          <button type="submit" class="btn-save" [disabled]="!profissionalForm.valid" (click)="onSaveProfissional(selectedProfissional || {id: '', nome: '', email: '', telefone: '', especialidade: '', status: 'ativo'})">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Detalhes do Profissional (layout idêntico ao Paciente) -->
+<div class="modal-overlay" *ngIf="showProfissionalDetailsModal" (click)="closeProfissionalDetailsModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Detalhes do Profissional TEA</h2>
+      <button class="modal-close-btn" (click)="closeProfissionalDetailsModal()">
+        <i class="icon-x"></i>
+      </button>
+    </div>
+
+    <div class="modal-body" *ngIf="selectedProfissional">
+      <!-- Cabeçalho com avatar e badges -->
+      <div class="user-profile-section">
+        <div class="user-avatar-large">
+          <div class="avatar-placeholder">{{selectedProfissional.nome.charAt(0).toUpperCase()}}</div>
+        </div>
+        <div class="user-info-main">
+          <h3 class="user-name-large">{{selectedProfissional.nome}}</h3>
+          <p class="user-email-large">{{selectedProfissional.email}}</p>
+          <div class="user-badges-modal">
+            <span class="status-badge-modal" [class]="getStatusClass(selectedProfissional.status)">
+              {{getStatusLabel(selectedProfissional.status)}}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid de detalhes -->
+      <div class="user-details-grid">
+        <div class="detail-card">
+          <h4 class="detail-card-title">Informações de Contato</h4>
+          <div class="detail-item">
+            <span class="detail-icon">📞</span>
+            <div class="detail-content">
+              <span class="detail-label">Telefone</span>
+              <span class="detail-value">{{selectedProfissional.telefone}}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <span class="detail-icon">📧</span>
+            <div class="detail-content">
+              <span class="detail-label">Email</span>
+              <span class="detail-value">{{selectedProfissional.email}}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <span class="detail-icon">🆔</span>
+            <div class="detail-content">
+              <span class="detail-label">CPF</span>
+              <span class="detail-value">{{selectedProfissional.cpf || 'Não informado'}}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <h4 class="detail-card-title">Informações Profissionais</h4>
+          <div class="detail-item">
+            <span class="detail-icon">🏷️</span>
+            <div class="detail-content">
+              <span class="detail-label">Especialidade</span>
+              <span class="detail-value">{{selectedProfissional.especialidade}}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <span class="detail-icon">🧾</span>
+            <div class="detail-content">
+              <span class="detail-label">Registro</span>
+              <span class="detail-value">{{selectedProfissional.crm || 'Não informado'}}</span>
+            </div>
+          </div>
+          <div class="detail-item" *ngIf="selectedProfissional.endereco">
+            <span class="detail-icon">📍</span>
+            <div class="detail-content">
+              <span class="detail-label">Endereço</span>
+              <span class="detail-value">{{selectedProfissional.endereco}}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <span class="detail-icon">📅</span>
+            <div class="detail-content">
+              <span class="detail-label">Data de Cadastro</span>
+              <span class="detail-value">{{formatDate(selectedProfissional.dataCadastro || '')}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" (click)="closeProfissionalDetailsModal()">Fechar</button>
+        <button class="modal-btn modal-btn-primary" (click)="editProfissional(selectedProfissional); closeProfissionalDetailsModal()"><i class="icon-edit"></i> Editar Profissional</button>
+      </div>
+    </div>
+  </div>
+</div>

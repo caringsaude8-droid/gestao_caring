@@ -1,0 +1,80 @@
+<div class="tea-page-container">
+  <div class="page-header">
+    <h2 class="page-title">Check-in por Senha</h2>
+    <p class="page-subtitle">Registre chegadas utilizando senha/código de atendimento.</p>
+  </div>
+
+  <!-- Filtros -->
+  <section class="filters-section">
+    <h3 class="section-title">Filtros para Check-In por senha</h3>
+    <div class="filters-container">
+      <div class="search-group">
+        <label class="filter-label">Paciente</label>
+        <select [(ngModel)]="pacienteSelecionado" (change)="onPacienteSelecionadoChange()" class="filter-select">
+          <option value="">Escolha...</option>
+          <option *ngFor="let nome of pacienteOptions" [value]="nome">{{ nome }}</option>
+        </select>
+        <button class="action-btn action-yellow" title="Gerar/Validar Senha">
+          <i class="icon-key"></i>
+        </button>
+      </div>
+
+      <div class="select-group">
+        <label class="filter-label">Tipo de Agendamento</label>
+        <select [(ngModel)]="tipoAgendamento" class="filter-select">
+          <option>Interno</option>
+          <option>Externo</option>
+        </select>
+      </div>
+
+      <div class="select-group">
+        <label class="filter-label">Forma de Ordenação</label>
+        <div class="order-group">
+          <select [(ngModel)]="formaOrdenacao" class="filter-select">
+            <option>Crescente</option>
+            <option>Decrescente</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="actions-group">
+        <button class="action-btn primary" (click)="pesquisar()">
+          <i class="icon-search"></i>
+          Pesquisar
+        </button>
+        <button class="action-btn" (click)="limparFiltros()" title="Limpar">
+          <i class="icon-refresh"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Listagem -->
+  <section class="list-section">
+    <h3 class="section-title">Listar Agendamentos</h3>
+    <div class="list-card">
+      <table class="tea-table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Paciente</th>
+            <th>Convênio</th>
+            <th>Checkin</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let a of filteredAppointments">
+            <td>{{a.date}}</td>
+            <td>{{a.patient}}</td>
+            <td>{{a.convenio}}</td>
+            <td>
+              <span class="badge-check" [class.badge-success]="a.checkedIn">
+                <i class="icon-check"></i>
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

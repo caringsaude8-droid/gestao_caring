@@ -1,0 +1,114 @@
+<div class="p-6 space-y-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-3xl font-bold text-foreground">Dashboard</h1>
+      <p class="text-muted-foreground">
+        Bem-vindo, {{ profile.nome || 'Administrador' }}! Visão geral do sistema Gestão Caring
+      </p>
+    </div>
+    <button class="btn btn-outline btn-sm" (click)="onNotificationsClick()">
+      <span class="icon-bell mr-2"></span>
+      Notificações
+    </button>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Tarefas Abertas -->
+    <div class="dashboard-stat-card stat-card-red cursor-pointer hover-scale">
+      <div class="stat-card-header">
+        <h3 class="stat-card-title">Tarefas Abertas</h3>
+        <span class="stat-card-icon">📋</span>
+      </div>
+      <div class="stat-card-content">
+        <div class="stat-card-value">2</div>
+      </div>
+    </div>
+
+    <!-- Tarefas Concluídas -->
+    <div class="dashboard-stat-card stat-card-teal cursor-pointer hover-scale">
+      <div class="stat-card-header">
+        <h3 class="stat-card-title">Tarefas Concluídas</h3>
+        <span class="stat-card-icon">✅</span>
+      </div>
+      <div class="stat-card-content">
+        <div class="stat-card-value">0</div>
+      </div>
+    </div>
+
+    <!-- Faturamento Pendente -->
+    <div class="dashboard-stat-card stat-card-red cursor-pointer hover-scale">
+      <div class="stat-card-header">
+        <h3 class="stat-card-title">Faturamento Pendente</h3>
+        <span class="stat-card-icon">💰</span>
+      </div>
+      <div class="stat-card-content">
+        <div class="stat-card-value">R$ 15.000,00</div>
+      </div>
+    </div>
+
+    <!-- Compromissos Hoje -->
+    <div class="dashboard-stat-card cursor-pointer hover-scale">
+      <div class="stat-card-header">
+        <h3 class="stat-card-title">Compromissos Hoje</h3>
+        <span class="stat-card-icon">📅</span>
+      </div>
+      <div class="stat-card-content">
+        <div class="stat-card-value">0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Recent Tasks -->
+    <div class="dashboard-content-card">
+      <div class="content-card-header">
+        <h3 class="content-card-title">
+          📋 Tarefas Recentes
+        </h3>
+      </div>
+      <div class="content-card-body space-y-4">
+        <div class="task-item-card">
+          <div>
+            <h4 class="task-item-title">Revisão de Documentos</h4>
+            <p class="task-item-subtitle">Geral • Sem prazo</p>
+          </div>
+        </div>
+        <div class="task-item-card">
+          <div>
+            <h4 class="task-item-title">Análise de Relatório</h4>
+            <p class="task-item-subtitle">Geral • Sem prazo</p>
+          </div>
+        </div>
+        <button class="btn-view-all" (click)="onViewAllTasks()">
+          Ver todas as tarefas
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="dashboard-content-card">
+      <div class="content-card-header">
+        <h3 class="content-card-title">
+          📈 Ações Rápidas
+        </h3>
+      </div>
+      <div class="content-card-body space-y-3">
+        <button class="action-btn" (click)="onNewTask()">
+          📋 Nova Tarefa
+        </button>
+        <button class="action-btn" (click)="onNewInvoice()">
+          💰 Novo Faturamento
+        </button>
+        <button class="action-btn" (click)="onNewEvent()">
+          📅 Agendar Reunião
+        </button>
+        <button class="action-btn" (click)="onManageUsers()">
+          👥 Gerenciar Usuários
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,47 @@
+<div class="tea-page-container">
+  <div class="page-header">
+    <h2 class="page-title">{{ pageTitle }}</h2>
+    <p class="page-subtitle">Escolha um paciente para abrir o prontuário.</p>
+  </div>
+
+  <section class="controls-section controls-card">
+    <div class="controls-row">
+      <input type="text" class="search-input full" placeholder="Buscar por nome ou matrícula" [(ngModel)]="searchTerm" (input)="onSearch()" />
+    </div>
+  </section>
+
+  <div class="card">
+    <table class="pacientes-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Foto</th>
+          <th>Nome</th>
+          <th>Matrícula</th>
+          <th>Convênio</th>
+          <th>Situação</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of paged; let i = index" (click)="abrirProntuario(p)" class="row-click">
+          <td>{{ i + 1 }}</td>
+          <td><div class="avatar" [class.placeholder]="!p.fotoUrl"><span *ngIf="!p.fotoUrl">👤</span><img *ngIf="p.fotoUrl" [src]="p.fotoUrl" alt="Foto" /></div></td>
+          <td>{{ p.nome }}</td>
+          <td>{{ p.matriculaConvenio }}</td>
+          <td>{{ p.convenio }}</td>
+          <td><span class="status-badge" [class.active]="p.situacao === 'Ativo'" [class.inativo]="p.situacao === 'Inativo'" [class.espera]="p.situacao === 'Em Espera'">{{ p.situacao }}</span></td>
+          <td><button class="action-btn" (click)="abrirProntuario(p); $event.stopPropagation();">Abrir Prontuário</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination">
+    <button class="page-btn" (click)="prevPage()" [disabled]="currentPage === 1">Anterior</button>
+    <ng-container *ngFor="let p of [].constructor(totalPages); let idx = index">
+      <button class="page-number" [class.active]="currentPage === (idx + 1)" (click)="goToPage(idx + 1)">{{ idx + 1 }}</button>
+    </ng-container>
+    <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">Próxima</button>
+  </div>
+</div>

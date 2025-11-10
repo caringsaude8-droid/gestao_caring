@@ -1,0 +1,102 @@
+<!-- Modal de Detalhes do Paciente -->
+<div *ngIf="show" class="modal-overlay" (click)="onOverlayClick($event)">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Detalhes do Paciente</h2>
+      <button class="modal-close-btn" (click)="onCloseModal()">
+        <i class="icon-x"></i>
+      </button>
+    </div>
+
+    <div class="modal-body" *ngIf="paciente">
+      <!-- Avatar e Informações Básicas do Paciente -->
+      <div class="user-profile-section">
+        <div class="user-avatar-large">
+          <img *ngIf="paciente.avatar" [src]="paciente.avatar" [alt]="paciente.nome" class="avatar-image">
+          <div *ngIf="!paciente.avatar" class="avatar-placeholder">
+            {{paciente.nome.charAt(0).toUpperCase()}}
+          </div>
+        </div>
+        <div class="user-info-main">
+          <h3 class="user-name-large">{{paciente.nome}}</h3>
+          <p class="user-email-large">{{paciente.email}}</p>
+          <div class="user-badges-modal">
+            <span class="status-badge-modal" [class]="getStatusClass(paciente.status)">
+              {{getStatusLabel(paciente.status)}}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Informações Detalhadas -->
+      <div class="user-details-grid">
+        <div class="detail-card">
+          <h4 class="detail-card-title">Informações de Contato</h4>
+          <div class="detail-item">
+            <span class="detail-icon">📞</span>
+            <div class="detail-content">
+              <span class="detail-label">Telefone</span>
+              <span class="detail-value">{{paciente.telefone}}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <span class="detail-icon">📧</span>
+            <div class="detail-content">
+              <span class="detail-label">Email</span>
+              <span class="detail-value">{{paciente.email}}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <span class="detail-icon">🆔</span>
+            <div class="detail-content">
+              <span class="detail-label">CPF</span>
+              <span class="detail-value">{{paciente.cpf}}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <h4 class="detail-card-title">Informações Adicionais</h4>
+          <div class="detail-item">
+            <span class="detail-icon">�</span>
+            <div class="detail-content">
+              <span class="detail-label">Data de Nascimento</span>
+              <span class="detail-value">{{formatDate(paciente.dataNascimento)}}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <span class="detail-icon">📅</span>
+            <div class="detail-content">
+              <span class="detail-label">Cadastro</span>
+              <span class="detail-value">{{formatDate(paciente.dataCriacao)}}</span>
+            </div>
+          </div>
+          <div class="detail-item" *ngIf="paciente.especialidades && paciente.especialidades.length > 0">
+            <span class="detail-icon">🎓</span>
+            <div class="detail-content">
+              <span class="detail-label">Especialidades</span>
+              <span class="detail-value">{{paciente.especialidades.join(', ')}}</span>
+            </div>
+          </div>
+          <div class="detail-item" *ngIf="paciente.observacoes">
+            <span class="detail-icon">📝</span>
+            <div class="detail-content">
+              <span class="detail-label">Observações</span>
+              <span class="detail-value">{{paciente.observacoes}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="modal-btn modal-btn-secondary" (click)="onCloseModal()">
+        Fechar
+      </button>
+      <button class="modal-btn modal-btn-primary" (click)="onEditPaciente()">
+        <i class="icon-edit"></i>
+        Editar Paciente
+      </button>
+    </div>
+  </div>
+</div>

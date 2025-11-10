@@ -1,0 +1,405 @@
+<div class="page-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div>
+        <h1 class="page-title">Gestão de Tarefas</h1>
+        <p class="page-subtitle">Gerencie os processos internos e atividades</p>
+      </div>
+      <button class="btn btn-primary" (click)="openTaskForm()">
+        <i class="icon-plus"></i>
+        Nova Tarefa
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters Card -->
+  <div class="card caring-card">
+    <div class="card-content">
+      <div class="filters-container">
+        <!-- Search -->
+        <div class="search-container">
+          <div class="input-group">
+            <i class="icon-search"></i>
+            <input 
+              type="text"
+              placeholder="Buscar tarefas..."
+              [(ngModel)]="searchTerm"
+              (ngModelChange)="onFiltersChange()"
+              class="input"
+            />
+          </div>
+        </div>
+        
+        <!-- Ownership Filter -->
+        <div class="filter-select">
+          <select 
+            [(ngModel)]="selectedOwnership"
+            (ngModelChange)="onFiltersChange()"
+            class="select"
+          >
+            <option value="todas">Todas as tarefas</option>
+            <option value="minhas">Criadas por mim</option>
+            <option value="compartilhadas">Compartilhadas comigo</option>
+          </select>
+        </div>
+        
+        <!-- Company Filter -->
+        <div class="filter-select">
+          <select 
+            [(ngModel)]="selectedEmpresa"
+            (ngModelChange)="onFiltersChange()"
+            class="select"
+          >
+            <option value="todos">Todas as empresas</option>
+            <option value="sem_empresa">Sem empresa</option>
+            <option *ngFor="let empresa of empresas" [value]="empresa.id">
+              {{ empresa.nome }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-container">
+    <div class="tabs-list">
+      <button 
+        [class.active]="activeTab === 'todas'"
+        class="tab-button"
+        (click)="setActiveTab('todas')"
+      >
+        Todas ({{ tasksByStatus.todas.length }})
+      </button>
+      <button 
+        [class.active]="activeTab === 'pendente'"
+        class="tab-button"
+        (click)="setActiveTab('pendente')"
+      >
+        Pendentes ({{ tasksByStatus.pendente.length }})
+      </button>
+      <button 
+        [class.active]="activeTab === 'em_andamento'"
+        class="tab-button"
+        (click)="setActiveTab('em_andamento')"
+      >
+        Em Andamento ({{ tasksByStatus.em_andamento.length }})
+      </button>
+      <button 
+        [class.active]="activeTab === 'urgente'"
+        class="tab-button"
+        (click)="setActiveTab('urgente')"
+      >
+        Urgentes ({{ tasksByStatus.urgente.length }})
+      </button>
+      <button 
+        [class.active]="activeTab === 'concluida'"
+        class="tab-button"
+        (click)="setActiveTab('concluida')"
+      >
+        Concluídas ({{ tasksByStatus.concluida.length }})
+      </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      <!-- Loading State -->
+      <div *ngIf="loading" class="loading-container">
+        <div class="spinner"></div>
+      </div>
+
+      <!-- Tasks List -->
+      <div *ngIf="!loading" class="tasks-container">
+        <!-- Display tasks based on active tab -->
+        <ng-container *ngFor="let task of getCurrentTabTasks()">
+          <div class="task-card" [class.shared-task]="isTaskSharedByOthers(task)">
+            <div class="task-content">
+              <!-- Task Header -->
+              <div class="task-header">
+                <div class="task-info">
+                  <div class="task-title-row">
+                    <i class="task-icon" [class]="'icon-' + task.status"></i>
+                    <h3 class="task-title">{{ task.titulo }}</h3>
+                    <span class="badge" [class]="getStatusBadgeClass(task.status)">
+                      {{ getStatusLabel(task.status) }}
+                    </span>
+                    <span class="badge" [class]="getPrioridadeBadgeClass(task.prioridade)">
+                      {{ getPrioridadeLabel(task.prioridade) }}
+                    </span>
+                    <span *ngIf="isTaskSharedByOthers(task)" class="badge badge-shared">
+                      <i class="icon-share"></i>
+                      Compartilhada
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="task-actions">
+                  <button 
+                    class="btn btn-outline btn-sm"
+                    (click)="viewTaskDetails(task)"
+                    title="Visualizar detalhes"
+                  >
+                    <i class="icon-eye"></i>
+                    Visualizar
+                  </button>
+                  
+                  <button 
+                    class="btn btn-outline btn-sm"
+                    title="Assentamento"
+                  >
+                    <i class="icon-file-text"></i>
+                  </button>
+                  
+                  <div class="dropdown">
+                    <button class="btn btn-ghost btn-sm dropdown-toggle">
+                      <i class="icon-more"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                      <button class="dropdown-item" (click)="editTask(task)">
+                        <i class="icon-edit"></i>
+                        Editar
+                      </button>
+                      <button 
+                        class="dropdown-item danger" 
+                        (click)="deleteTask(task)"
+                      >
+                        <i class="icon-trash"></i>
+                        Excluir
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Task Details -->
+              <div class="task-details">
+                <div class="detail-item">
+                  <i class="icon-calendar"></i>
+                  <span>
+                    {{ task.data_limite ? formatDate(task.data_limite) : 'Sem prazo' }}
+                  </span>
+                </div>
+                
+                <div class="detail-item">
+                  <i class="icon-visibility"></i>
+                  <span>{{ getVisibilityLabel(task.visibilidade) }}</span>
+                </div>
+                
+                <div *ngIf="getEmpresaName(task)" class="detail-item">
+                  <i class="icon-building"></i>
+                  <span>{{ getEmpresaName(task) }}</span>
+                </div>
+                
+                <div *ngIf="getClienteName(task)" class="detail-item">
+                  <i class="icon-user"></i>
+                  <span>{{ getClienteName(task) }}</span>
+                </div>
+                
+                <div *ngIf="isTaskSharedByOthers(task)" class="detail-item">
+                  <i class="icon-user-check"></i>
+                  <span class="shared-by">por {{ getCreatorName(task) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- Empty State -->
+        <div *ngIf="(activeTab === 'todas' ? filteredTasks : tasksByStatus[activeTab]).length === 0" class="empty-state">
+          <div class="empty-content">
+            <i class="icon-clipboard-list empty-icon"></i>
+            <h3>Nenhuma tarefa encontrada</h3>
+            <p *ngIf="activeTab === 'todas'">
+              Comece criando sua primeira tarefa no sistema.
+            </p>
+            <p *ngIf="activeTab !== 'todas'">
+              Nenhuma tarefa {{ getStatusLabel(activeTab).toLowerCase() }} encontrada.
+            </p>
+            <button *ngIf="activeTab === 'todas'" class="btn btn-primary" (click)="openTaskForm()">
+              <i class="icon-plus"></i>
+              Criar Primeira Tarefa
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Task Form Modal (Simplified placeholder) -->
+<div *ngIf="showTaskForm" class="modal-overlay" (click)="closeTaskForm()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Nova Tarefa</h2>
+      <button class="btn btn-ghost" (click)="closeTaskForm()">
+        <i class="icon-x"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form class="task-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="taskTitle">Título da Tarefa</label>
+            <ui-input 
+              id="taskTitle"
+              type="text" 
+              [(ngModel)]="newTask.title"
+              placeholder="Digite o título da tarefa">
+            </ui-input>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="taskDescription">Descrição</label>
+            <textarea 
+              id="taskDescription"
+              class="form-textarea"
+              [(ngModel)]="newTask.description"
+              placeholder="Descreva os detalhes da tarefa"
+              rows="3">
+            </textarea>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="taskCompany">Empresa</label>
+            <select id="taskCompany" class="form-select" [(ngModel)]="newTask.empresa">
+              <option value="">Selecione a empresa</option>
+              <option *ngFor="let empresa of empresas" [value]="empresa.nome">{{empresa.nome}}</option>
+            </select>
+          </div>
+          <div class="form-group half">
+            <label for="taskClient">Cliente</label>
+            <select id="taskClient" class="form-select" [(ngModel)]="newTask.cliente">
+              <option value="">Selecione o cliente</option>
+              <option *ngFor="let cliente of clientes" [value]="cliente.nome">{{cliente.nome}}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="taskPriority">Prioridade</label>
+            <select id="taskPriority" class="form-select" [(ngModel)]="newTask.prioridade">
+              <option value="baixa">Baixa</option>
+              <option value="media" selected>Média</option>
+              <option value="alta">Alta</option>
+              <option value="urgente">Urgente</option>
+            </select>
+          </div>
+          <div class="form-group half">
+            <label for="taskStatus">Status</label>
+            <select id="taskStatus" class="form-select" [(ngModel)]="newTask.status">
+              <option value="pendente" selected>Pendente</option>
+              <option value="andamento">Em andamento</option>
+              <option value="aguardando">Aguardando</option>
+              <option value="concluida">Concluída</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="taskDueDate">Data de Vencimento</label>
+            <ui-input 
+              id="taskDueDate"
+              type="date" 
+              [(ngModel)]="newTask.dataVencimento">
+            </ui-input>
+          </div>
+          <div class="form-group half">
+            <label for="taskDueTime">Horário</label>
+            <ui-input 
+              id="taskDueTime"
+              type="time" 
+              [(ngModel)]="newTask.horarioVencimento">
+            </ui-input>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="taskTags">Tags</label>
+            <ui-input 
+              id="taskTags"
+              type="text" 
+              [(ngModel)]="newTask.tagsText"
+              placeholder="Digite as tags separadas por vírgula (ex: urgente, documentação, compliance)">
+            </ui-input>
+            <small class="form-help">Use vírgulas para separar múltiplas tags</small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" [(ngModel)]="newTask.notificarEmail">
+                <span class="checkbox-custom"></span>
+                Enviar notificação por email
+              </label>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" (click)="closeTaskForm()">Cancelar</button>
+      <button class="btn btn-primary" (click)="createTask()" [disabled]="!newTask.title">
+        <i class="icon-plus"></i>
+        Criar Tarefa
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Task Details Modal -->
+<div *ngIf="showTaskDetails && selectedTask" class="modal-overlay" (click)="closeTaskDetails()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ selectedTask.titulo }}</h2>
+      <button class="btn btn-ghost" (click)="closeTaskDetails()">
+        <i class="icon-x"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="task-detail-info">
+        <div class="info-row">
+          <label>Status:</label>
+          <span class="badge" [class]="getStatusBadgeClass(selectedTask.status)">
+            {{ getStatusLabel(selectedTask.status) }}
+          </span>
+        </div>
+        <div class="info-row">
+          <label>Prioridade:</label>
+          <span class="badge" [class]="getPrioridadeBadgeClass(selectedTask.prioridade)">
+            {{ getPrioridadeLabel(selectedTask.prioridade) }}
+          </span>
+        </div>
+        <div class="info-row">
+          <label>Data Limite:</label>
+          <span>{{ selectedTask.data_limite ? formatDate(selectedTask.data_limite) : 'Sem prazo' }}</span>
+        </div>
+        <div class="info-row">
+          <label>Visibilidade:</label>
+          <span>{{ getVisibilityLabel(selectedTask.visibilidade) }}</span>
+        </div>
+        <div class="info-row">
+          <label>Criado por:</label>
+          <span>{{ getCreatorName(selectedTask) }}</span>
+        </div>
+        <div *ngIf="selectedTask.descricao" class="info-row">
+          <label>Descrição:</label>
+          <p>{{ selectedTask.descricao }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" (click)="closeTaskDetails()">Fechar</button>
+    </div>
+  </div>
+</div>

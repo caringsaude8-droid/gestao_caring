@@ -1,0 +1,123 @@
+<div class="sidebar" [class.collapsed]="collapsed">
+  <!-- Header -->
+  <div class="sidebar-header">
+    <div class="logo-section" *ngIf="!collapsed">
+      <div class="logo-container">
+        <div class="logo-placeholder" *ngIf="!logoUrl">
+          <i class="icon-building"></i>
+        </div>
+        <img *ngIf="logoUrl" [src]="logoUrl" alt="Logo da empresa" class="logo-image" />
+      </div>
+      <div class="brand">
+        <h1>Gestão</h1>
+        <p>Caring</p>
+      </div>
+    </div>
+    
+    <div class="logo-collapsed" *ngIf="collapsed">
+      <div class="logo-placeholder-small" *ngIf="!logoUrl">
+        <i class="icon-building"></i>
+      </div>
+      <img *ngIf="logoUrl" [src]="logoUrl" alt="Logo da empresa" class="logo-image-small" />
+    </div>
+    
+    <button class="toggle-btn" (click)="toggleCollapsed()">
+      <i [class]="collapsed ? 'icon-menu' : 'icon-chevron-left'"></i>
+    </button>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="navigation">
+    <!-- Menu items básicos -->
+    <a *ngFor="let item of getMenuItems()" 
+       [routerLink]="item.url"
+       class="nav-item"
+       routerLinkActive="active"
+       [routerLinkActiveOptions]="{ exact: true }">
+      <i [class]="'icon-' + item.icon"></i>
+      <span *ngIf="!collapsed">{{item.title}}</span>
+    </a>
+
+    <!-- Cadastros with submenu - só aparece quando não está nas páginas básicas e não está na página de usuários -->
+    <div *ngIf="!isBasicMenuPage() && !isUsuariosPage()" class="nav-group">
+      <button class="nav-item submenu-trigger" 
+              [class.active]="isCadastrosActive()"
+              (click)="toggleCadastros()">
+        <div class="nav-item-content">
+          <i class="icon-users"></i>
+          <span *ngIf="!collapsed">Cadastros</span>
+        </div>
+        <i *ngIf="!collapsed" 
+           class="icon-chevron-down submenu-icon" 
+           [class.rotated]="cadastrosOpen"></i>
+      </button>
+      
+      <div *ngIf="!collapsed && cadastrosOpen" class="submenu">
+        <a *ngFor="let subItem of cadastrosSubItems" 
+           [routerLink]="subItem.url"
+           class="submenu-item"
+           [class.active]="isActive(subItem.url)"
+           routerLinkActive="active">
+          {{subItem.title}}
+        </a>
+      </div>
+    </div>
+
+    <!-- Relatórios with submenu -->
+    <div *ngIf="!isBasicMenuPage() && !isUsuariosPage()" class="nav-group">
+      <button class="nav-item submenu-trigger" 
+              [class.active]="isRelatoriosActive()"
+              (click)="toggleRelatorios()">
+        <div class="nav-item-content">
+          <i class="icon-bar-chart"></i>
+          <span *ngIf="!collapsed">Relatórios</span>
+        </div>
+        <i *ngIf="!collapsed" 
+           class="icon-chevron-down submenu-icon" 
+           [class.rotated]="relatoriosOpen"></i>
+      </button>
+      
+      <div *ngIf="!collapsed && relatoriosOpen" class="submenu">
+        <a *ngFor="let subItem of relatoriosSubItems" 
+           [routerLink]="subItem.url"
+           class="submenu-item"
+           [class.active]="isActive(subItem.url)"
+           routerLinkActive="active">
+          {{subItem.title}}
+        </a>
+      </div>
+    </div>
+
+
+
+    <!-- Admin menu items - só aparecem quando não está nas páginas básicas e não está na página de usuários -->
+    <div *ngIf="isAdmin() && !isBasicMenuPage() && !isUsuariosPage()">
+      <a *ngFor="let item of adminMenuItems" 
+         [routerLink]="item.url"
+         class="nav-item"
+         [class.active]="isActive(item.url)"
+         routerLinkActive="active">
+        <i [class]="'icon-' + item.icon"></i>
+        <span *ngIf="!collapsed">{{item.title}}</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Footer -->
+  <div class="sidebar-footer">
+    <div *ngIf="!collapsed && profile" class="user-info">
+      <p class="user-name">{{profile.nome}}</p>
+      <p class="user-role">{{profile.perfil}}</p>
+    </div>
+    
+    <button class="logout-btn" (click)="signOut()">
+      <i class="icon-logout"></i>
+      <span *ngIf="!collapsed">Sair</span>
+    </button>
+    
+    <div *ngIf="!collapsed" class="version-info">
+      <p class="system-name">Sistema Caring</p>
+      <p class="version">v1.0.0</p>
+    </div>
+  </div>
+</div>

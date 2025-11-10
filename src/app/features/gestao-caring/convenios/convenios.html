@@ -1,0 +1,150 @@
+<div class="page-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div>
+        <h1 class="page-title">Convênios</h1>
+        <p class="page-subtitle">Gerencie os convênios disponíveis para cadastro</p>
+      </div>
+      <button class="btn btn-primary" (click)="openForm()">
+        <i class="icon-plus"></i>
+        Novo Convênio
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-content">
+        <div class="stat-info">
+          <h3 class="stat-value">{{ conveniosAtivos }}</h3>
+          <p class="stat-label">Convênios Ativos</p>
+        </div>
+        <div class="stat-icon active">✅</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-content">
+        <div class="stat-info">
+          <h3 class="stat-value">{{ conveniosInativos }}</h3>
+          <p class="stat-label">Convênios Inativos</p>
+        </div>
+        <div class="stat-icon inactive">❌</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-content">
+        <div class="stat-info">
+          <h3 class="stat-value">{{ convenios.length }}</h3>
+          <p class="stat-label">Total de Convênios</p>
+        </div>
+        <div class="stat-icon total">📋</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="caring-card">
+    <div class="card-content">
+      <div class="filters-container">
+        <div class="input-group">
+          <i class="icon-search"></i>
+          <input type="text" placeholder="Buscar convênios..." [(ngModel)]="searchTerm" class="input" />
+        </div>
+
+        <div class="filter-select">
+          <select [(ngModel)]="selectedStatus" class="select">
+            <option value="todos">Todos os status</option>
+            <option value="ativo">Apenas ativos</option>
+            <option value="inativo">Apenas inativos</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de Convênios -->
+  <div class="convenios-grid">
+    <div *ngFor="let conv of filteredConvenios" class="convenio-card">
+      <div class="convenio-header">
+        <div class="convenio-icon">🏥</div>
+        <div class="convenio-info">
+          <h3 class="convenio-name">{{ conv.nome }}</h3>
+          <span class="badge" [class]="getStatusClass(conv.status)">{{ getStatusLabel(conv.status) }}</span>
+        </div>
+        <div class="convenio-actions">
+          <button class="btn btn-ghost btn-sm" (click)="toggleStatus(conv)">Alterar Status</button>
+          <button class="btn btn-ghost btn-sm danger" (click)="deleteConvenio(conv)">Excluir</button>
+        </div>
+      </div>
+      <div class="convenio-details">
+        <div class="detail-item"><span class="detail-label">Código:</span> <span>{{ conv.codigo || '—' }}</span></div>
+        <div class="detail-item"><span class="detail-label">Tabela:</span> <span>{{ conv.tabelaConvenio }}</span></div>
+        <div class="detail-item"><span class="detail-label">Cobrança:</span> <span>{{ conv.tipoCobranca }}</span></div>
+        <div class="detail-item"><span class="detail-label">Validade:</span> <span>{{ conv.validade ? (conv.validade | date:'dd/MM/yyyy') : '—' }}</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulário de Novo Convênio -->
+  <div class="modal-overlay" *ngIf="showForm" (click)="closeForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">Novo Convênio</h2>
+        <button class="modal-close-btn" (click)="closeForm()">✕</button>
+      </div>
+      <form class="modal-body" (ngSubmit)="createConvenio()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nome" class="form-label">Nome do Convênio *</label>
+            <ui-input id="nome" type="text" [(ngModel)]="newConvenio.nome" name="nome" placeholder="Ex: Unimed"></ui-input>
+          </div>
+          <div class="form-group">
+            <label for="codigo" class="form-label">Código</label>
+            <ui-input id="codigo" type="text" [(ngModel)]="newConvenio.codigo" name="codigo" placeholder="Ex: UNM-001"></ui-input>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tabelaConvenio" class="form-label">Tabela Convênio</label>
+            <select id="tabelaConvenio" class="form-select" [(ngModel)]="newConvenio.tabelaConvenio" name="tabelaConvenio">
+              <option [ngValue]="'Padrão'">Padrão</option>
+              <option [ngValue]="'Especial'">Especial</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="tipoCobranca" class="form-label">Tipo de Cobrança</label>
+            <select id="tipoCobranca" class="form-select" [(ngModel)]="newConvenio.tipoCobranca" name="tipoCobranca">
+              <option [ngValue]="'Plano de Saúde'">Plano de Saúde</option>
+              <option [ngValue]="'Particular'">Particular</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="validade" class="form-label">Validade</label>
+            <input id="validade" type="date" [(ngModel)]="newConvenio.validade" name="validade" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label for="status" class="form-label">Status</label>
+            <select id="status" class="form-select" [(ngModel)]="newConvenio.status" name="status">
+              <option [ngValue]="'ativo'">Ativo</option>
+              <option [ngValue]="'inativo'">Inativo</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="observacoes" class="form-label">Observações</label>
+            <textarea id="observacoes" [(ngModel)]="newConvenio.observacoes" name="observacoes" class="form-input" rows="3"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="modal-btn modal-btn-secondary" (click)="closeForm()">Cancelar</button>
+          <button type="submit" class="modal-btn modal-btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

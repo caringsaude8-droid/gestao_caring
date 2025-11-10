@@ -1,0 +1,220 @@
+<div class="pacientes-container">
+  <div class="pacientes-header">
+    <div class="header-info">
+      <h1 class="pacientes-title">Clínicas TEA</h1>
+      <p class="pacientes-subtitle">Gerenciar clínicas do módulo TEA</p>
+    </div>
+    <button class="add-paciente-btn" (click)="openAddClinicaModal()">
+      <span class="icon-plus"></span>
+      Nova Clínica
+    </button>
+  </div>
+
+  <div class="filters-section">
+    <div class="filters-container">
+      <div class="search-group">
+        <span class="icon-search"></span>
+        <input 
+          type="text" 
+          placeholder="Buscar por nome..."
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()"
+          class="search-input">
+      </div>
+      <select class="filter-select" [(ngModel)]="selectedStatus" (change)="onStatusChange()">
+        <option value="">Todos os Status</option>
+        <option value="ativo">Ativo</option>
+        <option value="inativo">Inativo</option>
+      </select>
+      <button class="clear-filters-btn" (click)="clearFilters()">
+        <span class="icon-refresh"></span>
+        Limpar Filtros
+      </button>
+    </div>
+  </div>
+
+  <div class="pacientes-grid">
+    <div *ngFor="let clinica of filteredClinicas" class="paciente-card">
+      <div class="paciente-header">
+        <div class="paciente-avatar">
+          <div class="avatar-placeholder">{{clinica.nome.charAt(0).toUpperCase()}}</div>
+        </div>
+        <div class="paciente-basic-info">
+          <h3 class="paciente-name">{{clinica.nome}}</h3>
+        </div>
+        <div class="paciente-badges">
+          <span class="status-badge" [class]="getStatusClass(clinica.status)">
+            {{getStatusLabel(clinica.status)}}
+          </span>
+        </div>
+      </div>
+      <div class="paciente-actions">
+        <button class="action-btn action-view" (click)="viewClinicaDetails(clinica)">
+          Detalhes
+        </button>
+        <button class="action-btn action-edit" (click)="editClinica(clinica)">
+          Editar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="filteredClinicas.length === 0" class="empty-state">
+    <h3>Nenhuma clínica encontrada</h3>
+    <p *ngIf="searchTerm || selectedStatus">
+      Tente ajustar os filtros de busca ou limpar os filtros para ver todas as clínicas.
+    </p>
+    <p *ngIf="!searchTerm && !selectedStatus">
+      Nenhuma clínica foi cadastrada ainda. Clique em "Nova Clínica" para começar.
+    </p>
+    <button class="add-paciente-btn" (click)="openAddClinicaModal()">
+      <span class="icon-plus"></span>
+      Nova Clínica
+    </button>
+  </div>
+</div>
+
+<!-- Modal de Formulário de Clínica -->
+<div class="modal" *ngIf="showClinicaFormModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>{{formMode === 'create' ? 'Nova Clínica' : 'Editar Clínica'}}</h2>
+      <button class="close-btn" (click)="closeClinicaFormModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form #clinicaForm="ngForm">
+        <div class="form-group">
+          <label for="nome">Nome da Clínica</label>
+          <input type="text" id="nome" name="nome" [ngModel]="selectedClinica?.nome || ''" (ngModelChange)="selectedClinica ? selectedClinica.nome = $event : null" required>
+        </div>
+        <div class="form-group">
+          <label for="cnpj">CNPJ</label>
+          <input type="text" id="cnpj" name="cnpj" [ngModel]="selectedClinica?.cnpj || ''" (ngModelChange)="selectedClinica ? selectedClinica.cnpj = $event : null">
+        </div>
+        <div class="form-group">
+          <label for="responsavel">Responsável</label>
+          <input type="text" id="responsavel" name="responsavel" [ngModel]="selectedClinica?.responsavel || ''" (ngModelChange)="selectedClinica ? selectedClinica.responsavel = $event : null">
+        </div>
+        <div class="form-group">
+          <label for="endereco">Endereço</label>
+          <input type="text" id="endereco" name="endereco" [ngModel]="selectedClinica?.endereco || ''" (ngModelChange)="selectedClinica ? selectedClinica.endereco = $event : null" required>
+        </div>
+        <div class="form-group">
+          <label for="telefone">Telefone</label>
+          <input type="tel" id="telefone" name="telefone" [ngModel]="selectedClinica?.telefone || ''" (ngModelChange)="selectedClinica ? selectedClinica.telefone = $event : null" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" [ngModel]="selectedClinica?.email || ''" (ngModelChange)="selectedClinica ? selectedClinica.email = $event : null" required>
+        </div>
+        <div class="form-group">
+          <label for="website">Website</label>
+          <input type="text" id="website" name="website" [ngModel]="selectedClinica?.website || ''" (ngModelChange)="selectedClinica ? selectedClinica.website = $event : null">
+        </div>
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" name="status" [ngModel]="selectedClinica?.status || 'ativo'" (ngModelChange)="selectedClinica ? selectedClinica.status = $event : null" required>
+            <option value="ativo">Ativo</option>
+            <option value="inativo">Inativo</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="closeClinicaFormModal()">Cancelar</button>
+          <button type="submit" class="btn-save" [disabled]="!clinicaForm.valid" (click)="onSaveClinica(selectedClinica || {id: '', nome: '', endereco: '', telefone: '', email: '', status: 'ativo'})">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Detalhes da Clínica (layout idêntico ao Paciente) -->
+<div class="modal-overlay" *ngIf="showClinicaDetailsModal" (click)="closeClinicaDetailsModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Detalhes da Clínica TEA</h2>
+      <button class="modal-close-btn" (click)="closeClinicaDetailsModal()">
+        <i class="icon-x"></i>
+      </button>
+    </div>
+    <div class="modal-body" *ngIf="selectedClinica">
+      <!-- Cabeçalho com avatar e badge de status -->
+      <div class="user-profile-section">
+        <div class="user-avatar-large">
+          <div class="avatar-placeholder">{{selectedClinica.nome.charAt(0).toUpperCase()}}</div>
+        </div>
+        <div class="user-info-main">
+          <h3 class="user-name-large">{{selectedClinica.nome}}</h3>
+          <p class="user-email-large">{{selectedClinica.email}}</p>
+          <div class="user-badges-modal">
+            <span class="status-badge-modal" [class]="getStatusClass(selectedClinica.status)">{{getStatusLabel(selectedClinica.status)}}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid de detalhes -->
+      <div class="user-details-grid">
+        <div class="detail-card">
+          <h4 class="detail-card-title">Informações de Contato</h4>
+          <div class="detail-item">
+            <span class="detail-icon">📞</span>
+            <div class="detail-content">
+              <span class="detail-label">Telefone</span>
+              <span class="detail-value">{{selectedClinica.telefone}}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <span class="detail-icon">📧</span>
+            <div class="detail-content">
+              <span class="detail-label">Email</span>
+              <span class="detail-value">{{selectedClinica.email}}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <span class="detail-icon">📍</span>
+            <div class="detail-content">
+              <span class="detail-label">Endereço</span>
+              <span class="detail-value">{{selectedClinica.endereco}}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <h4 class="detail-card-title">Informações da Clínica</h4>
+          <div class="detail-item">
+            <span class="detail-icon">🧾</span>
+            <div class="detail-content">
+              <span class="detail-label">CNPJ</span>
+              <span class="detail-value">{{selectedClinica.cnpj || 'Não informado'}}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <span class="detail-icon">👤</span>
+            <div class="detail-content">
+              <span class="detail-label">Responsável</span>
+              <span class="detail-value">{{selectedClinica.responsavel || 'Não informado'}}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <span class="detail-icon">🌐</span>
+            <div class="detail-content">
+              <span class="detail-label">Website</span>
+              <span class="detail-value">{{selectedClinica.website || 'Não informado'}}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <span class="detail-icon">📅</span>
+            <div class="detail-content">
+              <span class="detail-label">Data de Cadastro</span>
+              <span class="detail-value">{{formatDate(selectedClinica.dataCadastro || '')}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" (click)="closeClinicaDetailsModal()">Fechar</button>
+        <button class="modal-btn modal-btn-primary" (click)="editClinica(selectedClinica); closeClinicaDetailsModal()"><i class="icon-edit"></i> Editar Clínica</button>
+      </div>
+    </div>
+  </div>
+</div>

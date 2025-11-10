@@ -1,0 +1,102 @@
+<div class="pacientes-container">
+  <div class="pacientes-header">
+    <div class="header-info">
+      <h1 class="pacientes-title">Usuários TEA</h1>
+      <p class="pacientes-subtitle">Gerenciar usuários do módulo TEA</p>
+    </div>
+    <button class="add-paciente-btn" (click)="openAddUserModal()">
+      <span class="icon-plus"></span>
+      Novo Usuário
+    </button>
+  </div>
+
+  <div class="filters-section">
+    <div class="filters-container">
+      <div class="search-group">
+        <span class="icon-search"></span>
+        <input 
+          type="text" 
+          placeholder="Buscar por nome ou email..."
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()"
+          class="search-input">
+      </div>
+      
+      <select class="filter-select" [(ngModel)]="selectedPerfil" (change)="onPerfilChange()">
+        <option value="">Todos os Perfis</option>
+        <option value="terapeuta">Terapeuta</option>
+        <option value="recepcao">Recepção</option>
+        <option value="supervisor">Supervisor</option>
+      </select>
+      
+      <select class="filter-select" [(ngModel)]="selectedStatus" (change)="onStatusChange()">
+        <option value="">Todos os Status</option>
+        <option value="ativo">Ativo</option>
+        <option value="inativo">Inativo</option>
+      </select>
+      
+      <button class="clear-filters-btn" (click)="clearFilters()">
+        <span class="icon-refresh"></span>
+        Limpar Filtros
+      </button>
+    </div>
+  </div>
+
+  <div class="pacientes-grid">
+    <div *ngFor="let user of filteredUsers" class="paciente-card">
+      <div class="paciente-header">
+        <div class="paciente-avatar">
+          <img *ngIf="user.avatar" [src]="user.avatar" [alt]="user.nome" class="avatar-image">
+          <div *ngIf="!user.avatar" class="avatar-placeholder">
+            {{user.nome.charAt(0).toUpperCase()}}
+          </div>
+        </div>
+        <div class="paciente-basic-info">
+          <h3 class="paciente-name">{{user.nome}}</h3>
+        </div>
+        <div class="paciente-badges">
+          <span class="status-badge" [class]="getStatusClass(user.status)">
+            {{getStatusLabel(user.status)}}
+          </span>
+        </div>
+      </div>
+      <div class="paciente-actions">
+        <button class="action-btn action-view" (click)="viewUserDetails(user)">
+          Detalhes
+        </button>
+        <button class="action-btn action-edit" (click)="editUser(user)">
+          Editar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="filteredUsers.length === 0" class="empty-state">
+    <h3>Nenhum usuário encontrado</h3>
+    <p *ngIf="searchTerm || selectedPerfil || selectedStatus">
+      Tente ajustar os filtros de busca ou limpar os filtros para ver todos os usuários.
+    </p>
+    <p *ngIf="!searchTerm && !selectedPerfil && !selectedStatus">
+      Nenhum usuário foi cadastrado ainda. Clique em "Novo Usuário" para começar.
+    </p>
+    <button class="add-paciente-btn" (click)="openAddUserModal()">
+      <span class="icon-plus"></span>
+      Novo Usuário
+    </button>
+  </div>
+
+  <app-tea-user-form-modal 
+    [show]="showUserFormModal"
+    [mode]="formMode"
+    [user]="selectedUser"
+    (close)="closeUserFormModal()"
+    (save)="onSaveUser($event)">
+  </app-tea-user-form-modal>
+
+  <app-tea-user-details-modal
+    [show]="showUserDetailsModal"
+    [user]="selectedUser"
+    (close)="closeUserDetailsModal()"
+    (editUser)="editUser($event)">
+  </app-tea-user-details-modal>
+</div>

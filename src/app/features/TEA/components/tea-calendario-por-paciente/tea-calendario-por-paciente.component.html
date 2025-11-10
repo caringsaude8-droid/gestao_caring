@@ -1,0 +1,51 @@
+<div class="tea-page-container">
+  <div class="page-header">
+    <h2 class="page-title">Calendário por Paciente</h2>
+    <p class="page-subtitle">Visão semanal de sessões do paciente</p>
+  </div>
+
+  <!-- Controles -->
+  <section class="controls-section controls-card">
+    <div class="controls-row">
+      <button class="action-btn action-secondary" (click)="previousWeek()">Semana Anterior</button>
+      <input class="date-input" type="date" [(ngModel)]="selectedDate" />
+      <button class="action-btn action-secondary" (click)="nextWeek()">Próxima Semana</button>
+    </div>
+
+    <div class="controls-row">
+      <div class="search-group">
+        <label class="filter-label">Paciente</label>
+        <select [(ngModel)]="selectedPatient" class="filter-select">
+          <option *ngFor="let p of patients" [value]="p">{{ p }}</option>
+        </select>
+      </div>
+      <button class="action-btn action-primary" (click)="listar()">Listar</button>
+    </div>
+  </section>
+
+  <p class="patient-label">Paciente: {{ selectedPatient }}</p>
+
+  <!-- Tabela semanal -->
+  <div class="weekly-table-wrapper">
+    <table class="weekly-table">
+      <thead class="weekly-header">
+        <tr>
+          <th class="time-col">Horário</th>
+          <th *ngFor="let day of weekDays" [class.current-day]="isToday(day.date)">{{ day.label }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let time of timeSlots">
+          <td class="time-col">{{ time }}</td>
+          <td *ngFor="let day of weekDays" [class.has-session]="getCellContent(day.date, time)" [class.current-day]="isToday(day.date)">
+            <ng-container *ngIf="getCellContent(day.date, time) as cell">
+              <div class="session-card">
+                <div class="session-title">{{ cell.professional }} - {{ cell.therapy }}</div>
+              </div>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

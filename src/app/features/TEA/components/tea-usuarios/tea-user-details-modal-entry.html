@@ -1,0 +1,7 @@
+<!-- Modal de Detalhes do Usuário TEA -->
+<app-tea-user-details-modal
+  [show]="showUserDetailsModal"
+  [user]="selectedUser"
+  (close)="closeUserDetailsModal()"
+  (editUser)="editUser($event)">
+</app-tea-user-details-modal>

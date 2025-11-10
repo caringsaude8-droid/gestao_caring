@@ -1,0 +1,74 @@
+<div class="page-container">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Relatórios de Atendimento</h1>
+      <p class="page-subtitle">Filtre, visualize e exporte os atendimentos</p>
+    </div>
+    <button class="btn btn-primary" (click)="exportCSV()">Exportar CSV</button>
+  </div>
+
+  <div class="filters-card">
+    <div class="filters-grid">
+      <div class="form-group">
+        <label>Início</label>
+        <input type="date" class="form-input" [(ngModel)]="filtroInicio" />
+      </div>
+      <div class="form-group">
+        <label>Fim</label>
+        <input type="date" class="form-input" [(ngModel)]="filtroFim" />
+      </div>
+      <div class="form-group">
+        <label>Paciente</label>
+        <ui-input [(ngModel)]="filtroPaciente" name="paciente" placeholder="Nome do paciente"></ui-input>
+      </div>
+      <div class="form-group">
+        <label>Profissional</label>
+        <ui-input [(ngModel)]="filtroProfissional" name="profissional" placeholder="Nome do profissional"></ui-input>
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select class="form-select" [(ngModel)]="filtroStatus">
+          <option [ngValue]="'Todos'">Todos</option>
+          <option [ngValue]="'Realizado'">Realizado</option>
+          <option [ngValue]="'Agendado'">Agendado</option>
+          <option [ngValue]="'Cancelado'">Cancelado</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-content"><div><h3 class="stat-value">{{ totais.total }}</h3><p class="stat-label">Total</p></div><div>📋</div></div></div>
+    <div class="stat-card"><div class="stat-content"><div><h3 class="stat-value">{{ totais.realizados }}</h3><p class="stat-label">Realizados</p></div><div>✅</div></div></div>
+    <div class="stat-card"><div class="stat-content"><div><h3 class="stat-value">{{ totais.agendados }}</h3><p class="stat-label">Agendados</p></div><div>📅</div></div></div>
+    <div class="stat-card"><div class="stat-content"><div><h3 class="stat-value">{{ totais.cancelados }}</h3><p class="stat-label">Cancelados</p></div><div>❌</div></div></div>
+  </div>
+
+  <div class="table-card">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Paciente</th>
+          <th>Profissional</th>
+          <th>Convênio</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let a of filtered">
+          <td>{{ a.data | date:'dd/MM/yyyy' }}</td>
+          <td>{{ a.paciente }}</td>
+          <td>{{ a.profissional }}</td>
+          <td>{{ a.convenio }}</td>
+          <td>
+            <span class="badge" [class.badge-success]="a.status==='Realizado'" [class.badge-warning]="a.status==='Agendado'" [class.badge-danger]="a.status==='Cancelado'">{{ a.status }}</span>
+          </td>
+        </tr>
+        <tr *ngIf="filtered.length === 0">
+          <td colspan="5" class="empty">Nenhum atendimento encontrado para os filtros.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

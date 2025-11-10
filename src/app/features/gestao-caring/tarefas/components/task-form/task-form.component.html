@@ -1,0 +1,233 @@
+<!-- Trigger Button -->
+<ui-button 
+  className="bg-primary hover:bg-primary/90"
+  (onClick)="openDialog()"
+>
+  <i class="icon-plus mr-2"></i>
+  {{ triggerButtonText }}
+</ui-button>
+
+<!-- Modal/Dialog -->
+<div 
+  *ngIf="isOpen"
+  class="fixed inset-0 z-50 flex items-center justify-center"
+  (click)="closeDialog()"
+>
+  <div class="fixed inset-0 bg-black/50"></div>
+  
+  <div 
+    class="relative bg-white rounded-lg shadow-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="p-6">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-semibold">Nova Tarefa</h2>
+        <button 
+          class="text-gray-400 hover:text-gray-600"
+          (click)="closeDialog()"
+        >
+          <i class="icon-x text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        <!-- Título -->
+        <div class="space-y-2">
+          <label for="titulo" class="block text-sm font-medium">Título *</label>
+          <ui-input
+            id="titulo"
+            formControlName="titulo"
+            placeholder="Digite o título da tarefa"
+            [required]="true"
+          ></ui-input>
+        </div>
+
+        <!-- Grid: Status, Prioridade, Data Limite -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Status -->
+          <div class="space-y-2">
+            <label for="status" class="block text-sm font-medium">Status</label>
+            <select 
+              id="status" 
+              formControlName="status"
+              class="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary"
+            >
+              <option value="pendente">Pendente</option>
+              <option value="em_andamento">Em Andamento</option>
+              <option value="urgente">Urgente</option>
+              <option value="concluida">Concluída</option>
+            </select>
+          </div>
+
+          <!-- Prioridade -->
+          <div class="space-y-2">
+            <label for="prioridade" class="block text-sm font-medium">Prioridade</label>
+            <select 
+              id="prioridade" 
+              formControlName="prioridade"
+              class="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary"
+            >
+              <option value="alta">
+                🔴 Alta
+              </option>
+              <option value="media">
+                🟠 Média
+              </option>
+              <option value="baixa">
+                🟢 Baixa
+              </option>
+            </select>
+          </div>
+
+          <!-- Data Limite -->
+          <div class="space-y-2">
+            <label for="data_limite" class="block text-sm font-medium">Data Limite</label>
+            <ui-input
+              id="data_limite"
+              type="datetime-local"
+              formControlName="data_limite"
+            ></ui-input>
+          </div>
+        </div>
+
+        <!-- Grid: Empresa, Cliente -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Empresa -->
+          <div class="space-y-2">
+            <label for="empresa" class="block text-sm font-medium">Empresa</label>
+            <select 
+              id="empresa" 
+              formControlName="empresa_id"
+              class="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary"
+            >
+              <option value="">Selecione a empresa</option>
+              <option *ngFor="let empresa of empresas" [value]="empresa.id">
+                {{ empresa.nome }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Cliente -->
+          <div class="space-y-2">
+            <label for="cliente" class="block text-sm font-medium">Cliente</label>
+            <select 
+              id="cliente" 
+              formControlName="cliente_id"
+              class="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary"
+            >
+              <option value="">Selecione o cliente</option>
+              <option *ngFor="let cliente of clientes" [value]="cliente.id">
+                {{ cliente.nome }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Visibilidade -->
+        <div class="space-y-2">
+          <label for="visibilidade" class="block text-sm font-medium">Visibilidade</label>
+          <select 
+            id="visibilidade" 
+            formControlName="visibilidade"
+            class="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary"
+          >
+            <option value="privado">Privado (apenas eu)</option>
+            <option value="publico">Público (todos os usuários)</option>
+            <option value="especifico">Específico (usuários selecionados)</option>
+          </select>
+        </div>
+
+        <!-- Usuários Específicos -->
+        <div *ngIf="taskForm.get('visibilidade')?.value === 'especifico'" class="space-y-2">
+          <label class="flex items-center gap-2 text-sm font-medium">
+            <i class="icon-users"></i>
+            Usuários com Acesso
+          </label>
+          <div class="max-h-32 overflow-y-auto border rounded-md p-2 space-y-2">
+            <div *ngFor="let usuario of usuarios" class="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                [id]="usuario.id"
+                [checked]="isUsuarioSelected(usuario.id)"
+                (change)="onUsuarioChange(usuario.id, $any($event.target).checked)"
+                class="rounded"
+              />
+              <label [for]="usuario.id" class="text-sm">
+                {{ usuario.nome }} ({{ usuario.email }})
+              </label>
+            </div>
+          </div>
+          <p *ngIf="usuariosSelecionados.length === 0" class="text-sm text-gray-500">
+            Selecione pelo menos um usuário para ter acesso à tarefa.
+          </p>
+        </div>
+
+        <!-- Lembrete Email -->
+        <div class="space-y-4 border-t pt-4">
+          <div class="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="lembrete_email"
+              formControlName="lembrete_email"
+              class="rounded"
+            />
+            <label for="lembrete_email" class="text-sm font-medium">
+              Ativar lembrete por e-mail
+            </label>
+          </div>
+
+          <div *ngIf="taskForm.get('lembrete_email')?.value" class="space-y-4 ml-6">
+            <!-- Periodicidade -->
+            <div class="space-y-2">
+              <label for="periodicidade" class="block text-sm font-medium">Periodicidade do Lembrete</label>
+              <select 
+                id="periodicidade" 
+                formControlName="periodicidade_lembrete"
+                class="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary"
+              >
+                <option value="diario">Diário</option>
+                <option value="tres_dias">A cada 3 dias</option>
+                <option value="semanal">Semanal</option>
+              </select>
+            </div>
+            
+            <!-- Emails Notificação -->
+            <div class="space-y-2">
+              <label for="emails_notificacao" class="block text-sm font-medium">E-mails para Notificação</label>
+              <textarea
+                id="emails_notificacao"
+                placeholder="Digite os e-mails separados por vírgula"
+                [(ngModel)]="emailsTexto"
+                [ngModelOptions]="{standalone: true}"
+                rows="2"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary"
+              ></textarea>
+              <p class="text-xs text-gray-500">
+                O dono da tarefa sempre receberá as notificações.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex justify-end space-x-2 pt-4">
+          <ui-button 
+            type="button" 
+            variant="outline" 
+            (onClick)="closeDialog()"
+          >
+            Cancelar
+          </ui-button>
+          <ui-button 
+            type="submit"
+            [disabled]="taskForm.invalid"
+          >
+            Criar Tarefa
+          </ui-button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,200 @@
+<div class="page-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Faturamento</h1>
+      <p class="page-subtitle">Controle financeiro e faturamento</p>
+    </div>
+    <button class="btn btn-primary">
+      <i class="icon-plus"></i>
+      Novo Faturamento
+    </button>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card" *ngFor="let stat of faturamentoStats" [class]="'stat-' + stat.variant">
+      <div class="stat-content">
+        <div class="stat-info">
+          <h3 class="stat-value">{{ stat.value }}</h3>
+          <p class="stat-label">{{ stat.title }}</p>
+        </div>
+        <div class="stat-icon">{{ stat.icon }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Faturamento por Empresa do Mês Atual -->
+  <div *ngIf="totalPorEmpresa.length > 0" class="empresa-section">
+    <h2 class="section-title">Faturamento do Mês por Empresa</h2>
+    <div class="empresa-grid">
+      <div class="stat-card" *ngFor="let empresa of totalPorEmpresa">
+        <div class="stat-content">
+          <div class="stat-info">
+            <h3 class="stat-value">{{ formatCurrency(empresa.total) }}</h3>
+            <p class="stat-label">{{ empresa.nome }}</p>
+          </div>
+          <div class="stat-icon stat-icon-empresa">🏢</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-card">
+    <div class="filter-content">
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <i class="search-icon">🔍</i>
+          <input 
+            type="text" 
+            class="search-input" 
+            placeholder="Buscar por cliente, empresa ou referência..."
+            [(ngModel)]="searchTerm"
+          />
+        </div>
+      </div>
+      <button class="btn btn-outline">
+        <i class="icon-filter">🔽</i>
+        Filtros
+      </button>
+    </div>
+  </div>
+
+  <!-- Faturamento Tabs -->
+  <div class="tabs-container">
+    <div class="tabs-list">
+      <button 
+        class="tab-trigger" 
+        [class.active]="activeTab === 'todos'"
+        (click)="setActiveTab('todos')"
+      >
+        <span class="tab-icon">📋</span>
+        Todos ({{ getTabCount('todos') }})
+      </button>
+      <button 
+        class="tab-trigger" 
+        data-status="pendente"
+        [class.active]="activeTab === 'pendente'"
+        (click)="setActiveTab('pendente')"
+      >
+        <span class="tab-icon">⏳</span>
+        Pendentes ({{ getTabCount('pendente') }})
+      </button>
+      <button 
+        class="tab-trigger" 
+        data-status="faturado"
+        [class.active]="activeTab === 'faturado'"
+        (click)="setActiveTab('faturado')"
+      >
+        <span class="tab-icon">📄</span>
+        Faturados ({{ getTabCount('faturado') }})
+      </button>
+      <button 
+        class="tab-trigger" 
+        [class.active]="activeTab === 'nf_enviada'"
+        (click)="setActiveTab('nf_enviada')"
+      >
+        <span class="tab-icon">📤</span>
+        NF Enviada ({{ getTabCount('nf_enviada') }})
+      </button>
+      <button 
+        class="tab-trigger" 
+        data-status="pago"
+        [class.active]="activeTab === 'pago'"
+        (click)="setActiveTab('pago')"
+      >
+        <span class="tab-icon">✅</span>
+        Pagos ({{ getTabCount('pago') }})
+      </button>
+      <button 
+        class="tab-trigger" 
+        data-status="cancelado"
+        [class.active]="activeTab === 'cancelado'"
+        (click)="setActiveTab('cancelado')"
+      >
+        <span class="tab-icon">❌</span>
+        Cancelados ({{ getTabCount('cancelado') }})
+      </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      <div *ngIf="loading" class="loading-container">
+        <div class="loading-spinner"></div>
+      </div>
+
+      <div *ngIf="!loading" class="faturamentos-grid">
+        <div 
+          class="faturamento-card" 
+          *ngFor="let fatura of getFilteredByStatus(activeTab)"
+        >
+          <div class="faturamento-header">
+            <div class="faturamento-info">
+              <h3 class="faturamento-referencia">{{ fatura.referencia }}</h3>
+              <p class="faturamento-cliente">{{ fatura.cliente?.nome }}</p>
+              <p class="faturamento-empresa" *ngIf="fatura.cliente?.empresa">{{ fatura.cliente?.empresa?.nome }}</p>
+            </div>
+            <div class="faturamento-actions">
+              <button class="btn-icon" (click)="handleEdit(fatura)" title="Editar">
+                ✏️
+              </button>
+              <button class="btn-icon btn-delete" (click)="openDeleteDialog(fatura.id)" title="Excluir">
+                🗑️
+              </button>
+            </div>
+          </div>
+
+          <div class="faturamento-details">
+            <div class="faturamento-value">
+              <span class="value-label">Valor:</span>
+              <span class="value-amount">{{ formatCurrency(fatura.valor) }}</span>
+            </div>
+            <div class="faturamento-status">
+              <span class="status-badge" [class]="getStatusClass(fatura.status)">
+                {{ getStatusLabel(fatura.status) }}
+              </span>
+            </div>
+            <div class="faturamento-date">
+              <span class="date-label">Criado em:</span>
+              <span class="date-value">{{ fatura.created_at | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="getFilteredByStatus(activeTab).length === 0" class="empty-state">
+          <div class="empty-icon">📄</div>
+          <p class="empty-message">
+            <span *ngIf="activeTab === 'todos'">Nenhum faturamento encontrado</span>
+            <span *ngIf="activeTab === 'pendente'">Nenhum faturamento pendente encontrado</span>
+            <span *ngIf="activeTab === 'faturado'">Nenhum faturamento faturado encontrado</span>
+            <span *ngIf="activeTab === 'nf_enviada'">Nenhuma NF enviada encontrada</span>
+            <span *ngIf="activeTab === 'pago'">Nenhum faturamento pago encontrado</span>
+            <span *ngIf="activeTab === 'cancelado'">Nenhum faturamento cancelado encontrado</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Dialog -->
+  <div *ngIf="deleteDialogOpen" class="dialog-overlay" (click)="cancelDelete()">
+    <div class="dialog-content" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <h3 class="dialog-title">Confirmar exclusão</h3>
+      </div>
+      <div class="dialog-body">
+        <p>Tem certeza que deseja excluir este faturamento? Esta ação não pode ser desfeita.</p>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn btn-outline" (click)="cancelDelete()">
+          Cancelar
+        </button>
+        <button class="btn btn-danger" (click)="handleDelete()">
+          Excluir
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,387 @@
+<div class="page-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div>
+        <h1 class="page-title">Pacientes</h1>
+        <p class="page-subtitle">Gerencie os pacientes do sistema</p>
+      </div>
+      <button class="btn btn-primary" (click)="openPatientForm()">
+        <i class="icon-plus"></i>
+        Novo Paciente
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-content">
+        <div class="stat-info">
+          <h3 class="stat-value">{{ pacientesAtivos }}</h3>
+          <p class="stat-label">Pacientes Ativos</p>
+        </div>
+        <div class="stat-icon active">
+          <i class="icon-user-check"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-content">
+        <div class="stat-info">
+          <h3 class="stat-value">{{ pacientesInativos }}</h3>
+          <p class="stat-label">Pacientes Inativos</p>
+        </div>
+        <div class="stat-icon inactive">
+          <i class="icon-user-x"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-content">
+        <div class="stat-info">
+          <h3 class="stat-value">{{ pacientes.length }}</h3>
+          <p class="stat-label">Total de Pacientes</p>
+        </div>
+        <div class="stat-icon total">
+          <i class="icon-users"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="caring-card">
+    <div class="card-content">
+      <div class="filters-container">
+        <!-- Search -->
+        <div class="search-container">
+          <div class="input-group">
+            <i class="icon-search"></i>
+            <input 
+              type="text"
+              placeholder="Buscar pacientes..."
+              [(ngModel)]="searchTerm"
+              class="input"
+            />
+          </div>
+        </div>
+        
+        <!-- Status Filter -->
+        <div class="filter-select">
+          <select 
+            [(ngModel)]="selectedStatus"
+            class="select"
+          >
+            <option value="todos">Todos os status</option>
+            <option value="ativo">Apenas ativos</option>
+            <option value="inativo">Apenas inativos</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Patients List -->
+  <div class="patients-container">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-container">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- Patients Grid -->
+    <div *ngIf="!loading" class="patients-grid">
+      <div *ngFor="let paciente of filteredPacientes" class="patient-card">
+        <div class="patient-content">
+          <!-- Patient Header -->
+          <div class="patient-header">
+            <div class="patient-avatar">
+              <i class="icon-user"></i>
+            </div>
+            <div class="patient-info">
+              <h3 class="patient-name">{{ paciente.nome }}</h3>
+              <span class="badge" [class]="getStatusClass(paciente.status)">
+                {{ getStatusLabel(paciente.status) }}
+              </span>
+            </div>
+            <div class="patient-actions">
+              <div class="dropdown">
+                <button class="btn btn-ghost btn-sm dropdown-toggle">
+                  <i class="icon-more"></i>
+                </button>
+                <div class="dropdown-menu">
+                  <button class="dropdown-item" (click)="editPatient(paciente)">
+                    <i class="icon-edit"></i>
+                    Editar
+                  </button>
+                  <button class="dropdown-item" (click)="toggleStatus(paciente)">
+                    <i class="icon-toggle"></i>
+                    {{ paciente.status === 'ativo' ? 'Desativar' : 'Ativar' }}
+                  </button>
+                  <button 
+                    class="dropdown-item danger" 
+                    (click)="deletePatient(paciente)"
+                  >
+                    <i class="icon-trash"></i>
+                    Excluir
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Patient Details -->
+          <div class="patient-details">
+            <div class="detail-item">
+              <i class="icon-id-card"></i>
+              <span>CPF: {{ paciente.cpf }}</span>
+            </div>
+            
+            <div class="detail-item">
+              <i class="icon-calendar-birth"></i>
+              <span>{{ getIdade(paciente.dataNascimento) }} anos</span>
+            </div>
+            
+            <div *ngIf="paciente.email" class="detail-item">
+              <i class="icon-mail"></i>
+              <span>{{ paciente.email }}</span>
+            </div>
+            
+            <div *ngIf="paciente.telefone" class="detail-item">
+              <i class="icon-phone"></i>
+              <span>{{ paciente.telefone }}</span>
+            </div>
+            
+            <div *ngIf="paciente.convenio" class="detail-item">
+              <i class="icon-heart"></i>
+              <span>{{ paciente.convenio }}</span>
+            </div>
+            
+            <div class="detail-item">
+              <i class="icon-calendar"></i>
+              <span>Cadastrado em {{ formatDate(paciente.data_cadastro) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && filteredPacientes.length === 0" class="empty-state">
+      <div class="empty-content">
+        <i class="icon-users empty-icon"></i>
+        <h3>Nenhum paciente encontrado</h3>
+        <p *ngIf="searchTerm || selectedStatus !== 'todos'">
+          Tente ajustar os filtros de busca.
+        </p>
+        <p *ngIf="!searchTerm && selectedStatus === 'todos'">
+          Comece adicionando seu primeiro paciente.
+        </p>
+        <button *ngIf="!searchTerm && selectedStatus === 'todos'" class="btn btn-primary" (click)="openPatientForm()">
+          <i class="icon-plus"></i>
+          Adicionar Primeiro Paciente
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Patient Form Modal -->
+<div *ngIf="showPatientForm" class="modal-overlay" (click)="closePatientForm()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Novo Paciente</h2>
+      <button class="btn btn-ghost" (click)="closePatientForm()">
+        <i class="icon-x"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form class="patient-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="patientName">Nome Completo</label>
+            <ui-input 
+              id="patientName"
+              type="text" 
+              [(ngModel)]="newPatient.nome"
+              placeholder="Digite o nome completo do paciente">
+            </ui-input>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="patientCPF">CPF</label>
+            <ui-input 
+              id="patientCPF"
+              type="text" 
+              [(ngModel)]="newPatient.cpf"
+              placeholder="000.000.000-00">
+            </ui-input>
+          </div>
+          <div class="form-group half">
+            <label for="patientBirthDate">Data de Nascimento</label>
+            <ui-input 
+              id="patientBirthDate"
+              type="date" 
+              [(ngModel)]="newPatient.dataNascimento">
+            </ui-input>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="patientEmail">Email</label>
+            <ui-input 
+              id="patientEmail"
+              type="email" 
+              [(ngModel)]="newPatient.email"
+              placeholder="paciente@exemplo.com">
+            </ui-input>
+          </div>
+          <div class="form-group half">
+            <label for="patientPhone">Telefone</label>
+            <ui-input 
+              id="patientPhone"
+              type="tel" 
+              [(ngModel)]="newPatient.telefone"
+              placeholder="(11) 99999-9999">
+            </ui-input>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="patientAddress">Endereço</label>
+            <ui-input 
+              id="patientAddress"
+              type="text" 
+              [(ngModel)]="newPatient.endereco"
+              placeholder="Rua, número, bairro">
+            </ui-input>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group third">
+            <label for="patientCity">Cidade</label>
+            <ui-input 
+              id="patientCity"
+              type="text" 
+              [(ngModel)]="newPatient.cidade"
+              placeholder="São Paulo">
+            </ui-input>
+          </div>
+          <div class="form-group third">
+            <label for="patientState">Estado</label>
+            <select id="patientState" class="form-select" [(ngModel)]="newPatient.estado">
+              <option value="SP">SP</option>
+              <option value="RJ">RJ</option>
+              <option value="MG">MG</option>
+              <option value="RS">RS</option>
+              <option value="PR">PR</option>
+              <option value="SC">SC</option>
+              <option value="BA">BA</option>
+              <option value="GO">GO</option>
+              <option value="PE">PE</option>
+              <option value="CE">CE</option>
+            </select>
+          </div>
+          <div class="form-group third">
+            <label for="patientZIP">CEP</label>
+            <ui-input 
+              id="patientZIP"
+              type="text" 
+              [(ngModel)]="newPatient.cep"
+              placeholder="00000-000">
+            </ui-input>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="patientInsurance">Convênio</label>
+            <select id="patientInsurance" class="form-select" [(ngModel)]="newPatient.convenio">
+              <option value="">Selecione o convênio</option>
+              <option *ngFor="let convenio of convenios" [value]="convenio.id">{{convenio.nome}}</option>
+            </select>
+          </div>
+          <div class="form-group half">
+            <label for="patientCardNumber">Número da Carteira</label>
+            <ui-input 
+              id="patientCardNumber"
+              type="text" 
+              [(ngModel)]="newPatient.numeroCartao"
+              placeholder="Número do cartão do convênio">
+            </ui-input>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="responsibleName">Nome do Responsável</label>
+            <ui-input 
+              id="responsibleName"
+              type="text" 
+              [(ngModel)]="newPatient.nomeResponsavel"
+              placeholder="Para menores de idade">
+            </ui-input>
+          </div>
+          <div class="form-group half">
+            <label for="responsiblePhone">Telefone do Responsável</label>
+            <ui-input 
+              id="responsiblePhone"
+              type="tel" 
+              [(ngModel)]="newPatient.telefoneResponsavel"
+              placeholder="(11) 99999-9999">
+            </ui-input>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="patientStatus">Status</label>
+            <select id="patientStatus" class="form-select" [(ngModel)]="newPatient.status">
+              <option value="ativo" selected>Ativo</option>
+              <option value="inativo">Inativo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="patientNotes">Observações</label>
+            <textarea 
+              id="patientNotes"
+              class="form-textarea"
+              [(ngModel)]="newPatient.observacoes"
+              placeholder="Informações adicionais sobre o paciente (alergias, medicamentos, etc.)"
+              rows="3">
+            </textarea>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" [(ngModel)]="newPatient.notificarEmail">
+                <span class="checkbox-custom"></span>
+                Enviar email de boas-vindas
+              </label>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" (click)="closePatientForm()">Cancelar</button>
+      <button class="btn btn-primary" (click)="createPatient()" [disabled]="!newPatient.nome || !newPatient.cpf">
+        <i class="icon-plus"></i>
+        Salvar Paciente
+      </button>
+    </div>
+  </div>
+</div>
