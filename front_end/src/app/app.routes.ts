@@ -21,7 +21,8 @@ import { TeaGestaoCheckinComponent } from './features/TEA/components/tea-gestao-
 import { TeaFilaRecepcaoComponent } from './features/TEA/components/tea-fila-recepcao/tea-fila-recepcao.component';
 import { TeaPainelCheckinComponent } from './features/TEA/components/tea-painel-checkin/tea-painel-checkin.component';
 import { TeaPainelAtendimentoComponent } from './features/TEA/components/tea-painel-atendimento/tea-painel-atendimento.component';
-import { TeaProntuarioEletronicoComponent } from './features/TEA/components/tea-prontuario-eletronico/tea-prontuario-eletronico.component';
+  import { TeaProntuarioEletronicoComponent } from './features/TEA/components/tea-prontuario-eletronico/tea-prontuario-eletronico.component';
+  import { TeaProntuarioEletronicoVisualizacaoComponent } from './features/TEA/components/tea-prontuario-eletronico-visualizacao/tea-prontuario-eletronico-visualizacao.component';
 import { TeaProntuarioListaComponent } from './features/TEA/components/tea-prontuario-lista/tea-prontuario-lista.component';
 import { TeaPesquisarPacientesComponent } from './features/TEA/components/tea-pesquisar-pacientes/tea-pesquisar-pacientes.component';
 import { CalendarioComponent } from './features/gestao-caring/calendario/calendario';
@@ -73,6 +74,10 @@ export const routes: Routes = [
       { path: 'calendario', component: TeaCalendarioComponent },
       { path: 'calendario-por-paciente', component: TeaCalendarioPorPacienteComponent },
       { path: 'calendario-por-profissionais', component: TeaCalendarioPorProfissionaisComponent },
+      // Profissionais submenu (atalhos dedicados)
+      { path: 'profissionais-calendario', component: TeaCalendarioPorProfissionaisComponent },
+      { path: 'profissionais-pacientes', component: TeaPacientesComponent },
+      { path: 'profissionais-prontuario', component: TeaProntuarioListaComponent },
       { path: 'agendamento', component: TeaAgendamentoComponent },
       { path: 'pesquisar-pacientes', component: TeaPesquisarPacientesComponent },
       { path: 'usuarios', component: TeaUsuariosComponent },
@@ -88,6 +93,7 @@ export const routes: Routes = [
       { path: 'painel-checkin', component: TeaPainelCheckinComponent },
       { path: 'painel-atendimento', component: TeaPainelAtendimentoComponent },
       { path: 'prontuario-eletronico', component: TeaProntuarioListaComponent },
+      { path: 'prontuario-eletronico-visualizacao/:id', component: TeaProntuarioEletronicoVisualizacaoComponent },
       { path: 'prontuario-eletronico/:id', component: TeaProntuarioEletronicoComponent }
     ]
   },

@@ -50,7 +50,13 @@ export class TeaProntuarioListaComponent implements OnInit {
   }
 
   abrirProntuario(p: Patient) {
-    this.router.navigate(['/tea/prontuario-eletronico', p.id]);
+    // Se a lista foi acessada via menu Profissionais, abrir modo EDITÁVEL
+    if (this.router.url.includes('/tea/profissionais-prontuario')) {
+      this.router.navigate(['/tea/prontuario-eletronico', p.id]);
+    } else {
+      // Caso contrário, abrir modo de VISUALIZAÇÃO
+      this.router.navigate(['/tea/prontuario-eletronico-visualizacao', p.id]);
+    }
   }
 
   private updatePagination() {

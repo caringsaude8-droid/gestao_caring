@@ -44,6 +44,13 @@ export class TeaPesquisarPacientesComponent implements OnInit {
   onStatusChange(): void { this.applyFilters(); }
   listar(): void { this.applyFilters(); }
 
+  clearFilters(): void {
+    this.searchTerm = '';
+    this.selectedStatus = '';
+    this.matriculaTerm = '';
+    this.applyFilters();
+  }
+
   private applyFilters(): void {
     const nameTerm = this.searchTerm.trim().toLowerCase();
     const matricTerm = this.matriculaTerm.trim();

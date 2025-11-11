@@ -57,6 +57,11 @@ export class TeaLayoutComponent implements OnInit, OnDestroy {
         { title: "Atendimentos", url: "/tea/relatorios/atendimentos", icon: "bar-chart" },
         { title: "Aniversários", url: "/tea/relatorios/aniversarios", icon: "calendar" }
       ] },
+      { title: "Profissionais", url: "/tea/profissionais", icon: "users", submenu: [
+        { title: "Calendário", url: "/tea/profissionais-calendario", icon: "calendar" },
+        { title: "Pacientes", url: "/tea/profissionais-pacientes", icon: "users" },
+        { title: "Prontuário", url: "/tea/profissionais-prontuario", icon: "folder" }
+      ] },
       { title: "Painel Atendimento", url: "/tea/painel-atendimento", icon: "monitor" },
       { title: "Prontuário Eletrônico", url: "/tea/prontuario-eletronico", icon: "folder" },
       { title: "Dashboard", url: "/tea/dashboard", icon: "dashboard" },
@@ -126,6 +131,18 @@ export class TeaLayoutComponent implements OnInit, OnDestroy {
       return this.currentRoute === '/tea/calendario' ||
              this.currentRoute === '/tea/calendario-por-paciente' ||
              this.currentRoute === '/tea/calendario-por-profissionais';
+    }
+
+    // Para submenus de Profissionais
+    if (url === '/tea/profissionais-calendario' || url === '/tea/profissionais-pacientes' || url === '/tea/profissionais-prontuario') {
+      return this.currentRoute === url;
+    }
+
+    // Para o menu Profissionais considerar ativo ao navegar por qualquer submenu
+    if (url === '/tea/profissionais') {
+      return this.currentRoute === '/tea/profissionais-calendario' ||
+             this.currentRoute === '/tea/profissionais-pacientes' ||
+             this.currentRoute === '/tea/profissionais-prontuario';
     }
     
     // Para submenus de Relatórios

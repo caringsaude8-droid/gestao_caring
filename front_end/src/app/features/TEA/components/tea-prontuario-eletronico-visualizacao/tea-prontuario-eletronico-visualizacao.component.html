@@ -1,0 +1,80 @@
+<div class="tea-page-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h2 class="page-title">{{ pageTitle }}</h2>
+    <div class="badge-row">
+      <span class="badge" *ngFor="let b of badges" [style.background]="b.color">{{ b.label }}</span>
+    </div>
+  </div>
+
+  <!-- Tabs (visualização) -->
+  <div class="tabs">
+    <button class="tab-btn" *ngFor="let t of tabs" [class.active]="t === activeTab" (click)="setActiveTab(t)">{{ t }}</button>
+  </div>
+
+  <div class="page-content">
+    <div class="grid">
+      <!-- Paciente Card -->
+      <div class="card left">
+        <div class="patient-header">
+          <div class="avatar" [class.placeholder]="!paciente.avatarUrl">
+            <span *ngIf="!paciente.avatarUrl">👩‍⚕️</span>
+            <img *ngIf="paciente.avatarUrl" [src]="paciente.avatarUrl" alt="Foto do paciente" />
+          </div>
+          <div class="patient-info">
+            <h3 class="patient-name">{{ paciente.nome }}</h3>
+            <div class="patient-meta">{{ paciente.telefone }}</div>
+            <div class="patient-meta">{{ paciente.idade }} anos</div>
+            <div class="patient-meta"><i class="icon-list"></i> {{ paciente.convenio }}</div>
+          </div>
+          <!-- Removido bloco de ações (editar/informações/multiclínica) para visualização -->
+        </div>
+
+        <div class="section">
+          <h4>Futuros agendamentos:</h4>
+          <ul class="appointments">
+            <li *ngFor="let a of futurosAgendamentos">
+              <a href="#" class="appt-link">{{ a.tipo }}</a> com {{ a.profissional }} dia {{ a.dataHora }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Observações -->
+      <div class="card right">
+        <div class="sections">
+          <div class="section">
+            <h4>Observações:</h4>
+            <ul class="notes">
+              <li *ngFor="let o of observacoes">- {{ o }}</li>
+            </ul>
+          </div>
+          <div class="section">
+            <h4>Observações privadas:</h4>
+            <ul class="notes">
+              <li *ngFor="let p of observacoesPrivadas">- {{ p }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Counter cards (somente exibição, sem ações) -->
+    <div class="stats-row">
+      <div class="stat-card" *ngFor="let c of counters">
+        <div class="stat-value">{{ c.value }}</div>
+        <div class="stat-label">{{ c.label }}</div>
+        <!-- ação removida -->
+      </div>
+    </div>
+
+    <!-- History search and actions -->
+    <div class="history-row">
+      <input class="history-search" type="text" placeholder="Pesquise no histórico" [(ngModel)]="historicoSearch" />
+      <div class="history-actions">
+        <button class="action-secondary">Compartilhar Todos Atendimentos</button>
+        <button class="action-secondary">Prontuário Completo</button>
+      </div>
+    </div>
+  </div>
+</div>

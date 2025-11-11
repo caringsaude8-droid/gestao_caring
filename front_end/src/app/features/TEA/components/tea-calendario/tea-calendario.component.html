@@ -56,38 +56,13 @@
     </div>
   </div>
 
-  <!-- Conteúdo com Sidebar (igual ao Agendamento) -->
+  <!-- Layout com Sidebar (igual aos outros) -->
   <div class="content-with-sidebar">
     <aside class="calendar-sidebar">
-      <div class="sidebar-filter">
-        <label>Filtro por Especialidade</label>
-        <select [(ngModel)]="filtroEspecialidade" (change)="onPeriodoChange()">
-          <option value="">Todas as Agendas</option>
-          <option *ngFor="let esp of especialidadesFiltradas" [value]="esp.id">{{esp.nome}}</option>
-        </select>
-      </div>
       <div class="calendar-header">
         <button class="cal-nav" (click)="previousMonth()">‹</button>
         <div class="cal-title">{{getCurrentMonthYear()}}</div>
         <button class="cal-nav" (click)="nextMonth()">›</button>
-      </div>
-
-      <!-- Submenu: Por pacientes / Por profissionais -->
-      <div class="submenu-tabs" role="tablist" aria-label="Submenu de filtros">
-        <button class="submenu-tab" [class.active]="submenuMode==='pacientes'" (click)="setSubmenuMode('pacientes')">Por pacientes</button>
-        <button class="submenu-tab" [class.active]="submenuMode==='profissionais'" (click)="setSubmenuMode('profissionais')">Por profissionais</button>
-      </div>
-
-      <!-- Submenu de pacientes -->
-      <div class="pac-submenu" *ngIf="submenuMode==='pacientes'">
-        <button class="pro-pill" [class.active]="!filtroPaciente" (click)="setPaciente('')">Todos</button>
-        <button *ngFor="let pac of pacientesFiltrados" class="pro-pill" [class.active]="filtroPaciente===pac" (click)="setPaciente(pac)">{{pac}}</button>
-      </div>
-
-      <!-- Submenu de profissionais -->
-      <div class="pro-submenu" *ngIf="submenuMode==='profissionais'">
-        <button class="pro-pill" [class.active]="!filtroProfissional" (click)="setProfissional('')">Todos</button>
-        <button *ngFor="let p of profissionaisFiltrados" class="pro-pill" [class.active]="filtroProfissional===p.id" (click)="setProfissional(p.id)">{{p.nome}}</button>
       </div>
 
       <div class="calendar-weekdays">
@@ -109,10 +84,6 @@
     </aside>
 
     <div class="main-column">
-
-      <!-- Toolbar removida conforme solicitação: Nova Sessão, Imprimir, Exportar, Configurações -->
-
-      <!-- Visualização Completa dos Agendamentos (dia selecionado) -->
       <div class="full-view-section">
         <div class="sessions-header">
           <h3 class="section-title">Visualização Completa ({{selectedDayISO}})</h3>
@@ -168,40 +139,31 @@
           </tbody>
         </table>
       </div>
-    </div> <!-- /.main-column -->
-  </div> <!-- /.content-with-sidebar -->
 
-  <!-- Today's Appointments -->
-  <div class="todays-appointments" *ngIf="todaysAppointments.length > 0">
-    <h3 class="section-title">Sessões de Hoje</h3>
-    <div class="appointments-list">
-      <div *ngFor="let appointment of todaysAppointments" 
-           class="appointment-card"
-           [class]="'status-' + appointment.status">
-        
-        <div class="appointment-time-badge">
-          <span class="time">{{appointment.time}}</span>
-          <span class="duration">{{appointment.duration}}min</span>
-        </div>
-        
-        <div class="appointment-info">
-          <h4 class="patient-name">{{appointment.patientName}}</h4>
-          <p class="appointment-details">
-            <span class="therapy-type">{{appointment.type}}</span>
-            <span class="therapist">{{appointment.therapistName}}</span>
-            <span class="room">{{appointment.room}}</span>
-          </p>
-          <p *ngIf="appointment.notes" class="appointment-notes">{{appointment.notes}}</p>
-        </div>
-        
-        <div class="appointment-status">
-          <span class="status-badge" [class]="'badge-' + appointment.status">
-            {{appointment.status === 'scheduled' ? 'Agendada' : 
-              appointment.status === 'completed' ? 'Concluída' : 
-              appointment.status === 'cancelled' ? 'Cancelada' : 'Falta'}}
-          </span>
-        </div>
-      </div>
     </div>
+  </div>
+  
+  <!-- Tabela semanal posicionada ABAIXO do layout (fora da coluna) -->
+  <div class="weekly-table-wrapper">
+    <table class="weekly-table">
+      <thead class="weekly-header">
+        <tr>
+          <th class="time-col">Horário</th>
+          <th *ngFor="let day of weeklyDays" [class.current-day]="isToday(day.date)">{{ day.label }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let time of weeklyTimeSlots">
+          <td class="time-col">{{ time }}</td>
+          <td *ngFor="let day of weeklyDays" [class.has-session]="getWeeklyCellContent(day.date, time)" [class.current-day]="isToday(day.date)">
+            <ng-container *ngIf="getWeeklyCellContent(day.date, time) as cell">
+              <div class="session-card">
+                <div class="session-title">{{ cell.patient }} - {{ cell.therapy }}</div>
+              </div>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>

@@ -50,6 +50,10 @@ export class TeaCalendarioComponent implements OnInit {
   slots: SlotHorario[] = [];
   selectedDayISO: string = new Date().toISOString().slice(0, 10);
 
+  // Semana (para tabela semanal abaixo)
+  weeklyDays: { label: string; date: Date }[] = [];
+  weeklyTimeSlots: string[] = ['14:00', '14:50', '15:40', '16:30'];
+
   get todaysAppointments(): TeaAppointment[] {
     const targetDay = this.selectedDayISO;
     return this.mapSlotsToAppointments(
@@ -76,6 +80,7 @@ export class TeaCalendarioComponent implements OnInit {
           .filter((n): n is string => !!n && n.trim().length > 0)
       )).sort((a, b) => a.localeCompare(b));
       this.generateCalendar();
+      this.buildWeekFromSelectedDay();
     });
     // Inicializa listas de filtros com dados do serviço
     this.especialidadesFiltradas = this.agendaService.especialidades;
@@ -223,6 +228,7 @@ export class TeaCalendarioComponent implements OnInit {
   selectDay(day: CalendarDay) {
     this.selectedDayISO = day.date.toISOString().split('T')[0];
     // Ao mudar o dia, a visão é recalculada (getters dependem de selectedDayISO)
+    this.buildWeekFromSelectedDay();
   }
 
   navigateTo(route: string) {
@@ -273,5 +279,41 @@ export class TeaCalendarioComponent implements OnInit {
   setPaciente(nome: string) {
     this.filtroPaciente = nome;
     this.onPeriodoChange();
+  }
+
+  // ====== Semana (weekly table) ======
+  private buildWeekFromSelectedDay(): void {
+    const baseISO = this.selectedDayISO || new Date().toISOString().substring(0,10);
+    const base = new Date(baseISO);
+    const dayOfWeek = base.getDay(); // 0=Dom, 1=Seg...
+    const monday = new Date(base);
+    const diffToMonday = (dayOfWeek + 6) % 7;
+    monday.setDate(base.getDate() - diffToMonday);
+
+    const labels = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
+    this.weeklyDays = [];
+    for (let i = 0; i < 6; i++) {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      this.weeklyDays.push({ label: `${labels[i]} - ${d.toLocaleDateString('pt-BR')}`, date: d });
+    }
+  }
+
+  isToday(day: Date): boolean {
+    const t = new Date(); t.setHours(0,0,0,0);
+    const d = new Date(day); d.setHours(0,0,0,0);
+    return d.getTime() === t.getTime();
+  }
+
+  getWeeklyCellContent(day: Date, time: string): { patient: string; therapy: string } | null {
+    const iso = day.toISOString().substring(0,10);
+    const found = this.slots.find(s =>
+      s.data === iso && s.hora === time &&
+      (!this.filtroProfissional || s.profissionalId === this.filtroProfissional) &&
+      (!this.filtroPaciente || s.paciente === this.filtroPaciente) &&
+      (!this.filtroEspecialidade || s.especialidadeId === this.filtroEspecialidade)
+    );
+    if (!found) return null;
+    return { patient: found.paciente || '—', therapy: this.getEspecialidadeNome(found.especialidadeId) };
   }
 }

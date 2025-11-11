@@ -5,21 +5,34 @@
   </div>
 
   <section class="controls-section controls-card">
-    <div class="controls-row">
-      <div class="search-wrapper">
-        <span class="icon-search" aria-hidden="true"></span>
-        <input type="text" class="search-input full" placeholder="Search" [(ngModel)]="searchTerm" (input)="onSearch()" />
+    <div class="filters-grid">
+      <div class="search-group">
+        <label class="filter-label">Nome</label>
+        <div class="search-wrapper">
+          <span class="icon-search" aria-hidden="true"></span>
+          <input type="text" class="search-input full" placeholder="Buscar por nome" [(ngModel)]="searchTerm" (input)="onSearch()" />
+        </div>
       </div>
-    </div>
-    <div class="controls-row">
-      <select class="filter-select" [(ngModel)]="selectedStatus" (change)="onStatusChange()">
-        <option>Ativos</option>
-        <option>Inativos</option>
-        <option>Em Espera</option>
-        <option value="">Todos</option>
-      </select>
-      <input type="text" class="search-input" placeholder="Matrícula/convênio" [(ngModel)]="matriculaTerm" (input)="onSearch()" />
-      <button class="action-btn action-primary" (click)="listar()">Buscar</button>
+
+      <div class="filter-group">
+        <label class="filter-label">Situação</label>
+        <select class="filter-select" [(ngModel)]="selectedStatus" (change)="onStatusChange()">
+          <option value="">Todos</option>
+          <option>Ativos</option>
+          <option>Inativos</option>
+          <option>Em Espera</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Matrícula/Convênio</label>
+        <input type="text" class="search-input" placeholder="Ex.: 086051562" [(ngModel)]="matriculaTerm" (input)="onSearch()" />
+      </div>
+
+      <div class="actions-group">
+        <button class="action-btn action-primary" (click)="listar()">Buscar</button>
+        <button class="action-btn action-secondary" (click)="clearFilters()">Limpar</button>
+      </div>
     </div>
     <div class="controls-row">
       <button class="action-btn action-primary btn-full">+ Novo</button>
