@@ -15,11 +15,11 @@ import { TeaAgendamentoComponent } from './features/TEA/components/tea-agendamen
 import { TeaUsuariosComponent } from './features/TEA/components/tea-usuarios/tea-usuarios.component';
 import { TeaProfissionaisComponent } from './features/TEA/components/tea-profissionais/tea-profissionais.component';
 import { TeaClinicasComponent } from './features/TEA/components/tea-clinicas/tea-clinicas.component';
-import { TeaCheckinPorSenhaComponent } from './features/TEA/components/tea-checkin-por-senha/tea-checkin-por-senha.component';
-import { TeaCheckinEmLoteComponent } from './features/TEA/components/tea-checkin-em-lote/tea-checkin-em-lote.component';
-import { TeaGestaoCheckinComponent } from './features/TEA/components/tea-gestao-checkin/tea-gestao-checkin.component';
-import { TeaFilaRecepcaoComponent } from './features/TEA/components/tea-fila-recepcao/tea-fila-recepcao.component';
-import { TeaPainelCheckinComponent } from './features/TEA/components/tea-painel-checkin/tea-painel-checkin.component';
+
+
+
+
+
 import { TeaPainelAtendimentoComponent } from './features/TEA/components/tea-painel-atendimento/tea-painel-atendimento.component';
   import { TeaProntuarioEletronicoComponent } from './features/TEA/components/tea-prontuario-eletronico/tea-prontuario-eletronico.component';
   import { TeaProntuarioEletronicoVisualizacaoComponent } from './features/TEA/components/tea-prontuario-eletronico-visualizacao/tea-prontuario-eletronico-visualizacao.component';
@@ -86,11 +86,11 @@ export const routes: Routes = [
       { path: 'convenios', component: ConveniosComponent },
       { path: 'relatorios/atendimentos', component: RelatoriosAtendimentosComponent },
       { path: 'relatorios/aniversarios', component: RelatoriosAniversariosComponent },
-      { path: 'checkin-por-senha', component: TeaCheckinPorSenhaComponent },
-      { path: 'checkin-em-lote', component: TeaCheckinEmLoteComponent },
-      { path: 'gestao-checkin', component: TeaGestaoCheckinComponent },
-      { path: 'fila-recepcao', component: TeaFilaRecepcaoComponent },
-      { path: 'painel-checkin', component: TeaPainelCheckinComponent },
+
+
+      
+
+      
       { path: 'painel-atendimento', component: TeaPainelAtendimentoComponent },
       { path: 'prontuario-eletronico', component: TeaProntuarioListaComponent },
       { path: 'prontuario-eletronico-visualizacao/:id', component: TeaProntuarioEletronicoVisualizacaoComponent },

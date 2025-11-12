@@ -111,17 +111,6 @@
     </div>
 
   <table class="agenda-table">
-    <colgroup>
-      <col style="width:3%">
-      <col style="width:8%">
-      <col style="width:18%">
-      <col style="width:14%">
-      <col style="width:8%">
-      <col style="width:9%">
-      <col style="width:8%">
-      <col style="width:9%">
-      <col style="width:7%">
-    </colgroup>
       <thead>
         <tr>
           <th></th>
@@ -147,20 +136,25 @@
             <span class="status-badge"
                   [class.agendado]="slot.status==='agendado'"
                   [class.confirmado]="slot.status==='confirmado'"
-                  [class.cancelado]="slot.status==='cancelado'">
+                  [class.cancelado]="slot.status==='cancelado'"
+                  [class.faltou]="slot.status==='faltou'">
               {{slot.status}}
             </span>
           </td>
           <td>
             <div class="checkin-cell">
-              <select class="checkin-select" [ngModel]="slot.status" (ngModelChange)="onCheckinChange(slot, $event)">
-                <option value="agendado">Agendado</option>
-                <option value="confirmado">Confirmado</option>
-                <option value="cancelado">Cancelado</option>
-              </select>
-              <button class="status-action editar" (click)="openMarcar(slot)">Editar</button>
-              <button class="status-action liberar" *ngIf="slot.status==='confirmado'" (click)="liberar(slot)">Liberar</button>
-              <button class="status-action excluir" (click)="solicitarExclusaoSlot(slot)">Excluir</button>
+              <ng-container *ngIf="slot.status === 'agendado'">
+                <button class="status-action checkin-btn" (click)="onStatusChange(slot, 'confirmado')">Chek-in</button>
+              </ng-container>
+              <ng-container *ngIf="slot.status === 'confirmado'">
+                <span class="status-checked"> ✔</span>
+              </ng-container>
+              <ng-container *ngIf="slot.status === 'cancelado'">
+                <span class="status-canceled"> ✕</span>
+              </ng-container>
+              <ng-container *ngIf="slot.status === 'faltou'">
+                <span class="status-missed"> !</span>
+              </ng-container>
             </div>
           </td>
           <td>
@@ -187,12 +181,14 @@
           <div><strong>Local:</strong> {{'—'}}</div>
           <div><strong>Sala:</strong> {{'—'}}</div>
           <div><strong>Por:</strong> {{ getProfissionalNome(detalhesSlot?.profissionalId || '') }}</div>
-          <div><strong>Status:</strong> {{detalhesSlot?.status}}</div>
+          <div><strong>Status:</strong> <span class="status-badge" [class]="'status-badge ' + detalhesSlot?.status">{{detalhesSlot?.status}}</span></div>
           <div *ngIf="detalhesSlot?.status==='cancelado'"><strong>Cancelado em:</strong> {{detalhesSlot?.canceladoEm}}</div>
         </div>
         <div class="details-actions">
           <button class="status-action editar" (click)="openMarcar(detalhesSlot!)">Editar</button>
-          <button class="status-action liberar" *ngIf="detalhesSlot?.status==='confirmado'" (click)="liberar(detalhesSlot!)">Liberar</button>
+          <button class="status-action cancelar" *ngIf="detalhesSlot?.status !== 'cancelado'" (click)="onStatusChange(detalhesSlot!, 'cancelado')">Cancelar</button>
+          <button class="status-action faltou" *ngIf="detalhesSlot?.status !== 'faltou'" (click)="onStatusChange(detalhesSlot!, 'faltou')">Faltou</button>
+          <button class="status-action liberar" (click)="liberar(detalhesSlot!)">Liberar</button>
           <button class="status-action" (click)="fecharDetalhes()">Fechar</button>
         </div>
       </div>

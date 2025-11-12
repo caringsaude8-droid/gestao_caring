@@ -1,5 +1,17 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+export type SlotStatus = 'agendado' | 'confirmado' | 'cancelado' | 'faltou';
+
+export interface TeaSession {
+  id: string;
+  patientName: string;
+  therapist: string;
+  type: string;
+  time: string;
+  status: SlotStatus;
+}
 
 export interface Especialidade {
   id: string;
@@ -11,8 +23,6 @@ export interface Profissional {
   nome: string;
   especialidadeId: string;
 }
-
-export type SlotStatus = 'agendado' | 'confirmado' | 'cancelado';
 
 export interface SlotHorario {
   id: string;
@@ -86,6 +96,10 @@ export class TeaAgendaService {
     return this.profissionais.find(p => p.id === id)?.nome || '';
   }
 
+  getEspecialidadeNome(id: string): string {
+    return this.especialidades.find(e => e.id === id)?.nome || '';
+  }
+
   upsertSlot(slot: SlotHorario) {
     const current = this.getSlotsSnapshot();
     const idx = current.findIndex(s => s.id === slot.id);
@@ -115,23 +129,37 @@ export class TeaAgendaService {
       current[idx] = { ...current[idx], status };
       this.slotsSubject.next([...current]);
     }
+    return of(undefined);
   }
 
-  getTodaySessionsForClinica(): { id: string; patient: string; therapist: string; type: string; time: string; status: 'scheduled' | 'completed' | 'cancelled' }[] {
-    const todayIso = new Date().toISOString().slice(0, 10);
-    return this.getSlotsSnapshot()
-      .filter(s => s.data === todayIso && s.paciente && s.status !== 'cancelado')
-      .map(s => {
-        const status: 'scheduled' | 'completed' | 'cancelled' = s.status === 'cancelado' ? 'cancelled' : 'scheduled';
-        return {
-          id: s.id,
-          patient: s.paciente || '',
-          therapist: this.getProfissionalNome(s.profissionalId),
-          type: this.especialidades.find(e => e.id === s.especialidadeId)?.nome || '',
-          time: s.hora,
-          status
-        };
+  updateSlotStatus(id: string, status: SlotStatus): Observable<void> {
+    const current = this.getSlotsSnapshot();
+    const idx = current.findIndex(s => s.id === id);
+    if (idx >= 0) {
+      current[idx] = { ...current[idx], status };
+      this.slotsSubject.next([...current]);
+    }
+    return of(undefined);
+  }
+
+  getTodaySessionsForClinica(): Observable<TeaSession[]> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayIso = today.toISOString().slice(0, 10);
+
+    return this.slots$.pipe(
+      map((slots: SlotHorario[]) => {
+        return slots
+          .filter(slot => slot.data === todayIso)
+          .map(slot => ({
+            id: slot.id,
+            patientName: slot.paciente || 'N/A',
+            therapist: this.getProfissionalNome(slot.profissionalId),
+            type: this.getEspecialidadeNome(slot.especialidadeId),
+            time: slot.hora,
+            status: slot.status
+          }));
       })
-      .sort((a, b) => a.time.localeCompare(b.time));
+    );
   }
 }

@@ -203,8 +203,12 @@ export class TeaAgendamentoComponent implements OnInit {
     slot.canceladoEm = undefined;
   }
 
-  onCheckinChange(slot: SlotHorario, status: 'agendado' | 'confirmado' | 'cancelado') {
+  onStatusChange(slot: SlotHorario, status: 'agendado' | 'confirmado' | 'cancelado' | 'faltou') {
     this.agendaService.setStatus(slot.id, status);
+    if (this.detalhesSlot && this.detalhesSlot.id === slot.id) {
+      this.detalhesSlot.status = status;
+      this.fecharDetalhes();
+    }
   }
 
   excluirAgendamento(slot: SlotHorario) {
@@ -281,6 +285,7 @@ export class TeaAgendamentoComponent implements OnInit {
   // Detalhes
   abrirDetalhes(slot: SlotHorario) {
     this.detalhesSlot = slot;
+    console.log('Detalhes do Slot:', this.detalhesSlot);
   }
 
   fecharDetalhes() {

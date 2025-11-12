@@ -42,7 +42,6 @@
 }
 
 .agenda-grid {
-  overflow-x: auto;
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
@@ -196,44 +195,86 @@
 }
 
 .agenda-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e5e7eb; }
-.agenda-table { table-layout: fixed; width: 100%; }
+
 .agenda-table thead th { background: #f3f4f6; font-weight: 600; font-size: 0.75rem; text-align: left; padding: 0.38rem; border-bottom: 1px solid #e5e7eb; }
-.agenda-table thead th, .agenda-table tbody td { white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+.agenda-table thead th, .agenda-table tbody td { text-overflow: ellipsis; overflow: hidden; word-break: break-word; }
 .agenda-table tbody td { border-top: 1px solid #f1f5f9; padding: 0.38rem; font-size: 0.75rem; line-height: 1.15; vertical-align: middle; }
-.list-view { overflow-x: auto; }
+
 .agenda-table tbody tr:hover { background: #f9fafb; }
 
 .status-badge { display: inline-block; padding: 0.1rem 0.4rem; border-radius: 999px; font-size: 0.7rem; margin-right: 0.35rem; text-transform: capitalize; }
 .status-badge.agendado { background: #fef3c7; color: #b45309; border: 1px solid #f59e0b; }
 .status-badge.confirmado { background: #dcfce7; color: #166534; border: 1px solid #22c55e; }
 .status-badge.cancelado { background: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
+.status-badge.faltou { background: #ffe4e6; color: #be123c; border: 1px solid #f87171; }
 .status-action { border: 1px solid #d1d5db; background: #fff; border-radius: 0.375rem; font-size: 0.7rem; padding: 0.15rem 0.45rem; cursor: pointer; margin-right: 0.25rem; font-weight: 600; }
-.status-action.checkin { background: #3b82f6; border-color: #3b82f6; color: #fff; }
-.status-action.editar { background: #10b981; border-color: #10b981; color: #fff; }
-.status-action.excluir { background: #ef4444; border-color: #ef4444; color: #fff; }
-
-.checkin-menu { display: inline-flex; gap: 0.25rem; margin-top: 0.25rem; }
-.checkin-option { border: 1px solid #d1d5db; background: #fff; border-radius: 0.375rem; font-size: 0.7rem; padding: 0.2rem 0.5rem; cursor: pointer; }
-.checkin-option.agendado { background: #fef3c7; border-color: #f59e0b; color: #111827; }
-.checkin-option.compareceu { background: #dcfce7; border-color: #22c55e; color: #111827; }
-.checkin-option.atrasado { background: #fff7ed; border-color: #f59e0b; color: #111827; }
-.checkin-option.faltou { background: #fee2e2; border-color: #ef4444; color: #111827; }
-.checkin-close { border: 1px solid #d1d5db; background: #fff; border-radius: 0.375rem; font-size: 0.7rem; padding: 0.2rem 0.5rem; cursor: pointer; }
-.status-action.liberar { background: #e5e7eb; border-color: #d1d5db; color: #111827; }
-.status-action.liberar:hover { background: #d1d5db; }
-
 @media (max-width: 768px) {
   .filters { grid-template-columns: 1fr 1fr; }
   .content-with-sidebar { grid-template-columns: 1fr; }
   .calendar-sidebar { order: 2; }
+  .main-column { order: 1; }
 }
 .status-badge { white-space: nowrap; }
-.checkin-cell { display: inline-flex; align-items: center; gap: 0.25rem; flex-wrap: nowrap; }
-.checkin-select { padding: 0.2rem 0.35rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.7rem; background: #fff; min-width: 96px; width: 96px; }
+.checkin-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap; /* Adicionado para permitir quebra de linha */
+}
+
+.checkin-btn {
+  background-color: #28a745; /* Green for check-in */
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0; /* Adicionado para evitar que o botão encolha demais */
+}
+
+.checkin-btn:hover {
+  background-color: #218838;
+}
+
+.status-checked {
+  color: #28a745; /* Green for checked */
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.status-canceled {
+  color: #dc3545; /* Vermelho para cancelado */
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.status-missed {
+  color: #ffc107; /* Amarelo/Laranja para faltou */
+  font-weight: bold;
+  font-size: 1.2em;
+}
 .checkin-cell button { padding: 0.2rem 0.45rem; font-size: 0.7rem; }
 
 @media (max-width: 1024px) {
   .list-view { overflow-x: auto; }
+}
+
+@media (max-width: 600px) {
+  .agenda-header,
+  .agenda-row {
+    grid-template-columns: 60px repeat(auto-fit, minmax(60px, 1fr));
+  }
+
+  .slot-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .slot-actions button {
+    width: 100%;
+  }
 }
 
 /* Detalhes Panel */

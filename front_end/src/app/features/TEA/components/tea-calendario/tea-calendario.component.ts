@@ -247,7 +247,8 @@ export class TeaCalendarioComponent implements OnInit {
     const map: Record<SlotHorario['status'], string> = {
       agendado: 'Agendado',
       confirmado: 'Confirmado',
-      cancelado: 'Cancelado'
+      cancelado: 'Cancelado',
+      faltou: 'Faltou'
     };
     return map[status] || status;
   }

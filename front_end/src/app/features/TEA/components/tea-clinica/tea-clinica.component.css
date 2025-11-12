@@ -88,159 +88,6 @@
   margin-bottom: 1.5rem;
 }
 
-/* Quick Actions */
-.quick-actions {
-  margin-bottom: 3rem;
-}
-
-.actions-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.5rem;
-}
-
-.action-card {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.5rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  border-left: 4px solid transparent;
-}
-
-.action-card.clickable {
-  cursor: pointer;
-}
-
-.action-card.clickable:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.action-card:not(.clickable) {
-  opacity: 0.7;
-  cursor: default;
-}
-
-.action-blue { border-left-color: #3b82f6; }
-.action-green { border-left-color: #10b981; }
-.action-purple { border-left-color: #8b5cf6; }
-.action-orange { border-left-color: #f59e0b; }
-.action-teal { border-left-color: #06b6d4; }
-.action-pink { border-left-color: #ec4899; }
-
-.action-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  flex-shrink: 0;
-}
-
-.action-blue .action-icon { background: #dbeafe; color: #3b82f6; }
-.action-green .action-icon { background: #d1fae5; color: #10b981; }
-.action-purple .action-icon { background: #ede9fe; color: #8b5cf6; }
-.action-orange .action-icon { background: #fef3c7; color: #f59e0b; }
-.action-teal .action-icon { background: #cffafe; color: #06b6d4; }
-.action-pink .action-icon { background: #fce7f3; color: #ec4899; }
-
-.action-content {
-  flex: 1;
-}
-
-.action-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0 0 0.25rem 0;
-}
-
-.action-description {
-  font-size: 0.9rem;
-  color: #64748b;
-  margin: 0;
-}
-
-.action-arrow {
-  color: #94a3b8;
-  font-size: 1.2rem;
-}
-
-/* TEA Resources */
-.tea-resources {
-  margin-bottom: 3rem;
-}
-
-.resources-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-}
-
-.resource-card {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
-}
-
-.resource-card:hover {
-  transform: translateY(-2px);
-}
-
-.resource-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.resource-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  flex-shrink: 0;
-}
-
-.resource-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0;
-}
-
-.resource-description {
-  font-size: 0.9rem;
-  color: #64748b;
-  margin: 0 0 1rem 0;
-  line-height: 1.4;
-}
-
-.resource-stats {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.resource-count {
-  font-size: 0.8rem;
-  color: #3b82f6;
-  font-weight: 500;
-  background: #dbeafe;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-}
-
 /* Sessões de Hoje */
 .todays-sessions {
   background: white;
@@ -299,6 +146,13 @@
   transition: all 0.3s ease;
 }
 
+.session-right-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
 .session-item:hover {
   border-color: #3b82f6;
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
@@ -309,6 +163,46 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.session-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.status-action {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  border-radius: 0.375rem;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.45rem;
+  cursor: pointer;
+  margin-right: 0.25rem;
+  font-weight: 600;
+}
+
+.checkin-btn {
+  background-color: #28a745; /* Green for check-in */
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.checkin-btn:hover {
+  background-color: #218838;
+}
+
+.status-checked {
+  color: #28a745; /* Green for checked */
+  font-weight: bold;
+  font-size: 0.9rem;
 }
 
 .session-patient {
@@ -353,16 +247,6 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-}
-
-.status-scheduled {
-  background: #dbeafe;
-  color: #3b82f6;
-}
-
-.status-completed {
-  background: #d1fae5;
-  color: #10b981;
 }
 
 .status-cancelled {
@@ -429,4 +313,25 @@
   .resource-card {
     padding: 1rem;
   }
+}
+
+.status-missed {
+  color: #ffc107; /* Amarelo/Laranja para faltou */
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.faltou-btn {
+  background-color: #fd950d; /* Vermelho para indicar falta */
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.faltou-btn:hover {
+  background-color: #d87a00;
 }

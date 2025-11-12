@@ -33,34 +33,27 @@ export class TeaLayoutComponent implements OnInit, OnDestroy {
       { title: "Clínicas", url: "/tea/selecao-clinica", icon: "clinic" },
       { title: "TEA Clínica", url: "/tea/clinica", icon: "brain" },
       { title: "Cadastro", url: "/cadastro", icon: "folder", submenu: [
-        { title: "Usuários", url: "/tea/usuarios", icon: "users" },
-        { title: "Pacientes", url: "/tea/pacientes", icon: "users" },
-        { title: "Pesquisar Pacientes", url: "/tea/pesquisar-pacientes", icon: "search" },
-        { title: "Profissionais", url: "/tea/profissionais", icon: "users" },
-        { title: "Clínicas", url: "/tea/clinicas", icon: "clinic" },
-        { title: "Convênios", url: "/tea/convenios", icon: "folder" }
-      ] },
-      { title: "Check-in", url: "/tea/checkin", icon: "check-square", submenu: [
-        { title: "Check-in por Senha", url: "/tea/checkin-por-senha", icon: "lock" },
-        { title: "Check-in em Lote", url: "/tea/checkin-em-lote", icon: "layers" },
-        { title: "Gestão de Checkin", url: "/tea/gestao-checkin", icon: "settings" },
-        { title: "Fila Recepção", url: "/tea/fila-recepcao", icon: "list" },
-        { title: "Painel de Checkin", url: "/tea/painel-checkin", icon: "monitor" }
+        { title: "Usuários", url: "/tea/usuarios", icon: "" },
+        { title: "Pacientes", url: "/tea/pacientes", icon: "" },
+        { title: "###", url: "/tea/pesquisar-pacientes", icon: "" },
+        { title: "Profissionais", url: "/tea/profissionais", icon: "" },
+        { title: "Clínicas", url: "/tea/clinicas", icon: "" },
+        { title: "Convênios", url: "/tea/convenios", icon: "" }
       ] },
       { title: "Calendário", url: "/tea/calendario", icon: "calendar", submenu: [
-        { title: "Calendário Mensal", url: "/tea/calendario", icon: "calendar" },
-        { title: "Por Paciente", url: "/tea/calendario-por-paciente", icon: "users" },
-        { title: "Por Profissionais", url: "/tea/calendario-por-profissionais", icon: "users" }
+        { title: "Calendário Mensal", url: "/tea/calendario", icon: "" },
+        { title: "Por Paciente", url: "/tea/calendario-por-paciente", icon: "" },
+        { title: "Por Profissionais", url: "/tea/calendario-por-profissionais", icon: "" }
       ] },
       { title: "Agendamento", url: "/tea/agendamento", icon: "clock" },
       { title: "Relatórios", url: "/tea/relatorios", icon: "bar-chart", submenu: [
-        { title: "Atendimentos", url: "/tea/relatorios/atendimentos", icon: "bar-chart" },
-        { title: "Aniversários", url: "/tea/relatorios/aniversarios", icon: "calendar" }
+        { title: "Atendimentos", url: "/tea/relatorios/atendimentos", icon: "" },
+        { title: "Aniversários", url: "/tea/relatorios/aniversarios", icon: "" }
       ] },
       { title: "Profissionais", url: "/tea/profissionais", icon: "users", submenu: [
-        { title: "Calendário", url: "/tea/profissionais-calendario", icon: "calendar" },
-        { title: "Pacientes", url: "/tea/profissionais-pacientes", icon: "users" },
-        { title: "Prontuário", url: "/tea/profissionais-prontuario", icon: "folder" }
+        { title: "Calendário", url: "/tea/profissionais-calendario", icon: "" },
+        { title: "Pacientes", url: "/tea/profissionais-pacientes", icon: "" },
+        { title: "Prontuário", url: "/tea/profissionais-prontuario", icon: "" }
       ] },
       { title: "Painel Atendimento", url: "/tea/painel-atendimento", icon: "monitor" },
       { title: "Prontuário Eletrônico", url: "/tea/prontuario-eletronico", icon: "folder" },
