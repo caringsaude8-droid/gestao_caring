@@ -11,24 +11,15 @@
   <section class="controls-section controls-card">
 
     <div class="filters-grid">
-      <div class="search-group">
-        <label class="filter-label">Profissional</label>
-        <input class="search-input" type="text" placeholder="Buscar profissional" [(ngModel)]="professionalSearch" />
-      </div>
       <div class="filter-group">
         <label class="filter-label">Seleção</label>
         <select [(ngModel)]="selectedProfessional" (ngModelChange)="onProfessionalChange($event)" class="filter-select">
           <option value="">Selecione...</option>
-          <option *ngFor="let p of filteredProfessionals" [value]="p">{{ p }}</option>
+          <option *ngFor="let p of filteredAgendaProfessionals" [value]="p.id">{{ p.nome }}</option>
         </select>
       </div>
-      <div class="filter-group">
-        <label class="filter-label">Sessão</label>
-        <input class="search-input" type="text" placeholder="Paciente ou terapia" [(ngModel)]="sessionSearch" />
-      </div>
       <div class="actions-group">
-        <button class="action-btn action-primary" [disabled]="!selectedProfessional" (click)="listar()">Listar</button>
-        <button class="action-btn action-secondary" (click)="clearProfessionalFilters()">Limpar</button>
+        <button class="action-btn action-secondary" (click)="clearProfessionalFilters()">Limpar Filtros</button>
       </div>
     </div>
   </section>
@@ -98,10 +89,11 @@
           <h3 class="section-title">Visualização Completa ({{selectedDate}})</h3>
           <div class="header-actions">
             <label class="status-filter-label">Filtrar por Status</label>
-            <select class="status-filter-select">
-              <option>Todos</option>
+            <select class="status-filter-select" [(ngModel)]="filtroStatus" (change)="onStatusFilterChange()">
+              <option value="todos">Todos</option>
               <option>Agendado</option>
               <option>Confirmado</option>
+              <option>Faltou</option>
               <option>Cancelado</option>
             </select>
           </div>
@@ -147,7 +139,7 @@
         </table>
       </div>
 
-      <p class="patient-label" *ngIf="selectedProfessional">Profissional: {{ selectedProfessional }}</p>
+      <p class="patient-label" *ngIf="selectedProfessional">Profissional: {{ getSelectedProfessionalName() }}</p>
 
     </div> <!-- /.main-column -->
   </div> <!-- /.content-with-sidebar -->

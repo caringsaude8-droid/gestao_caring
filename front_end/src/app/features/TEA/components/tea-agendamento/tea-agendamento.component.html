@@ -6,45 +6,34 @@
 
   <div class="content-with-sidebar">
     <aside class="calendar-sidebar">
-      <div class="sidebar-filter">
-        <label>Filtro por Especialidade</label>
-        <select [(ngModel)]="filtroEspecialidade" (change)="onPeriodoChange()">
-          <option value="">Todas as Agendas</option>
-          <option *ngFor="let esp of especialidadesFiltradas" [value]="esp.id">{{esp.nome}}</option>
-        </select>
+      <div class="sidebar-header">
+        <h3 class="sidebar-title">Agendamento</h3>
       </div>
+      <div class="sidebar-content">
+        <div class="calendar-header">
+          <button class="cal-nav" (click)="prevMonth()">‹</button>
+          <div class="cal-title">{{ getMesLabel(calCurrent) }} <span>{{ calCurrent | date:'y' }}</span></div>
+          <button class="cal-nav" (click)="nextMonth()">›</button>
+        </div>
 
-      <div class="sidebar-filter">
-        <label>Selecione a Agenda</label>
-        <select [(ngModel)]="filtroProfissional" (change)="onPeriodoChange()">
-          <option value="">Usuário Teste</option>
-          <option *ngFor="let p of profissionaisFiltrados" [value]="p.id">{{p.nome}}</option>
-        </select>
-      </div>
+        <div class="calendar-weekdays">
+          <span *ngFor="let w of weekDays">{{w}}</span>
+        </div>
 
-      <div class="calendar-header">
-        <button class="cal-nav" (click)="prevMonth()">‹</button>
-        <div class="cal-title">{{ getMesLabel(calCurrent) }} <span>{{ calCurrent | date:'y' }}</span></div>
-        <button class="cal-nav" (click)="nextMonth()">›</button>
-      </div>
-
-      <div class="calendar-weekdays">
-        <span *ngFor="let w of weekDays">{{w}}</span>
-      </div>
-
-      <div class="calendar-grid">
-        <div class="calendar-row" *ngFor="let week of calendarWeeks">
-          <button
-            *ngFor="let day of week"
-            class="cal-cell"
-            [class.out-month]="!day.inMonth"
-            [class.today]="day.isToday"
-            [class.selected]="day.isSelected"
-            (click)="selectCalendarDay(day.iso)"
-          >
-            {{day.day}}
-            <span class="availability-dot" *ngIf="day.availableCount > 0"></span>
-          </button>
+        <div class="calendar-grid">
+          <div class="calendar-row" *ngFor="let week of calendarWeeks">
+            <button
+              *ngFor="let day of week"
+              class="cal-cell"
+              [class.out-month]="!day.inMonth"
+              [class.today]="day.isToday"
+              [class.selected]="day.isSelected"
+              (click)="selectCalendarDay(day.iso)"
+            >
+              {{day.day}}
+              <span class="availability-dot" *ngIf="day.availableCount > 0"></span>
+            </button>
+          </div>
         </div>
       </div>
     </aside>
@@ -80,12 +69,7 @@
   <div class="agenda-toolbar">
     <div class="left">
       <button class="btn-primary" (click)="openNewAgendamento()">Novo Agendamento</button>
-      <button class="icon-btn" title="Imprimir">🖨️</button>
-      <button class="icon-btn" title="Exportar">📄</button>
-      <button class="icon-btn" title="Configurações">⚙️</button>
-    </div>
-    <div class="right">
-      <input class="search" type="text" placeholder="Buscar" />
+    
     </div>
   </div>
 
@@ -97,7 +81,7 @@
       </div>
       <div class="control">
         <label>Filtrar por Status</label>
-        <select>
+        <select [(ngModel)]="filtroStatus" (change)="onPeriodoChange()">
           <option value="">Todos</option>
           <option value="agendado">Agendado</option>
           <option value="confirmado">Confirmado</option>

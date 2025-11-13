@@ -61,6 +61,11 @@ export class TeaAgendaService {
     this.initMockData();
   }
 
+  // Expor horas visíveis para sincronizar a grade semanal
+  getHorasVisiveis(): string[] {
+    return [...this.horasVisiveis];
+  }
+
   private initMockData() {
     const hoje = new Date();
     const adicionarDias = (d: number) => new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() + d);

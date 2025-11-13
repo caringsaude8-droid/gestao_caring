@@ -26,8 +26,8 @@
   padding: 0.75rem;
 }
 .controls-row { display: flex; align-items: center; gap: 0.5rem; }
-.filters-grid { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 0.75rem; align-items: end; }
-.search-group, .filter-group { display: flex; flex-direction: column; gap: 0.25rem; }
+.filters-grid { display: grid; grid-template-columns: 1fr auto; gap: 0.75rem; align-items: end; }
+.filter-group { display: flex; flex-direction: column; gap: 0.25rem; }
 .actions-group { display: flex; gap: 0.5rem; align-items: center; }
 .date-input {
   padding: 0.5rem 0.75rem;
@@ -49,7 +49,6 @@
   border: none;
   cursor: pointer;
 }
-.action-primary { background: #3b82f6; color: white; }
 .action-secondary { background: #e2e8f0; color: #334155; }
 
 .patient-label { margin: 0.5rem 0 1rem 0; font-weight: 600; }

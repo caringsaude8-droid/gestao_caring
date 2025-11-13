@@ -139,24 +139,11 @@
   padding: 0.4rem 0.75rem;
   cursor: pointer;
 }
-.agenda-toolbar .icon-btn {
-  border: 1px solid #d1d5db;
-  background: #fff;
-  border-radius: 0.375rem;
-  padding: 0.35rem 0.5rem;
-  cursor: pointer;
-}
-.agenda-toolbar .search {
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  padding: 0.35rem 0.5rem;
-}
 
 /* Layout with sidebar */
 .content-with-sidebar { display: grid; grid-template-columns: 280px 1fr; gap: 1rem; align-items: start; }
 .main-column { display: block; }
 .calendar-sidebar { background: #fff; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 0.75rem; }
-.calendar-sidebar .sidebar-filter { margin-bottom: 0.75rem; }
 .calendar-sidebar label { display: block; font-size: 0.8rem; color: #374151; margin-bottom: 0.25rem; }
 .calendar-sidebar select { width: 100%; padding: 0.35rem 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; }
 

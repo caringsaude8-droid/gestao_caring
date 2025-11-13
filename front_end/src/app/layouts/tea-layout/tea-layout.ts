@@ -31,7 +31,21 @@ export class TeaLayoutComponent implements OnInit, OnDestroy {
   private allTeaMenuItems: MenuItem[] = [
       { title: "Home", url: "/home", icon: "home" },
       { title: "Clínicas", url: "/tea/selecao-clinica", icon: "clinic" },
+
+      { title: "Dashboard", url: "/tea/dashboard", icon: "dashboard" },
+      
       { title: "TEA Clínica", url: "/tea/clinica", icon: "brain" },
+
+
+      { title: "Calendário", url: "/tea/calendario", icon: "calendar", submenu: [
+        { title: "Calendário Mensal", url: "/tea/calendario", icon: "" },
+        { title: "Por Paciente", url: "/tea/calendario-por-paciente", icon: "" },
+        { title: "Por Profissionais", url: "/tea/calendario-por-profissionais", icon: "" }
+      ] },
+
+      { title: "Agendamento", url: "/tea/agendamento", icon: "clock" },
+
+
       { title: "Cadastro", url: "/cadastro", icon: "folder", submenu: [
         { title: "Usuários", url: "/tea/usuarios", icon: "" },
         { title: "Pacientes", url: "/tea/pacientes", icon: "" },
@@ -40,16 +54,15 @@ export class TeaLayoutComponent implements OnInit, OnDestroy {
         { title: "Clínicas", url: "/tea/clinicas", icon: "" },
         { title: "Convênios", url: "/tea/convenios", icon: "" }
       ] },
-      { title: "Calendário", url: "/tea/calendario", icon: "calendar", submenu: [
-        { title: "Calendário Mensal", url: "/tea/calendario", icon: "" },
-        { title: "Por Paciente", url: "/tea/calendario-por-paciente", icon: "" },
-        { title: "Por Profissionais", url: "/tea/calendario-por-profissionais", icon: "" }
-      ] },
-      { title: "Agendamento", url: "/tea/agendamento", icon: "clock" },
+      
+
       { title: "Relatórios", url: "/tea/relatorios", icon: "bar-chart", submenu: [
         { title: "Atendimentos", url: "/tea/relatorios/atendimentos", icon: "" },
         { title: "Aniversários", url: "/tea/relatorios/aniversarios", icon: "" }
       ] },
+
+      
+      
       { title: "Profissionais", url: "/tea/profissionais", icon: "users", submenu: [
         { title: "Calendário", url: "/tea/profissionais-calendario", icon: "" },
         { title: "Pacientes", url: "/tea/profissionais-pacientes", icon: "" },
@@ -57,7 +70,7 @@ export class TeaLayoutComponent implements OnInit, OnDestroy {
       ] },
       { title: "Painel Atendimento", url: "/tea/painel-atendimento", icon: "monitor" },
       { title: "Prontuário Eletrônico", url: "/tea/prontuario-eletronico", icon: "folder" },
-      { title: "Dashboard", url: "/tea/dashboard", icon: "dashboard" },
+      
   ];
 
   // Controla o submenu aberto

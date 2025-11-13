@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TeaAgendaService, SlotStatus } from '../../services/tea-agenda.service';
+import { Router, RouterOutlet } from '@angular/router';
 
 interface UserProfile {
   name: string;
@@ -21,7 +22,8 @@ interface TeaSession {
   selector: 'app-tea-clinica',
   standalone: true,
   imports: [
-    CommonModule
+    CommonModule,
+    RouterOutlet
   ],
   templateUrl: './tea-clinica.component.html',
   styleUrls: ['./tea-clinica.component.css']
@@ -31,7 +33,7 @@ export class TeaClinicaComponent implements OnInit {
 
   recentSessions: TeaSession[] = [];
 
-  constructor(private teaAgendaService: TeaAgendaService) { }
+  constructor(private teaAgendaService: TeaAgendaService, private router: Router) { }
 
   ngOnInit(): void {
     this.loadUserProfile();
@@ -61,8 +63,7 @@ export class TeaClinicaComponent implements OnInit {
   }
 
   navigateTo(route: string): void {
-    console.log(`Navigate to ${route}`);
-    // Implement navigation logic here
+    this.router.navigate([route]);
   }
 
   getStatusLabel(status: SlotStatus): string {

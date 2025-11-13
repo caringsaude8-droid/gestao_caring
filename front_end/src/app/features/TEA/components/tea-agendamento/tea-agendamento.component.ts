@@ -25,6 +25,7 @@ export class TeaAgendamentoComponent implements OnInit {
   filtroProfissional: string = '';
   filtroDataInicio: string = '';
   filtroDataFim: string = '';
+  filtroStatus: string = '';
   viewMode: 'list' | 'grid' = 'list';
   diaSelecionado: string = '';
 
@@ -183,7 +184,8 @@ export class TeaAgendamentoComponent implements OnInit {
     return this.slots.filter(s =>
       s.data === dia &&
       (!this.filtroEspecialidade || s.especialidadeId === this.filtroEspecialidade) &&
-      (!this.filtroProfissional || s.profissionalId === this.filtroProfissional)
+      (!this.filtroProfissional || s.profissionalId === this.filtroProfissional) &&
+      (!this.filtroStatus || s.status === this.filtroStatus)
     ).sort((a, b) => a.hora.localeCompare(b.hora));
   }
 
