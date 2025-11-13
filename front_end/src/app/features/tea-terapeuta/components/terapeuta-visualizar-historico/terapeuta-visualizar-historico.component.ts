@@ -5,13 +5,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TeaAgendaService, SlotHorario } from '../../../TEA/services/tea-agenda.service';
 
 @Component({
-  selector: 'app-tea-terapeuta-visualizar-historico',
+  selector: 'app-terapeuta-visualizar-historico',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './tea-visualizar-historico.component.html',
-  styleUrls: ['./tea-visualizar-historico.component.css']
+  templateUrl: './terapeuta-visualizar-historico.component.html',
+  styleUrls: ['./terapeuta-visualizar-historico.component.css']
 })
-export class TeaTerapeutaVisualizarHistoricoComponent implements OnInit {
+export class TerapeutaVisualizarHistoricoComponent implements OnInit {
   slot?: SlotHorario;
   profissionalSelecionado: string = '';
   dataSelecionada: string = new Date().toISOString().slice(0,10);
@@ -43,7 +43,6 @@ export class TeaTerapeutaVisualizarHistoricoComponent implements OnInit {
 
   get horaIntervalo(): string {
     const h = this.slot?.hora || '11:10';
-    // mock de duração 50min
     const [HH, MM] = h.split(':').map(Number);
     const end = new Date(0,0,0,HH,MM + 50);
     const endStr = `${String(end.getHours()).padStart(2,'0')}:${String(end.getMinutes()).padStart(2,'0')}`;

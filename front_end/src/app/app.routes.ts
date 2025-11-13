@@ -94,7 +94,8 @@ export const routes: Routes = [
       { path: 'painel-atendimento', component: TeaPainelAtendimentoComponent },
       { path: 'prontuario-eletronico', component: TeaProntuarioListaComponent },
       { path: 'prontuario-eletronico-visualizacao/:id', component: TeaProntuarioEletronicoVisualizacaoComponent },
-      { path: 'prontuario-eletronico/:id', component: TeaProntuarioEletronicoComponent }
+      { path: 'prontuario-eletronico/:id', component: TeaProntuarioEletronicoComponent },
+      { path: 'terapeuta', loadChildren: () => import('./features/tea-terapeuta/tea-terapeuta.module').then(m => m.TeaTerapeutaModule) }
     ]
   },
   { path: '**', redirectTo: '/home' }

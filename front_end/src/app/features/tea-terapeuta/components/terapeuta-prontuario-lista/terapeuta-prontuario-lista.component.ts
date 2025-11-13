@@ -13,13 +13,13 @@ interface Patient {
 }
 
 @Component({
-  selector: 'app-tea-prontuario-lista',
+  selector: 'app-terapeuta-prontuario-lista',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './tea-prontuario-lista.component.html',
-  styleUrls: ['./tea-prontuario-lista.component.css']
+  templateUrl: './terapeuta-prontuario-lista.component.html',
+  styleUrls: ['./terapeuta-prontuario-lista.component.css']
 })
-export class TeaProntuarioListaComponent implements OnInit {
+export class TerapeutaProntuarioListaComponent implements OnInit {
   pageTitle = 'Prontuário Eletrônico — Selecionar Paciente';
   searchTerm = '';
   patients: Patient[] = [
@@ -28,7 +28,6 @@ export class TeaProntuarioListaComponent implements OnInit {
     { id: 3, nome: 'Pedro Rodrigues', matriculaConvenio: '5010150121590370', convenio: 'PARTICULAR', situacao: 'Inativo' }
   ];
   filtered: Patient[] = [...this.patients];
-  // Paginação
   pageSize = 10;
   currentPage = 1;
   totalPages = 1;
@@ -50,13 +49,11 @@ export class TeaProntuarioListaComponent implements OnInit {
   }
 
   abrirProntuario(p: Patient) {
-    // Se a lista foi acessada via menu Profissionais, abrir modo EDITÁVEL
-    if (this.router.url.includes('/tea/profissionais-prontuario')) {
-      this.router.navigate(['/tea/prontuario-eletronico', p.id]);
-    } else {
-      // Caso contrário, abrir modo de VISUALIZAÇÃO
-      this.router.navigate(['/tea/prontuario-eletronico-visualizacao', p.id]);
-    }
+    this.router.navigate(['/tea/terapeuta/prontuario-eletronico', p.id]);
+  }
+
+  visualizarHistorico(p: Patient) {
+    this.router.navigate(['/tea/terapeuta/visualizar-historico', p.id]);
   }
 
   private updatePagination() {

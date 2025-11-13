@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-tea-terapeuta-home',
+  selector: 'app-terapeuta-home',
   template: `
     <div class="tea-page-container">
       <div class="page-header">
@@ -14,4 +14,4 @@ import { Component } from '@angular/core';
     </div>
   `
 })
-export class TeaTerapeutaHomeComponent {}
+export class TerapeutaHomeComponent {}

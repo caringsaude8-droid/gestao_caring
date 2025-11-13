@@ -18,7 +18,7 @@ interface MenuItem {
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './tea-terapeuta-layout.html',
-  styleUrl: './tea-terapeuta-layout.css'
+  styleUrls: ['./tea-terapeuta-layout.css']
 })
 export class TeaTerapeutaLayoutComponent implements OnInit, OnDestroy {
   collapsed = false;

@@ -21,13 +21,13 @@ interface CounterCard {
 }
 
 @Component({
-  selector: 'app-tea-terapeuta-prontuario-eletronico',
+  selector: 'app-terapeuta-prontuario-eletronico',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './tea-prontuario-eletronico.component.html',
-  styleUrl: './tea-prontuario-eletronico.component.css'
+  templateUrl: './terapeuta-prontuario-eletronico.component.html',
+  styleUrls: ['./terapeuta-prontuario-eletronico.component.css']
 })
-export class TeaTerapeutaProntuarioEletronicoComponent implements OnInit {
+export class TerapeutaProntuarioEletronicoComponent implements OnInit {
   pageTitle = 'Prontuário Eletrônico';
   patientId: string | null = null;
 

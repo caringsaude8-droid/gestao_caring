@@ -1,16 +1,16 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { TeaTerapeutaHomeComponent } from './pages/home/home.component';
-import { TeaAgendaProfissionaisComponent } from './components/tea-agenda-profissionais/tea-agenda-profissionais.component';
-import { TeaProfissionalComponent } from './components/tea-profissional/tea-profissional.component';
-import { TeaTerapeutaVisualizarHistoricoComponent } from './components/tea-visualizar-historico/tea-visualizar-historico.component';
+import { TerapeutaHomeComponent } from './pages/home/home.component';
+import { TerapeutaAgendaProfissionaisComponent } from './components/terapeuta-agenda-profissionais/terapeuta-agenda-profissionais.component';
+import { TerapeutaProfissionalComponent } from './components/terapeuta-profissional/terapeuta-profissional.component';
+import { TerapeutaVisualizarHistoricoComponent } from './components/terapeuta-visualizar-historico/terapeuta-visualizar-historico.component';
 
 const routes: Routes = [
-  { path: '', component: TeaTerapeutaHomeComponent },
-  { path: 'home', component: TeaTerapeutaHomeComponent },
-  { path: 'agenda', component: TeaAgendaProfissionaisComponent },
-  { path: 'profissional', component: TeaProfissionalComponent },
-  { path: 'visualizar-historico/:id', component: TeaTerapeutaVisualizarHistoricoComponent }
+  { path: '', component: TerapeutaHomeComponent },
+  { path: 'home', component: TerapeutaHomeComponent },
+  { path: 'agenda', component: TerapeutaAgendaProfissionaisComponent },
+  { path: 'profissional', component: TerapeutaProfissionalComponent },
+  { path: 'visualizar-historico/:id', component: TerapeutaVisualizarHistoricoComponent }
 ];
 
 @NgModule({

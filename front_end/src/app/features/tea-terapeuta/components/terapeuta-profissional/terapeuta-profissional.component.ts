@@ -5,13 +5,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TeaAgendaService, Profissional, SlotHorario } from '../../../TEA/services/tea-agenda.service';
 
 @Component({
-  selector: 'app-tea-profissional',
+  selector: 'app-terapeuta-profissional',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './tea-profissional.component.html',
-  styleUrls: ['./tea-profissional.component.css']
+  templateUrl: './terapeuta-profissional.component.html',
+  styleUrls: ['./terapeuta-profissional.component.css']
 })
-export class TeaProfissionalComponent implements OnInit {
+export class TerapeutaProfissionalComponent implements OnInit {
   profissionais: Profissional[] = [];
   profissionalId: string = '';
   hojeISO: string = new Date().toISOString().slice(0,10);
@@ -67,7 +67,7 @@ export class TeaProfissionalComponent implements OnInit {
   }
 
   visualizarHistorico(slot: SlotHorario) {
-    this.router.navigate(['/tea/visualizar-historico', slot.id]);
+    this.router.navigate(['/tea/terapeuta/visualizar-historico', slot.id]);
   }
 
   atender(slot: SlotHorario) {

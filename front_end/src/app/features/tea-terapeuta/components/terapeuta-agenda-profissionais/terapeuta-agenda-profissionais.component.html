@@ -1,0 +1,35 @@
+<div class="agenda-container">
+  <h1 class="page-title">Agenda por Profissionais</h1>
+
+  <div class="filters">
+    <div class="filter-group">
+      <label>Especialidade</label>
+      <select [(ngModel)]="filtroEspecialidade" (change)="buscar()">
+        <option value="">Todas</option>
+        <option *ngFor="let e of especialidades" [value]="e.id">{{ e.nome }}</option>
+      </select>
+    </div>
+    <div class="tabs">
+      <button class="tab" [class.active]="topTab === 'evolucoes'" (click)="setTopTab('evolucoes')">Evoluções</button>
+      <button class="tab" [class.active]="topTab === 'devolutivas'" (click)="setTopTab('devolutivas')">Devolutivas</button>
+    </div>
+    <div class="inner-tabs">
+      <button class="tab" [class.active]="statusTab === 'pendentes'" (click)="setStatusTab('pendentes')">Pendentes</button>
+      <button class="tab" [class.active]="statusTab === 'evoluidos'" (click)="setStatusTab('evoluidos')">Evoluídos</button>
+      <button class="tab" [class.active]="statusTab === 'ambos'" (click)="setStatusTab('ambos')">Ambos</button>
+    </div>
+  </div>
+
+  <div class="list">
+    <div *ngFor="let slot of exibicaoSlots" class="slot-card">
+      <div class="left">
+        <div class="patient">{{ slot.paciente || '—' }}</div>
+        <div class="meta">{{ slot.data | date:'dd/MM/yyyy' }} {{ slot.hora }} — {{ getEspecialidadeNome(slot.especialidadeId) }}</div>
+      </div>
+      <div class="right">
+        <button (click)="visualizarHistorico(slot)">Visualizar Histórico</button>
+        <button class="primary" (click)="atender(slot)">Atender</button>
+      </div>
+    </div>
+  </div>
+</div>

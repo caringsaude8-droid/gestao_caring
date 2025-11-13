@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { TeaTerapeutaLayoutComponent } from '../../layouts/tea-terapeuta-layout/tea-terapeuta-layout';
-import { TeaTerapeutaHomeComponent } from './pages/home/home.component';
-import { TeaAgendaProfissionaisComponent } from './components/tea-agenda-profissionais/tea-agenda-profissionais.component';
-import { TeaProfissionalComponent } from './components/tea-profissional/tea-profissional.component';
-import { TeaTerapeutaVisualizarHistoricoComponent } from './components/tea-visualizar-historico/tea-visualizar-historico.component';
-import { TeaTerapeutaCalendarioPorProfissionaisComponent } from './components/tea-calendario-por-profissionais/tea-calendario-por-profissionais.component';
-import { TeaTerapeutaProntuarioEletronicoComponent } from './components/tea-prontuario-eletronico/tea-prontuario-eletronico.component';
-import { TeaTerapeutaProntuarioListaComponent } from './components/tea-prontuario-lista/tea-prontuario-lista.component';
+import { TerapeutaHomeComponent } from './pages/home/home.component';
+import { TerapeutaAgendaProfissionaisComponent } from './components/terapeuta-agenda-profissionais/terapeuta-agenda-profissionais.component';
+import { TerapeutaProfissionalComponent } from './components/terapeuta-profissional/terapeuta-profissional.component';
+import { TerapeutaVisualizarHistoricoComponent } from './components/terapeuta-visualizar-historico/terapeuta-visualizar-historico.component';
+import { TerapeutaCalendarioPorProfissionaisComponent } from './components/terapeuta-calendario-por-profissionais/terapeuta-calendario-por-profissionais.component';
+import { TerapeutaProntuarioEletronicoComponent } from './components/terapeuta-prontuario-eletronico/terapeuta-prontuario-eletronico.component';
+import { TerapeutaProntuarioListaComponent } from './components/terapeuta-prontuario-lista/terapeuta-prontuario-lista.component';
 
 @NgModule({
   imports: [
@@ -20,23 +20,23 @@ import { TeaTerapeutaProntuarioListaComponent } from './components/tea-prontuari
         path: '',
         component: TeaTerapeutaLayoutComponent,
         children: [
-          { path: '', component: TeaTerapeutaHomeComponent },
-          { path: 'home', component: TeaTerapeutaHomeComponent },
-          { path: 'agenda', component: TeaAgendaProfissionaisComponent },
-          { path: 'profissional', component: TeaProfissionalComponent },
-          { path: 'visualizar-historico/:id', component: TeaTerapeutaVisualizarHistoricoComponent },
-          { path: 'calendario-por-profissionais', component: TeaTerapeutaCalendarioPorProfissionaisComponent },
-          { path: 'prontuario-eletronico/:id', component: TeaTerapeutaProntuarioEletronicoComponent },
-          { path: 'pacientes', component: TeaTerapeutaProntuarioListaComponent },
+          { path: '', component: TerapeutaHomeComponent },
+          { path: 'home', component: TerapeutaHomeComponent },
+          { path: 'agenda', component: TerapeutaAgendaProfissionaisComponent },
+          { path: 'profissional', component: TerapeutaProfissionalComponent },
+          { path: 'visualizar-historico/:id', component: TerapeutaVisualizarHistoricoComponent },
+          { path: 'calendario-por-profissionais', component: TerapeutaCalendarioPorProfissionaisComponent },
+          { path: 'prontuario-eletronico/:id', component: TerapeutaProntuarioEletronicoComponent },
+          { path: 'pacientes', component: TerapeutaProntuarioListaComponent },
         ]
       }
     ]),
-    TeaTerapeutaHomeComponent,
+    TerapeutaHomeComponent,
     TeaTerapeutaLayoutComponent,
-    TeaTerapeutaCalendarioPorProfissionaisComponent,
-    TeaTerapeutaProntuarioEletronicoComponent,
-    TeaTerapeutaVisualizarHistoricoComponent,
-    TeaTerapeutaProntuarioListaComponent,
+    TerapeutaCalendarioPorProfissionaisComponent,
+    TerapeutaProntuarioEletronicoComponent,
+    TerapeutaVisualizarHistoricoComponent,
+    TerapeutaProntuarioListaComponent,
   ],
 })
 export class TeaTerapeutaModule {}

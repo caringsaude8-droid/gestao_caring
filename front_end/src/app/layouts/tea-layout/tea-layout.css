@@ -432,6 +432,11 @@
   margin-left: 80px !important;
 }
 
+/* Quando o módulo TEA Terapeuta estiver ativo, não reservar espaço para o menu TEA */
+.tea-main-content.no-tea-sidebar {
+  margin-left: 0 !important;
+}
+
 /* Icons - Reusando os existentes e adicionando brain */
 .icon-brain:before { content: "🧠"; }
 .icon-home:before { content: "🏠"; }

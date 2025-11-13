@@ -197,6 +197,11 @@ export class TeaLayoutComponent implements OnInit, OnDestroy {
       });
   }
 
+  // Oculta o menu TEA quando estiver no módulo TEA Terapeuta
+  isTerapeutaModuleActive(): boolean {
+    return this.currentRoute.startsWith('/tea/terapeuta');
+  }
+
 
   toggleCollapsed() {
     this.collapsed = !this.collapsed;

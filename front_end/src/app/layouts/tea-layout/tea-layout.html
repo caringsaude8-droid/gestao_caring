@@ -1,5 +1,5 @@
 <div class="tea-layout">
-  <div class="tea-sidebar" [class.collapsed]="collapsed">
+  <div class="tea-sidebar" [class.collapsed]="collapsed" *ngIf="!isTerapeutaModuleActive()">
     <!-- Header -->
     <div class="sidebar-header">
       <div class="logo-section" *ngIf="!collapsed">
@@ -86,7 +86,7 @@
   </div>
 
   <!-- Main Content -->
-  <div class="tea-main-content">
+  <div class="tea-main-content" [ngClass]="{ 'sidebar-collapsed': collapsed, 'no-tea-sidebar': isTerapeutaModuleActive() }">
     <router-outlet></router-outlet>
   </div>
 </div>

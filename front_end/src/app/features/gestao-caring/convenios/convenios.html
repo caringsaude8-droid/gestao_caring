@@ -83,6 +83,8 @@
         <div class="detail-item"><span class="detail-label">Tabela:</span> <span>{{ conv.tabelaConvenio }}</span></div>
         <div class="detail-item"><span class="detail-label">Cobrança:</span> <span>{{ conv.tipoCobranca }}</span></div>
         <div class="detail-item"><span class="detail-label">Validade:</span> <span>{{ conv.validade ? (conv.validade | date:'dd/MM/yyyy') : '—' }}</span></div>
+        <div class="detail-item"><span class="detail-label">CNPJ:</span> <span>{{ conv.cnpj || '—' }}</span></div>
+        <div class="detail-item"><span class="detail-label">Data de Faturamento:</span> <span>{{ conv.dataFaturamento ? (conv.dataFaturamento | date:'dd/MM/yyyy') : '—' }}</span></div>
       </div>
     </div>
   </div>
@@ -132,6 +134,16 @@
               <option [ngValue]="'ativo'">Ativo</option>
               <option [ngValue]="'inativo'">Inativo</option>
             </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cnpj" class="form-label">CNPJ</label>
+            <ui-input id="cnpj" type="text" [(ngModel)]="newConvenio.cnpj" name="cnpj" placeholder="Ex: 12.345.678/0001-99"></ui-input>
+          </div>
+          <div class="form-group">
+            <label for="dataFaturamento" class="form-label">Data de Faturamento</label>
+            <input id="dataFaturamento" type="date" [(ngModel)]="newConvenio.dataFaturamento" name="dataFaturamento" class="form-input" />
           </div>
         </div>
         <div class="form-row">

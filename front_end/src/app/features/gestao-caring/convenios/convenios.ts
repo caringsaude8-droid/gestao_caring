@@ -7,9 +7,11 @@ export interface Convenio {
   id: string;
   nome: string;
   codigo?: string;
+  cnpj?: string;
   tabelaConvenio: 'Padrão' | 'Especial';
   tipoCobranca: 'Plano de Saúde' | 'Particular';
   validade?: string;
+  dataFaturamento?: string;
   status: 'ativo' | 'inativo';
   observacoes?: string;
 }
@@ -91,9 +93,11 @@ export class ConveniosComponent implements OnInit {
   newConvenio: Partial<Convenio> = {
     nome: '',
     codigo: '',
+    cnpj: '',
     tabelaConvenio: 'Padrão',
     tipoCobranca: 'Plano de Saúde',
     validade: '',
+    dataFaturamento: '',
     status: 'ativo',
     observacoes: ''
   };
@@ -104,9 +108,11 @@ export class ConveniosComponent implements OnInit {
       id: Date.now().toString(),
       nome: this.newConvenio.nome!,
       codigo: this.newConvenio.codigo || '',
+      cnpj: this.newConvenio.cnpj || '',
       tabelaConvenio: (this.newConvenio.tabelaConvenio || 'Padrão') as any,
       tipoCobranca: (this.newConvenio.tipoCobranca || 'Plano de Saúde') as any,
       validade: this.newConvenio.validade || '',
+      dataFaturamento: this.newConvenio.dataFaturamento || '',
       status: (this.newConvenio.status || 'ativo') as any,
       observacoes: this.newConvenio.observacoes || ''
     };
@@ -127,9 +133,11 @@ export class ConveniosComponent implements OnInit {
     this.newConvenio = {
       nome: '',
       codigo: '',
+      cnpj: '',
       tabelaConvenio: 'Padrão',
       tipoCobranca: 'Plano de Saúde',
       validade: '',
+      dataFaturamento: '',
       status: 'ativo',
       observacoes: ''
     };
