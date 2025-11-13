@@ -77,6 +77,12 @@ export class TerapeutaAgendaProfissionaisComponent implements OnInit {
     alert(`Atender: ${slot.paciente || 'Paciente'} às ${slot.hora} com ${this.getProfissionalNome(slot.profissionalId)}`);
   }
 
+  marcarEvoluido(slot: SlotHorario) {
+    this.agendaService.setStatus(slot.id, 'confirmado').subscribe(() => {
+      this.buscar();
+    });
+  }
+
   mostrar(slot: SlotHorario) {
     // Placeholder para mostrar detalhes
     alert(`Detalhes\nPaciente: ${slot.paciente || '—'}\nProfissional: ${this.getProfissionalNome(slot.profissionalId)}\nEspecialidade: ${this.getEspecialidadeNome(slot.especialidadeId)}\nHora: ${slot.hora}`);
