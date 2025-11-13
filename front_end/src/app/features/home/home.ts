@@ -50,6 +50,14 @@ export class HomeComponent implements OnInit {
       clickable: true
     },
     {
+      title: 'TEA Terapeuta',
+      description: 'Módulo do terapeuta (agenda, pacientes, prontuário)',
+      route: '/tea/terapeuta',
+      icon: 'users',
+      color: 'purple',
+      clickable: true
+    },
+    {
       title: 'Usuários',
       description: 'Gestão de usuários do sistema',
       route: '/usuarios',

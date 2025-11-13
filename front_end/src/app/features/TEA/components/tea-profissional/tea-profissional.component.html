@@ -1,0 +1,43 @@
+<div class="prof-container">
+  <h1 class="title">Profissional TEA</h1>
+
+  <div class="filters">
+    <label>Profissional</label>
+    <select [(ngModel)]="profissionalId" (change)="onProfChange()">
+      <option *ngFor="let p of profissionais" [value]="p.id">{{ p.nome }}</option>
+    </select>
+    <div class="summary">
+      <span class="badge">Especialidade: {{ nomeEspecialidade }}</span>
+      <span class="badge">Pendentes: {{ pendentes.length }}</span>
+      <span class="badge">Evoluídos: {{ evoluidos.length }}</span>
+    </div>
+  </div>
+
+  <div class="list-section">
+    <h2>Pendentes</h2>
+    <div *ngIf="pendentes.length === 0" class="empty">Sem atendimentos pendentes hoje.</div>
+    <div *ngFor="let slot of pendentes" class="card">
+      <div class="left">
+        <div class="patient orange">{{ slot.paciente || 'Paciente não informado' }}</div>
+        <div class="meta">{{ slot.data | date:'dd/MM/yyyy' }} {{ slot.hora }} — {{ getEspNome(slot.especialidadeId) }}</div>
+      </div>
+      <div class="right">
+        <button class="primary" (click)="atender(slot)">Atender</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="list-section">
+    <h2>Evoluídos</h2>
+    <div *ngIf="evoluidos.length === 0" class="empty">Sem evoluções confirmadas hoje.</div>
+    <div *ngFor="let slot of evoluidos" class="card">
+      <div class="left">
+        <div class="patient green">{{ slot.paciente || 'Paciente não informado' }}</div>
+        <div class="meta">{{ slot.data | date:'dd/MM/yyyy' }} {{ slot.hora }} — {{ getEspNome(slot.especialidadeId) }}</div>
+      </div>
+      <div class="right">
+        <button class="secondary" (click)="visualizarHistorico(slot)">Visualizar Histórico</button>
+      </div>
+    </div>
+  </div>
+</div>

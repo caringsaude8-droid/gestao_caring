@@ -1,0 +1,36 @@
+<div class="tea-terapeuta-pacientes-container">
+  <div class="header">
+    <h2>Pacientes</h2>
+    <div class="actions">
+      <input type="text" placeholder="Pesquisar por nome ou responsável" (input)="onSearch($event.target.value)" />
+    </div>
+  </div>
+
+  <div class="card">
+    <table class="patients-table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Nascimento</th>
+          <th>Responsável</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of filteredPatients">
+          <td>{{ p.name }}</td>
+          <td>{{ p.birthDate | date: 'dd/MM/yyyy' }}</td>
+          <td>{{ p.responsible }}</td>
+          <td>
+            <span class="status" [class.active]="p.status === 'Ativo'" [class.inactive]="p.status !== 'Ativo'">{{ p.status }}</span>
+          </td>
+          <td>
+            <button class="btn primary" (click)="abrirProntuario(p.id)">Prontuário</button>
+            <button class="btn" (click)="visualizarHistorico(p.id)">Histórico</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

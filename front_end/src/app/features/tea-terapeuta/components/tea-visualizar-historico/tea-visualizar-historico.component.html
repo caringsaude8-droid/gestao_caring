@@ -1,0 +1,70 @@
+<div class="historico-container">
+  <h1 class="page-title">Criar evolução</h1>
+
+  <!-- Cabeçalho paciente -->
+  <div class="paciente-header">
+    <div class="foto"></div>
+    <div class="dados">
+      <div class="linha"><strong>Nome:</strong> {{ pacienteNome }}</div>
+      <div class="linha"><strong>NR Atendimentos:</strong> 602</div>
+      <div class="linha"><strong>Prontuário:</strong> 44</div>
+      <div class="linha"><strong>Início do tratamento em:</strong> 17/10/2023</div>
+      <div class="linha"><strong>Convênio</strong> PARTICULAR</div>
+    </div>
+    <div class="acoes">
+      <button class="blue-btn" (click)="visualizarCadastro()">VISUALIZAR CADASTRO</button>
+      <button class="blue-btn" (click)="anexos()">ANEXOS</button>
+    </div>
+  </div>
+
+  <!-- Tabs de formulários -->
+  <div class="tabs">
+    <button class="tab active">Formulários</button>
+    <button class="tab">Todos</button>
+  </div>
+
+  <!-- Filtros profissional e data -->
+  <div class="filtros">
+    <label>Profissional</label>
+    <select [(ngModel)]="profissionalSelecionado">
+      <option value="">Selecione uma opção...</option>
+      <option [value]="slot?.profissionalId">{{ profissionalNome }}</option>
+    </select>
+
+    <label>Data</label>
+    <input type="date" [(ngModel)]="dataSelecionada" />
+  </div>
+
+  <!-- Evolução -->
+  <div class="evolucao-card">
+    <div class="date-badge">
+      <div class="day">{{ (slot?.data | date:'dd') || (dataSelecionada | date:'dd') }}</div>
+      <div class="month">{{ (slot?.data | date:'MMM') || (dataSelecionada | date:'MMM') }}</div>
+      <div class="year">{{ (slot?.data | date:'yyyy') || (dataSelecionada | date:'yyyy') }}</div>
+    </div>
+    <div class="evolucao-content">
+      <div class="top-row">
+        <div class="time">{{ horaIntervalo }}</div>
+        <div class="actions">
+          <button class="blue-btn" (click)="imprimir()">Imprimir</button>
+          <button class="red-btn" (click)="remover()">Remover</button>
+        </div>
+      </div>
+      <h2 class="section-title">Evoluções</h2>
+      <div class="patient-line">Paciente: {{ pacienteNome }}</div>
+      <div class="info-line">Convênio: PARTICULAR</div>
+      <div class="info-line">Procedimento: {{ especialidadeNome }}</div>
+      <div class="by-line">Por: {{ profissionalNome }}</div>
+
+      <div class="evolucao-item">
+        <div class="item-title">Evolução {{ especialidadeNome }}</div>
+        <button class="yellow-btn">Editar</button>
+      </div>
+
+      <p>Atendimento suspenso.</p>
+
+      <div class="signature">Assinatura do profissional</div>
+      <div class="notice">Nenhum prontuário assinado digitalmente encontrado para este atendimento.</div>
+    </div>
+  </div>
+</div>
