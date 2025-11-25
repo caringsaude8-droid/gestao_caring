@@ -1,7 +1,7 @@
 <div class="agendamento-page">
   <header class="page-header">
     <h1>Agendamento</h1>
-    <p>Organize horários por especialidade e profissional</p>
+    <p>Organize horários por especialidade e terapeuta</p>
   </header>
 
   <div class="content-with-sidebar">
@@ -48,13 +48,13 @@
       </select>
     </div>
 
-    <div class="filter-card">
-      <label>Profissional</label>
-      <select [(ngModel)]="filtroProfissional" (change)="onPeriodoChange()">
-        <option value="">Todos</option>
-        <option *ngFor="let p of profissionaisFiltrados" [value]="p.id">{{p.nome}}</option>
-      </select>
-    </div>
+      <div class="filter-card">
+        <label>Terapeuta</label>
+        <select [(ngModel)]="filtroTerapeuta" (change)="onPeriodoChange()">
+          <option value="">Todos</option>
+          <option *ngFor="let p of terapeutasFiltrados" [value]="p.id">{{p.nome}}</option>
+        </select>
+      </div>
 
     <div class="filter-card">
       <label>Início</label>
@@ -115,7 +115,7 @@
           <td [title]="slot.paciente || 'Horário Livre'">{{ slot.paciente || 'Horário Livre' }}</td>
           <td>{{ getEspecialidadeNome(slot.especialidadeId) }}</td>
           <td>–</td>
-          <td>{{ getProfissionalNome(slot.profissionalId) }}</td>
+          <td>{{ getTerapeutaNome(slot.terapeutaId) }}</td>
           <td>
             <span class="status-badge"
                   [class.agendado]="slot.status==='agendado'"
@@ -156,22 +156,22 @@
           <button class="close-btn" (click)="fecharDetalhes()">✕</button>
         </div>
         <div class="details-grid">
-          <div><strong>Data:</strong> {{detalhesSlot?.data}}</div>
-          <div><strong>Hora:</strong> {{detalhesSlot?.hora}}</div>
-          <div><strong>Nome:</strong> {{detalhesSlot?.paciente || '—'}}</div>
+          <div><strong>Data:</strong> {{detalhesSlot.data}}</div>
+          <div><strong>Hora:</strong> {{detalhesSlot.hora}}</div>
+          <div><strong>Nome:</strong> {{detalhesSlot.paciente || '—'}}</div>
           <div><strong>Celular:</strong> {{'—'}}</div>
           <div><strong>Idade:</strong> {{'—'}}</div>
-          <div><strong>Procedimento:</strong> {{ getEspecialidadeNome(detalhesSlot?.especialidadeId || '') }}</div>
+          <div><strong>Procedimento:</strong> {{ getEspecialidadeNome(detalhesSlot.especialidadeId || '') }}</div>
           <div><strong>Local:</strong> {{'—'}}</div>
           <div><strong>Sala:</strong> {{'—'}}</div>
-          <div><strong>Por:</strong> {{ getProfissionalNome(detalhesSlot?.profissionalId || '') }}</div>
-          <div><strong>Status:</strong> <span class="status-badge" [class]="'status-badge ' + detalhesSlot?.status">{{detalhesSlot?.status}}</span></div>
-          <div *ngIf="detalhesSlot?.status==='cancelado'"><strong>Cancelado em:</strong> {{detalhesSlot?.canceladoEm}}</div>
+          <div><strong>Por:</strong> {{ getTerapeutaNome(detalhesSlot.terapeutaId || '') }}</div>
+          <div><strong>Status:</strong> <span class="status-badge" [class]="'status-badge ' + detalhesSlot.status">{{detalhesSlot.status}}</span></div>
+          <div *ngIf="detalhesSlot.status==='cancelado'"><strong>Cancelado em:</strong> {{detalhesSlot.canceladoEm}}</div>
         </div>
         <div class="details-actions">
           <button class="status-action editar" (click)="openMarcar(detalhesSlot!)">Editar</button>
-          <button class="status-action cancelar" *ngIf="detalhesSlot?.status !== 'cancelado'" (click)="onStatusChange(detalhesSlot!, 'cancelado')">Cancelar</button>
-          <button class="status-action faltou" *ngIf="detalhesSlot?.status !== 'faltou'" (click)="onStatusChange(detalhesSlot!, 'faltou')">Faltou</button>
+          <button class="status-action cancelar" *ngIf="detalhesSlot.status !== 'cancelado'" (click)="onStatusChange(detalhesSlot!, 'cancelado')">Cancelar</button>
+          <button class="status-action faltou" *ngIf="detalhesSlot.status !== 'faltou'" (click)="onStatusChange(detalhesSlot!, 'faltou')">Faltou</button>
           <button class="status-action liberar" (click)="liberar(detalhesSlot!)">Liberar</button>
           <button class="status-action" (click)="fecharDetalhes()">Fechar</button>
         </div>
@@ -200,10 +200,9 @@
     [show]="showFormModal"
     [dia]="diaSelecionado"
     [horas]="horasVisiveis"
-    [profissionais]="profissionaisFiltrados"
+    [terapeutas]="terapeutasFiltrados"
     [especialidadeId]="filtroEspecialidade"
-    [slot]="slotSelecionado ? { hora: slotSelecionado.hora, profissionalId: slotSelecionado.profissionalId, especialidadeId: slotSelecionado.especialidadeId } : null"
+    [slot]="slotSelecionado ? { hora: slotSelecionado.hora, terapeutaId: slotSelecionado.terapeutaId, especialidadeId: slotSelecionado.especialidadeId } : null"
     (close)="closeForm()"
-    (save)="saveAgendamento($event)"
-  ></app-tea-agendamento-form-modal>
-</div>
+    (save)="saveAgendamento($event)">
+  </app-tea-agendamento-form-modal>

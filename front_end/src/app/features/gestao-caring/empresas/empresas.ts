@@ -16,7 +16,7 @@ export interface Empresa {
   selector: 'app-empresas',
   imports: [CommonModule, FormsModule],
   templateUrl: './empresas.html',
-  styleUrl: './empresas.css',
+  styleUrls: ['./empresas.css'],
 })
 export class EmpresasComponent {
   loading = false;

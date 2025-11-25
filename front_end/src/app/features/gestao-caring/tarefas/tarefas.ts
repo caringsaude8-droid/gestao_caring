@@ -38,7 +38,7 @@ export interface Cliente {
   standalone: true,
   imports: [CommonModule, FormsModule, InputComponent],
   templateUrl: './tarefas.html',
-  styleUrl: './tarefas.css',
+  styleUrls: ['./tarefas.css'],
 })
 export class TarefasComponent implements OnInit {
   // Data properties

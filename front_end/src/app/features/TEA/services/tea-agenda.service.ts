@@ -18,7 +18,7 @@ export interface Especialidade {
   nome: string;
 }
 
-export interface Profissional {
+export interface Terapeuta {
   id: string;
   nome: string;
   especialidadeId: string;
@@ -28,7 +28,7 @@ export interface SlotHorario {
   id: string;
   data: string; // yyyy-mm-dd
   hora: string; // HH:MM
-  profissionalId: string;
+  terapeutaId: string;
   especialidadeId: string;
   status: SlotStatus;
   paciente?: string;
@@ -47,7 +47,7 @@ export class TeaAgendaService {
     { id: 'psico', nome: 'Psicologia' }
   ];
 
-  readonly profissionais: Profissional[] = [
+  readonly terapeutas: Terapeuta[] = [
     { id: 'p1', nome: 'Maria Santos', especialidadeId: 'aba' },
     { id: 'p2', nome: 'Pedro Lima', especialidadeId: 'fono' },
     { id: 'p3', nome: 'Carla Souza', especialidadeId: 'to' },
@@ -71,7 +71,7 @@ export class TeaAgendaService {
     const adicionarDias = (d: number) => new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() + d);
     const formatDate = (dt: Date) => dt.toISOString().slice(0, 10);
 
-    const profs = this.profissionais;
+    const profs = this.terapeutas;
     let idCounter = 1;
     const generated: SlotHorario[] = [];
     for (let d = 0; d < 7; d++) {
@@ -82,7 +82,7 @@ export class TeaAgendaService {
           id: 's' + idCounter++,
           data,
           hora: h,
-          profissionalId: prof.id,
+          terapeutaId: prof.id,
           especialidadeId: prof.especialidadeId,
           status: 'agendado',
           paciente: 'Paciente Teste',
@@ -97,8 +97,8 @@ export class TeaAgendaService {
     return this.slotsSubject.getValue();
   }
 
-  getProfissionalNome(id: string): string {
-    return this.profissionais.find(p => p.id === id)?.nome || '';
+  getTerapeutaNome(id: string): string {
+    return this.terapeutas.find(p => p.id === id)?.nome || '';
   }
 
   getEspecialidadeNome(id: string): string {
@@ -159,7 +159,7 @@ export class TeaAgendaService {
           .map(slot => ({
             id: slot.id,
             patientName: slot.paciente || 'N/A',
-            therapist: this.getProfissionalNome(slot.profissionalId),
+            therapist: this.getTerapeutaNome(slot.terapeutaId),
             type: this.getEspecialidadeNome(slot.especialidadeId),
             time: slot.hora,
             status: slot.status

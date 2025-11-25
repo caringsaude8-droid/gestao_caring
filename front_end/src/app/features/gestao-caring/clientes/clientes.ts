@@ -26,7 +26,7 @@ export interface Cliente {
   standalone: true,
   imports: [CommonModule, FormsModule, InputComponent],
   templateUrl: './clientes.html',
-  styleUrl: './clientes.css',
+  styleUrls: ['./clientes.css'],
 })
 export class ClientesComponent implements OnInit {
   clientes: Cliente[] = [];

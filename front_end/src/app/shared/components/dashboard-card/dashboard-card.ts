@@ -14,7 +14,7 @@ type DashboardCardVariant = 'default' | 'red' | 'teal';
   standalone: true,
   imports: [CommonModule, CardComponent, CardHeaderComponent, CardTitleComponent, CardContentComponent],
   templateUrl: './dashboard-card.html',
-  styleUrl: './dashboard-card.css'
+  styleUrls: ['./dashboard-card.css']
 })
 export class DashboardCardComponent {
   @Input() title: string = '';

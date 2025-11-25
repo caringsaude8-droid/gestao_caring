@@ -10,7 +10,7 @@ interface Badge {
 
 interface Appointment {
   tipo: string;
-  profissional: string;
+  terapeuta: string;
   dataHora: string;
 }
 
@@ -25,7 +25,7 @@ interface CounterCard {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './tea-prontuario-eletronico.component.html',
-  styleUrl: './tea-prontuario-eletronico.component.css'
+  styleUrls: ['./tea-prontuario-eletronico.component.css']
 })
 export class TeaProntuarioEletronicoComponent implements OnInit {
   pageTitle = 'Prontuário Eletrônico';
@@ -50,8 +50,8 @@ export class TeaProntuarioEletronicoComponent implements OnInit {
   activeTab = this.tabs[0];
 
   futurosAgendamentos: Appointment[] = [
-    { tipo: 'Consulta', profissional: 'Marina Dias', dataHora: '19/11/2022 às 15:00' },
-    { tipo: 'Procedimento', profissional: 'Marina Dias', dataHora: '19/11/2022 às 16:00' }
+    { tipo: 'Consulta', terapeuta: 'Marina Dias', dataHora: '19/11/2022 às 15:00' },
+    { tipo: 'Procedimento', terapeuta: 'Marina Dias', dataHora: '19/11/2022 às 16:00' }
   ];
 
   observacoes: string[] = [

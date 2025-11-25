@@ -1,0 +1,96 @@
+<div class="tea-page-container">
+  <!-- Header e controles superiores removidos conforme solicitado -->
+
+  <!-- coluna principal (sidebar mensal removida) -->
+  <div class="content-with-sidebar">
+    <div class="main-column">
+      <!-- Estatísticas no topo (igual ao mensal) -->
+      <div class="stats-section">
+        <div class="stats-grid">
+          <div class="stat-card stat-scheduled">
+            <div class="stat-icon"><i class="icon-calendar"></i></div>
+            <div class="stat-content">
+              <h3 class="stat-title">Agendadas</h3>
+              <p class="stat-value">{{getWeekStats().scheduled}}</p>
+            </div>
+          </div>
+          <div class="stat-card stat-completed">
+            <div class="stat-icon"><i class="icon-check"></i></div>
+            <div class="stat-content">
+              <h3 class="stat-title">Concluídas</h3>
+              <p class="stat-value">{{getWeekStats().completed}}</p>
+            </div>
+          </div>
+          <div class="stat-card stat-cancelled">
+            <div class="stat-icon"><i class="icon-x"></i></div>
+            <div class="stat-content">
+              <h3 class="stat-title">Canceladas</h3>
+              <p class="stat-value">{{getWeekStats().cancelled}}</p>
+            </div>
+          </div>
+          <div class="stat-card stat-no-show">
+            <div class="stat-icon"><i class="icon-alert"></i></div>
+            <div class="stat-content">
+              <h3 class="stat-title">Faltas</h3>
+              <p class="stat-value">{{getWeekStats().noShow}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visualização Completa removida: tabela de dia individual foi retirada -->
+
+      <p class="patient-label" *ngIf="selectedTerapeuta">Terapeuta: {{ selectedTerapeuta }}</p>
+
+    </div> <!-- /.main-column -->
+  </div> <!-- /.content-with-sidebar -->
+  
+  <!-- Controles da semana (mantidos) -->
+  <section class="controls-section controls-card">
+    <div class="left-controls">
+      <button type="button" class="week-btn" (click)="previousWeek()"> Anterior ←</button>
+      <button type="button" class="week-btn" (click)="nextWeek()">Próxima →</button>
+    </div>
+
+    <h3 class="section-title">Semanal</h3>
+
+    <div class="right-area">
+      <div class="right-controls"> 
+      </div>
+      <div class="header-actions">
+        <label class="status-filter-label">Filtrar Status</label>
+        <select class="status-filter-select" [(ngModel)]="filtroStatus" (ngModelChange)="onStatusFilterChange()">
+          <option value="todos">Todos</option>
+          <option value="agendado">Agendado</option>
+          <option value="confirmado">Confirmado</option>
+          <option value="cancelado">Cancelado</option>
+          <option value="faltou">Faltou</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tabela semanal ABAIXO do layout -->
+  <div class="weekly-table-wrapper">
+    <table class="weekly-table">
+      <thead class="weekly-header">
+        <tr>
+          <th class="time-col">Horário</th>
+          <th *ngFor="let day of weekDays" [class.current-day]="isToday(day.date)">{{ day.label }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let time of timeSlots">
+          <td class="time-col">{{ time }}</td>
+          <td *ngFor="let day of weekDays" [class.has-session]="getCellContent(day.date, time)" [class.current-day]="isToday(day.date)">
+            <ng-container *ngIf="getCellContent(day.date, time) as cell">
+              <div class="session-card">
+                <div class="session-title">{{ cell.patient }} - {{ cell.therapy }}</div>
+              </div>
+            </ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

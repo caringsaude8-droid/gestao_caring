@@ -35,7 +35,7 @@ tea-usuarios/
 - ✅ Cards estatísticos (Total, Ativos, Inativos)
 
 ### Perfis Disponíveis
-- **Terapeuta**: Profissionais que realizam atendimentos
+- **Terapeuta**: Terapeutas que realizam atendimentos
 - **Recepção**: Equipe administrativa
 - **Supervisor**: Responsáveis por supervisão e gestão
 
@@ -87,7 +87,7 @@ interface TeaUser {
 ### TeaUserDetailsModalComponent
 Modal para visualizar informações detalhadas de um usuário, incluindo:
 - Dados de contato
-- Informações profissionais
+- Informações do Terapeuta
 - Especialidades (se aplicável)
 - Data de criação
 

@@ -9,7 +9,11 @@
           <option *ngFor="let c of clinicas" [value]="c.id">{{ c.nome }}</option>
         </select>
       </div>
-      <button class="btn-acessar" [disabled]="!selectedClinicaId" (click)="acessar()">Acessar</button>
+        <button class="btn-acessar" [disabled]="!selectedClinicaId" (click)="acessar()">Acessar</button>
+        <div *ngIf="clinicaSelecionadaMsg" class="clinica-msg" style="margin-top:16px;color:#2e7d32;font-weight:bold;display:flex;align-items:center;gap:8px;">
+          <span style="font-size:1.5em;">✔️</span>
+          <span>{{ clinicaSelecionadaMsg }}</span>
+        </div>
     </div>
   </div>
 </div>

@@ -123,7 +123,7 @@
               <td [title]="s.paciente || 'Horário Livre'">{{ s.paciente || 'Horário Livre' }}</td>
               <td>{{ getEspecialidadeNome(s.especialidadeId) }}</td>
               <td>–</td>
-              <td>{{ getProfissionalNome(s.profissionalId) }}</td>
+              <td>{{ getTerapeutaNome(s.terapeutaId) }}</td>
               <td>
                 <span class="status-badge" [class]="'badge-' + (s.status === 'cancelado' ? 'cancelled' : s.status === 'confirmado' ? 'completed' : 'scheduled')">
                   {{ getSlotStatusLabel(s.status) | uppercase }}

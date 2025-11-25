@@ -17,7 +17,7 @@ interface Atendimento {
   standalone: true,
   imports: [CommonModule, FormsModule, InputComponent],
   templateUrl: './relatorios-atendimentos.html',
-  styleUrl: './relatorios-atendimentos.css',
+  styleUrls: ['./relatorios-atendimentos.css'],
 })
 export class RelatoriosAtendimentosComponent implements OnInit {
   atendimentos: Atendimento[] = [];

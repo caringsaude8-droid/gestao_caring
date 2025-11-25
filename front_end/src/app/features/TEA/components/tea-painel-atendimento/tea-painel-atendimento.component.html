@@ -1,7 +1,7 @@
 <div class="tea-page-container">
   <div class="page-header">
     <h2 class="page-title">Painel de Atendimento</h2>
-    <p class="page-subtitle">Visão por horário com pacientes, sala, profissional e especialidade.</p>
+    <p class="page-subtitle">Visão por horário com pacientes, sala, terapeuta e especialidade.</p>
   </div>
 
   <section class="controls-section controls-card">
@@ -26,7 +26,7 @@
               <tr>
                 <th>Paciente</th>
                 <th>Sala</th>
-                <th>PROF</th>
+                <th>TERAPEUTA</th>
                 <th>ESP</th>
               </tr>
             </thead>
@@ -34,7 +34,7 @@
               <tr *ngFor="let s of sessionsByTime[time] || []" class="panel-row">
                 <td class="cell-paciente">{{ s.patient }}</td>
                 <td class="cell-sala">{{ s.room }}</td>
-                <td class="cell-prof">{{ s.professional }}</td>
+                <td class="cell-prof">{{ s.terapeuta }}</td>
                 <td class="cell-esp">{{ s.specialty }}</td>
               </tr>
             </tbody>

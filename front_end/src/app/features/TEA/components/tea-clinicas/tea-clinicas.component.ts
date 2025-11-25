@@ -1,26 +1,20 @@
+
+// Interface local para Clinica (ajuste conforme necessário)
+export interface Clinica {
+  id?: number;
+  nome: string;
+  cnpj?: string;
+  endereco?: string;
+  telefone?: string;
+  email?: string;
+  status?: string;
+  // Adicione outros campos conforme necessário
+}
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 
-interface Clinica {
-  id: string;
-  nome: string;
-  endereco: string;
-  telefone: string;
-  email: string;
-  status: 'ativo' | 'inativo';
-  dataCadastro?: string;
-  cnpj?: string;
-  responsavel?: string;
-  website?: string;
-}
-
-interface ClinicaStats {
-  total: number;
-  ativas: number;
-  inativas: number;
-}
 
 @Component({
   selector: 'app-tea-clinicas',
@@ -37,50 +31,14 @@ export class TeaClinicasComponent implements OnInit {
   formMode: 'create' | 'edit' = 'create';
   selectedClinica: Clinica | null = null;
   filteredClinicas: Clinica[] = [];
-  
-  clinicas: Clinica[] = [
-    {
-      id: '1',
-      nome: 'Clínica Esperança',
-      endereco: 'Rua das Flores, 123 - São Paulo, SP',
-      telefone: '(11) 3456-7890',
-      email: 'contato@clinicaesperanca.com.br',
-      status: 'ativo',
-      dataCadastro: '2023-04-10'
-    },
-    {
-      id: '2',
-      nome: 'Centro de Terapia Integrada',
-      endereco: 'Av. Paulista, 1000 - São Paulo, SP',
-      telefone: '(11) 2345-6789',
-      email: 'contato@centroterapia.com.br',
-      status: 'ativo',
-      dataCadastro: '2023-05-22'
-    },
-    {
-      id: '3',
-      nome: 'Instituto Desenvolvimento',
-      endereco: 'Rua Augusta, 500 - São Paulo, SP',
-      telefone: '(11) 3456-7891',
-      email: 'contato@instituto.com.br',
-      status: 'inativo',
-      dataCadastro: '2023-06-15'
-    }
-  ];
-  
-  stats: ClinicaStats = {
-    total: 3,
-    ativas: 2,
-    inativas: 1
-  };
+  clinicas: Clinica[] = [];
 
-  constructor(private router: Router) {}
+  constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.filterClinicas();
-    this.updateStats();
+    this.loadClinicas();
   }
-  
+
   onSearch(): void {
     this.filterClinicas();
   }
@@ -100,20 +58,41 @@ export class TeaClinicasComponent implements OnInit {
     this.filteredClinicas = this.clinicas.filter(c => {
       const matchTerm = term ? (
         c.nome.toLowerCase().includes(term) ||
-        c.email.toLowerCase().includes(term) ||
-        c.endereco.toLowerCase().includes(term)
+        c.email?.toLowerCase().includes(term) ||
+        c.endereco?.toLowerCase().includes(term)
       ) : true;
       const matchStatus = this.selectedStatus ? c.status === this.selectedStatus : true;
       return matchTerm && matchStatus;
     });
   }
 
-  private updateStats(): void {
-    this.stats = {
-      total: this.clinicas.length,
-      ativas: this.clinicas.filter(c => c.status === 'ativo').length,
-      inativas: this.clinicas.filter(c => c.status === 'inativo').length
+  openAddClinicaModal(): void {
+    this.formMode = 'create';
+    this.selectedClinica = {
+      id: undefined, nome: '', endereco: '', telefone: '', email: '', status: 'ativo', cnpj: ''
     };
+    this.showClinicaFormModal = true;
+  }
+
+  editClinica(clinica: Clinica): void {
+    this.formMode = 'edit';
+    this.selectedClinica = { ...clinica };
+    this.showClinicaFormModal = true;
+  }
+
+  viewClinicaDetails(clinica: Clinica): void {
+    this.selectedClinica = { ...clinica };
+    this.showClinicaDetailsModal = true;
+  }
+
+  closeClinicaFormModal(): void {
+    this.showClinicaFormModal = false;
+    this.selectedClinica = null;
+  }
+
+  closeClinicaDetailsModal(): void {
+    this.showClinicaDetailsModal = false;
+    // mantém selectedClinica para reabrir se necessário
   }
 
   getStatusClass(status: 'ativo' | 'inativo'): string {
@@ -133,50 +112,33 @@ export class TeaClinicasComponent implements OnInit {
     return `${dd}/${mm}/${yyyy}`;
   }
 
-  openAddClinicaModal(): void {
-    this.formMode = 'create';
-    this.selectedClinica = {
-      id: '',
-      nome: '',
-      endereco: '',
-      telefone: '',
-      email: '',
-      status: 'ativo'
-    };
-    this.showClinicaFormModal = true;
-  }
-  
-  viewClinicaDetails(clinica: Clinica): void {
-    this.selectedClinica = { ...clinica };
-    this.showClinicaDetailsModal = true;
-  }
-  
-  editClinica(clinica: Clinica): void {
-    this.formMode = 'edit';
-    this.selectedClinica = { ...clinica };
-    this.showClinicaFormModal = true;
-  }
-
-  closeClinicaFormModal(): void {
-    this.showClinicaFormModal = false;
-    this.selectedClinica = null;
-  }
-
-  closeClinicaDetailsModal(): void {
-    this.showClinicaDetailsModal = false;
-    // mantém selectedClinica para reabrir se necessário
+  loadClinicas(): void {
+    const token = localStorage.getItem('auth_token');
+    const headers = token ? { headers: new HttpHeaders({ Authorization: `Bearer ${token}` }) } : {};
+    this.http.get<any[]>('http://localhost:8081/api/v1/clinicas', headers).subscribe({
+      next: (data: any[]) => {
+        this.clinicas = data.map((c: any) => ({
+          id: c.id,
+          nome: c.nome,
+          endereco: c.endereco,
+          telefone: c.telefone,
+          email: c.email,
+          status: c.status === 1 ? 'ativo' : 'inativo',
+          dataCadastro: c.dataCadastro,
+          cnpj: c.cnpj,
+          responsavel: c.responsavel,
+          website: c.website
+        }));
+        this.filterClinicas();
+      },
+      error: (err) => {
+        console.error('Erro ao carregar clínicas:', err);
+      }
+    });
   }
 
   onSaveClinica(clinica: Clinica): void {
-    if (this.formMode === 'create') {
-      const newId = String(this.clinicas.length + 1);
-      const novo = { ...clinica, id: newId };
-      this.clinicas.push(novo);
-    } else if (this.formMode === 'edit' && this.selectedClinica) {
-      this.clinicas = this.clinicas.map(c => c.id === this.selectedClinica!.id ? { ...this.selectedClinica!, ...clinica, id: this.selectedClinica!.id } : c);
-    }
-    this.updateStats();
-    this.filterClinicas();
+    // Salvar lógica (POST/PUT) aqui
     this.closeClinicaFormModal();
   }
 }

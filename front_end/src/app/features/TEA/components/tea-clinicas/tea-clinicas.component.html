@@ -43,8 +43,8 @@
           <h3 class="paciente-name">{{clinica.nome}}</h3>
         </div>
         <div class="paciente-badges">
-          <span class="status-badge" [class]="getStatusClass(clinica.status)">
-            {{getStatusLabel(clinica.status)}}
+          <span class="status-badge" [class]="getStatusClass(clinica.status === 'ativo' ? 'ativo' : 'inativo')">
+            {{getStatusLabel(clinica.status === 'ativo' ? 'ativo' : 'inativo')}}
           </span>
         </div>
       </div>
@@ -75,14 +75,15 @@
 </div>
 
 <!-- Modal de Formulário de Clínica -->
-<div class="modal" *ngIf="showClinicaFormModal">
-  <div class="modal-content">
+<div class="modal" *ngIf="showClinicaFormModal" (click)="closeClinicaFormModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h2>{{formMode === 'create' ? 'Nova Clínica' : 'Editar Clínica'}}</h2>
       <button class="close-btn" (click)="closeClinicaFormModal()">&times;</button>
     </div>
     <div class="modal-body">
       <form #clinicaForm="ngForm">
+
         <div class="form-group">
           <label for="nome">Nome da Clínica</label>
           <input type="text" id="nome" name="nome" [ngModel]="selectedClinica?.nome || ''" (ngModelChange)="selectedClinica ? selectedClinica.nome = $event : null" required>
@@ -90,10 +91,6 @@
         <div class="form-group">
           <label for="cnpj">CNPJ</label>
           <input type="text" id="cnpj" name="cnpj" [ngModel]="selectedClinica?.cnpj || ''" (ngModelChange)="selectedClinica ? selectedClinica.cnpj = $event : null">
-        </div>
-        <div class="form-group">
-          <label for="responsavel">Responsável</label>
-          <input type="text" id="responsavel" name="responsavel" [ngModel]="selectedClinica?.responsavel || ''" (ngModelChange)="selectedClinica ? selectedClinica.responsavel = $event : null">
         </div>
         <div class="form-group">
           <label for="endereco">Endereço</label>
@@ -108,10 +105,6 @@
           <input type="email" id="email" name="email" [ngModel]="selectedClinica?.email || ''" (ngModelChange)="selectedClinica ? selectedClinica.email = $event : null" required>
         </div>
         <div class="form-group">
-          <label for="website">Website</label>
-          <input type="text" id="website" name="website" [ngModel]="selectedClinica?.website || ''" (ngModelChange)="selectedClinica ? selectedClinica.website = $event : null">
-        </div>
-        <div class="form-group">
           <label for="status">Status</label>
           <select id="status" name="status" [ngModel]="selectedClinica?.status || 'ativo'" (ngModelChange)="selectedClinica ? selectedClinica.status = $event : null" required>
             <option value="ativo">Ativo</option>
@@ -120,7 +113,7 @@
         </div>
         <div class="form-actions">
           <button type="button" class="btn-cancel" (click)="closeClinicaFormModal()">Cancelar</button>
-          <button type="submit" class="btn-save" [disabled]="!clinicaForm.valid" (click)="onSaveClinica(selectedClinica || {id: '', nome: '', endereco: '', telefone: '', email: '', status: 'ativo'})">Salvar</button>
+          <button type="submit" class="btn-save" [disabled]="!clinicaForm.valid" (click)="onSaveClinica(selectedClinica || { nome: '', endereco: '', telefone: '', email: '', status: 'ativo', cnpj: '' })">Salvar</button>
         </div>
       </form>
     </div>
@@ -146,7 +139,7 @@
           <h3 class="user-name-large">{{selectedClinica.nome}}</h3>
           <p class="user-email-large">{{selectedClinica.email}}</p>
           <div class="user-badges-modal">
-            <span class="status-badge-modal" [class]="getStatusClass(selectedClinica.status)">{{getStatusLabel(selectedClinica.status)}}</span>
+            <span class="status-badge-modal" [class]="getStatusClass(selectedClinica.status === 'ativo' ? 'ativo' : 'inativo')">{{getStatusLabel(selectedClinica.status === 'ativo' ? 'ativo' : 'inativo')}}</span>
           </div>
         </div>
       </div>
@@ -187,33 +180,12 @@
               <span class="detail-value">{{selectedClinica.cnpj || 'Não informado'}}</span>
             </div>
           </div>
-          <div class="detail-item">
-            <span class="detail-icon">👤</span>
-            <div class="detail-content">
-              <span class="detail-label">Responsável</span>
-              <span class="detail-value">{{selectedClinica.responsavel || 'Não informado'}}</span>
-            </div>
-          </div>
-          <div class="detail-item">
-            <span class="detail-icon">🌐</span>
-            <div class="detail-content">
-              <span class="detail-label">Website</span>
-              <span class="detail-value">{{selectedClinica.website || 'Não informado'}}</span>
-            </div>
-          </div>
-          <div class="detail-item">
-            <span class="detail-icon">📅</span>
-            <div class="detail-content">
-              <span class="detail-label">Data de Cadastro</span>
-              <span class="detail-value">{{formatDate(selectedClinica.dataCadastro || '')}}</span>
-            </div>
-          </div>
+
         </div>
       </div>
 
       <div class="modal-footer">
         <button class="modal-btn modal-btn-secondary" (click)="closeClinicaDetailsModal()">Fechar</button>
-        <button class="modal-btn modal-btn-primary" (click)="editClinica(selectedClinica); closeClinicaDetailsModal()"><i class="icon-edit"></i> Editar Clínica</button>
       </div>
     </div>
   </div>

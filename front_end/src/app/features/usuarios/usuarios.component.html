@@ -62,7 +62,8 @@
       <select class="filter-select" [(ngModel)]="selectedPerfil" (change)="onPerfilChange()">
         <option value="">Todos os Perfis</option>
         <option value="admin">Administrador</option>
-        <option value="terapeuta">Admin TEA</option>
+        <option value="user">Usuário</option>
+        <option value="gestor">Gestor</option>
       </select>
       
       <select class="filter-select" [(ngModel)]="selectedStatus" (change)="onStatusChange()">
@@ -78,8 +79,13 @@
     </div>
   </div>
 
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="loading-indicator">
+    <div class="custom-spinner"></div>
+    <span style="margin-top: 1rem; color: #64748b; font-weight: 500; font-size: 1.1rem;">Carregando usuários...</span>
+  </div>
   <!-- Users Grid -->
-  <div class="users-grid">
+  <div class="users-grid" *ngIf="!isLoading">
     <div *ngFor="let user of filteredUsers" class="user-card">
       <!-- User Header -->
       <div class="user-header">

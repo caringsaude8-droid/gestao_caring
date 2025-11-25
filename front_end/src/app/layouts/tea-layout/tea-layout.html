@@ -1,4 +1,8 @@
 <div class="tea-layout">
+    <div *ngIf="toast" class="toast" [ngClass]="toast.type" (click)="closeToast()">
+      <strong>{{ toast.title }}</strong><br>
+      <span>{{ toast.message }}</span>
+    </div>
   <div class="tea-sidebar" [class.collapsed]="collapsed" *ngIf="!isTerapeutaModuleActive()">
     <!-- Header -->
     <div class="sidebar-header">
@@ -12,6 +16,12 @@
         <div class="brand">
           <h1>TEA</h1>
           <p>Caring</p>
+        </div>
+        <div class="quick-actions" *ngIf="!collapsed">
+          <a class="quick-action-btn" [routerLink]="['/tea/convenios']" title="Convênios">
+            <i class="icon-convenios"></i>
+          </a>
+
         </div>
       </div>
       
@@ -31,10 +41,8 @@
       <!-- TEA Menu Items -->
       <ng-container *ngFor="let item of teaMenuItems; let i = index">
         <div *ngIf="!item.submenu">
-          <a [routerLink]="item.url"
-             class="nav-item"
-             routerLinkActive="active"
-             [routerLinkActiveOptions]="{ exact: true }">
+          <a (click)="navigateTo(item.url)"
+             class="nav-item">
             <i [class]="'icon-' + item.icon"></i>
             <span *ngIf="!collapsed">{{item.title}}</span>
           </a>
@@ -54,10 +62,8 @@
           
           <div *ngIf="!collapsed && openSubmenuIndex === i" class="submenu">
             <a *ngFor="let sub of item.submenu" 
-               [routerLink]="sub.url"
-               class="submenu-item"
-               routerLinkActive="active"
-               [routerLinkActiveOptions]="{ exact: true }">
+               (click)="navigateTo(sub.url)"
+               class="submenu-item">
               <i [class]="'icon-' + sub.icon"></i>
               <span>{{sub.title}}</span>
             </a>

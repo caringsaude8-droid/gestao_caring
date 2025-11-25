@@ -15,7 +15,7 @@ interface PessoaAniversario {
   standalone: true,
   imports: [CommonModule, FormsModule, InputComponent],
   templateUrl: './relatorios-aniversarios.html',
-  styleUrl: './relatorios-aniversarios.css',
+  styleUrls: ['./relatorios-aniversarios.css'],
 })
 export class RelatoriosAniversariosComponent implements OnInit {
   pessoas: PessoaAniversario[] = [];

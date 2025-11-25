@@ -21,7 +21,7 @@ export interface Convenio {
   standalone: true,
   imports: [CommonModule, FormsModule, InputComponent],
   templateUrl: './convenios.html',
-  styleUrl: './convenios.css',
+  styleUrls: ['./convenios.css'],
 })
 export class ConveniosComponent implements OnInit {
   convenios: Convenio[] = [];

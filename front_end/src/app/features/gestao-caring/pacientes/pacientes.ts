@@ -14,6 +14,7 @@ export interface Paciente {
   numeroCartao?: string;
   status: 'ativo' | 'inativo';
   data_cadastro: string;
+  terapeutaId?: string;
 }
 
 @Component({
@@ -21,7 +22,7 @@ export interface Paciente {
   standalone: true,
   imports: [CommonModule, FormsModule, InputComponent],
   templateUrl: './pacientes.html',
-  styleUrl: './pacientes.css',
+  styleUrls: ['./pacientes.css'],
 })
 export class PacientesComponent implements OnInit {
   pacientes: Paciente[] = [];

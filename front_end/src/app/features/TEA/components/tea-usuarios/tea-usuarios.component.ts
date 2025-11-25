@@ -1,24 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+
+import { Component, OnInit, inject } from '@angular/core';
+import { forkJoin } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-// import removido
-import { TeaUserFormModalComponent } from './components/tea-user-form-modal/tea-user-form-modal.component';
-import { TeaUserDetailsModalComponent } from './components/tea-user-details-modal/tea-user-details-modal.component';
-
-interface TeaUser {
-  id: string;
-  cpf: string;
-  nome: string;
-  email: string;
-  telefone: string;
-  perfil: 'terapeuta' | 'recepcao' | 'supervisor';
-  status: 'ativo' | 'inativo';
-  dataUltimoAcesso: string;
-  dataCriacao: string;
-  avatar?: string;
-  especialidades?: string[];
-  departamento?: string;
-}
+import { HttpClientModule } from '@angular/common/http';
+import { UsuarioService } from '../../services/usuario.service';
+import { TerapeutaService } from '../../services/terapeuta.service';
+import { TeaUserFormModalComponent, TeaUser } from './tea-user-form-modal/tea-user-form-modal.component';
+import { TeaUserDetailsModalComponent } from './tea-user-details-modal/tea-user-details-modal.component';
 
 interface UserStats {
   total: number;
@@ -29,11 +18,12 @@ interface UserStats {
 @Component({
   selector: 'app-tea-usuarios',
   standalone: true,
-  imports: [CommonModule, FormsModule, TeaUserFormModalComponent, TeaUserDetailsModalComponent],
+  imports: [CommonModule, FormsModule, HttpClientModule, TeaUserFormModalComponent, TeaUserDetailsModalComponent],
   templateUrl: './tea-usuarios.component.html',
   styleUrls: ['./tea-usuarios.component.css']
 })
 export class TeaUsuariosComponent implements OnInit {
+    isLoading: boolean = false;
   searchTerm: string = '';
   selectedPerfil: string = '';
   selectedStatus: string = '';
@@ -42,53 +32,71 @@ export class TeaUsuariosComponent implements OnInit {
   formMode: 'create' | 'edit' = 'create';
   selectedUser: TeaUser | null = null;
   
-  users: TeaUser[] = [
-    {
-      id: '1',
-      cpf: '234.567.890-12',
-      nome: 'Dr. Pedro Lima Costa',
-      email: 'pedro.lima@caring.com',
-      telefone: '(11) 99999-0002',
-      perfil: 'terapeuta',
-      status: 'ativo',
-      dataUltimoAcesso: '2024-01-25',
-      dataCriacao: '2023-03-20',
-      especialidades: ['ABA', 'Fonoaudiologia'],
-      departamento: 'TEA'
-    },
-    {
-      id: '2',
-      cpf: '456.789.012-34',
-      nome: 'Julia Ferreira',
-      email: 'julia.ferreira@caring.com',
-      telefone: '(11) 99999-0005',
-      perfil: 'terapeuta',
-      status: 'ativo',
-      dataUltimoAcesso: '2024-01-20',
-      dataCriacao: '2024-01-15',
-      especialidades: ['Psicologia'],
-      departamento: 'TEA'
-    },
-    {
-      id: '3',
-      cpf: '567.890.123-45',
-      nome: 'Carlos Mendes',
-      email: 'carlos.mendes@caring.com',
-      telefone: '(11) 99999-0006',
-      perfil: 'supervisor',
-      status: 'ativo',
-      dataUltimoAcesso: '2024-01-24',
-      dataCriacao: '2023-06-10',
-      departamento: 'TEA'
-    }
-  ];
+  users: TeaUser[] = [];
 
   filteredUsers: TeaUser[] = [];
+
+  private usuarioService = inject(UsuarioService);
+  private terapeutaService = inject(TerapeutaService);
 
   constructor() {}
 
   ngOnInit() {
-    this.filteredUsers = [...this.users];
+    this.loadUsers();
+  }
+
+  loadUsers(): void {
+    this.isLoading = true;
+    const selectedClinicaId = localStorage.getItem('selectedClinica');
+    forkJoin({
+      usuarios: this.usuarioService.getAll(selectedClinicaId ? String(selectedClinicaId) : undefined),
+      terapeutas: this.terapeutaService.getTerapeutas(selectedClinicaId || undefined)
+    }).subscribe({
+      next: ({ usuarios, terapeutas }) => {
+        const mappedUsers = (usuarios || [])
+          .filter(u => !u.perfil || ['user', 'USER', 'terapeuta', 'TERAPEUTA'].includes(u.perfil))
+          .map(u => ({
+            ...u,
+            id: u.id ? u.id.toString() : '',
+            perfil: (u.perfil && u.perfil.toLowerCase() === 'terapeuta') ? 'terapeuta' : 'user',
+            clinicaId: (u as any)['clinicaId'] ?? (u as any)['clinica_id'] ?? (u as any)['teaCliId'] ?? null,
+            status: u.status === 1 || u.status === true ? 'ativo' : u.status === 0 || u.status === false ? 'inativo' : (u.status || 'ativo'),
+          }));
+        const mappedTerapeutas = (terapeutas || [])
+          .map(t => {
+            let status: string = 'ativo';
+            if (typeof t.status === 'number') {
+              status = t.status === 1 ? 'ativo' : 'inativo';
+            } else if (typeof t.status === 'boolean') {
+              status = t.status ? 'ativo' : 'inativo';
+            } else if (typeof t.status === 'string') {
+              status = t.status;
+            }
+            return {
+              id: t.id ? t.id.toString() : '',
+              nome: t.nome,
+              email: t.email,
+              cpf: t.cpf,
+              telefone: t.telefone,
+              perfil: 'terapeuta',
+              clinicaId: (t as any)['clinicaId'] ?? (t as any)['clinica_id'] ?? null,
+              status,
+              especialidades: t.especialidade ? [t.especialidade] : [],
+              permissoes: {},
+              dataUltimoAcesso: '',
+              dataCriacao: '',
+            };
+          });
+        this.users = [...mappedUsers, ...mappedTerapeutas];
+        this.filterUsers();
+        this.isLoading = false;
+      },
+      error: (err: any) => {
+        this.isLoading = false;
+        this.users = [];
+        this.filteredUsers = [];
+      }
+    });
   }
 
   get stats(): UserStats {
@@ -112,15 +120,23 @@ export class TeaUsuariosComponent implements OnInit {
   }
 
   private filterUsers(): void {
+    const selectedClinicaId = localStorage.getItem('selectedClinica');
     this.filteredUsers = this.users.filter(user => {
       const matchesSearch = !this.searchTerm || 
         user.nome.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         user.email.toLowerCase().includes(this.searchTerm.toLowerCase());
 
-      const matchesPerfil = !this.selectedPerfil || user.perfil === this.selectedPerfil;
-      const matchesStatus = !this.selectedStatus || user.status === this.selectedStatus;
+      // Comparação case-insensitive para perfil e status
+      const matchesPerfil = !this.selectedPerfil || (user.perfil && String(user.perfil).toLowerCase() === this.selectedPerfil.toLowerCase());
+    
+      let userStatusStr = user.status;
+      if (typeof user.status === 'boolean') {
+        userStatusStr = user.status ? 'ativo' : 'inativo';
+      }
+      const matchesStatus = !this.selectedStatus || (userStatusStr && String(userStatusStr).toLowerCase() === this.selectedStatus.toLowerCase());
+      const matchesClinica = !selectedClinicaId || String(user.clinicaId) === String(selectedClinicaId);
 
-      return matchesSearch && matchesPerfil && matchesStatus;
+      return matchesSearch && matchesPerfil && matchesStatus && matchesClinica;
     });
   }
 
@@ -134,8 +150,7 @@ export class TeaUsuariosComponent implements OnInit {
   getPerfilLabel(perfil: string): string {
     const labels: { [key: string]: string } = {
       'terapeuta': 'Terapeuta',
-      'recepcao': 'Recepção',
-      'supervisor': 'Supervisor'
+      'user': 'Usuário'
     };
     return labels[perfil] || perfil;
   }
@@ -180,9 +195,24 @@ export class TeaUsuariosComponent implements OnInit {
 
   editUser(user: TeaUser): void {
     this.formMode = 'edit';
-    this.selectedUser = user;
-    this.showUserFormModal = true;
-    this.closeUserDetailsModal();
+    const closeAndSet = (data: any) => {
+      this.closeUserDetailsModal();
+      const perfil: 'terapeuta' | 'user' = user.perfil === 'terapeuta' ? 'terapeuta' : 'user';
+      this.selectedUser = { ...data, perfil };
+      // Só abre o modal depois de selectedUser estar pronto!
+      this.showUserFormModal = true;
+    };
+    if (user.perfil === 'terapeuta') {
+      this.terapeutaService.getTerapeutaById(user.id).subscribe({
+        next: (data: any) => closeAndSet(data),
+        error: () => closeAndSet(user)
+      });
+    } else {
+      this.usuarioService.getById(user.id).subscribe({
+        next: (data: any) => closeAndSet(data),
+        error: () => closeAndSet(user)
+      });
+    }
   }
 
   viewUserDetails(user: TeaUser): void {
@@ -204,33 +234,21 @@ export class TeaUsuariosComponent implements OnInit {
   onSaveUser(userData: any): void {
     const userToSave: TeaUser = {
       ...userData,
-      id: userData.id.toString(),
-      dataUltimoAcesso: typeof userData.dataUltimoAcesso === 'string' ? userData.dataUltimoAcesso : userData.dataUltimoAcesso.toISOString(),
-      dataCriacao: typeof userData.dataCriacao === 'string' ? userData.dataCriacao : userData.dataCriacao.toISOString()
+      id: userData.id?.toString() ?? '',
+      dataUltimoAcesso: userData.dataUltimoAcesso
+        ? (typeof userData.dataUltimoAcesso === 'string'
+            ? userData.dataUltimoAcesso
+            : userData.dataUltimoAcesso.toISOString())
+        : '',
+      dataCriacao: userData.dataCriacao
+        ? (typeof userData.dataCriacao === 'string'
+            ? userData.dataCriacao
+            : userData.dataCriacao.toISOString())
+        : ''
     };
 
-    if (this.formMode === 'create') {
-      // Adicionar novo usuário
-      this.users.push({
-        ...userToSave,
-        dataUltimoAcesso: new Date().toISOString(),
-        dataCriacao: new Date().toISOString()
-      });
-      console.log('Usuário TEA criado:', userToSave);
-    } else {
-      // Editar usuário existente
-      const index = this.users.findIndex(u => u.id === userToSave.id);
-      if (index !== -1) {
-        this.users[index] = {
-          ...userToSave,
-          dataUltimoAcesso: this.users[index].dataUltimoAcesso,
-          dataCriacao: this.users[index].dataCriacao
-        };
-        console.log('Usuário TEA atualizado:', userToSave);
-      }
-    }
-    
+    // Após salvar, recarrega a lista da API
+    this.loadUsers();
     this.closeUserFormModal();
-    // Aqui você implementaria a chamada para a API
   }
 }

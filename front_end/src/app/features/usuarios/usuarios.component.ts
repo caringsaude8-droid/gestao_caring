@@ -1,16 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UserDetailsModalComponent } from './components/user-details-modal/user-details-modal.component';
-import { UserFormModalComponent } from './components/user-form-modal/user-form-modal.component';
+import { UserDetailsModalComponent } from './user-details-modal/user-details-modal.component';
+import { UserFormModalComponent, UserForm } from './user-form-modal/user-form-modal.component';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { UserDetails } from './user-details-modal/user-details-modal.component';
 
-interface User {
+interface UserApi {
   id: string;
   cpf: string;
   nome: string;
   email: string;
   telefone: string;
-  perfil: 'admin' | 'terapeuta' | 'recepcao' | 'supervisor';
+  perfil: string;
   status: 'ativo' | 'inativo';
   dataUltimoAcesso: string;
   dataCriacao: string;
@@ -33,61 +35,44 @@ interface UserStats {
   styleUrls: ['./usuarios.component.css']
 })
 export class UsuariosComponent implements OnInit {
+  public isLoading = false;
   searchTerm: string = '';
   selectedPerfil: string = '';
   selectedStatus: string = '';
   showUserDetailsModal: boolean = false;
   showUserFormModal: boolean = false;
   formMode: 'create' | 'edit' = 'create';
-  selectedUser: User | null = null;
+  selectedUser: UserForm | null = null;
   
-  users: User[] = [
-    {
-      id: '1',
-      cpf: '123.456.789-01',
-      nome: 'Ana Santos Silva',
-      email: 'ana.santos@caring.com',
-      telefone: '(11) 99999-0001',
-      perfil: 'admin',
-      status: 'ativo',
-      dataUltimoAcesso: '2024-01-26',
-      dataCriacao: '2023-01-15',
-      departamento: 'Administração'
-    },
-    {
-      id: '2',
-      cpf: '234.567.890-12',
-      nome: 'Dr. Pedro Lima Costa',
-      email: 'pedro.lima@caring.com',
-      telefone: '(11) 99999-0002',
-      perfil: 'terapeuta',
-      status: 'ativo',
-      dataUltimoAcesso: '2024-01-25',
-      dataCriacao: '2023-03-20',
-      especialidades: ['ABA', 'Fonoaudiologia'],
-      departamento: 'TEA'
-    },
-    {
-      id: '5',
-      cpf: '456.789.012-34',
-      nome: 'Julia Ferreira',
-      email: 'julia.ferreira@caring.com',
-      telefone: '(11) 99999-0005',
-      perfil: 'terapeuta',
-      status: 'ativo',
-      dataUltimoAcesso: '2024-01-20',
-      dataCriacao: '2024-01-15',
-      especialidades: ['Psicologia'],
-      departamento: 'TEA'
-    }
-  ];
+  users: UserApi[] = [];
 
-  filteredUsers: User[] = [];
+  filteredUsers: UserApi[] = [];
 
-  constructor() {}
+  constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.filteredUsers = [...this.users];
+    this.isLoading = true;
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      this.isLoading = false;
+      return;
+    }
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    this.http.get<any[]>('http://localhost:8081/api/v1/usuarios', { headers }).subscribe({
+      next: (data: any[]) => {
+        this.users = data.map((u: any) => ({
+          ...u,
+          status: u.status === true ? 'ativo' : 'inativo'
+        }));
+        this.filteredUsers = [...this.users];
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Erro ao buscar usuários:', err);
+        this.filteredUsers = [];
+        this.isLoading = false;
+      }
+    });
   }
 
   get stats(): UserStats {
@@ -116,7 +101,8 @@ export class UsuariosComponent implements OnInit {
         user.nome.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         user.email.toLowerCase().includes(this.searchTerm.toLowerCase());
 
-      const matchesPerfil = !this.selectedPerfil || user.perfil === this.selectedPerfil;
+      // Corrigir comparação para funcionar com perfis em maiúsculo/minúsculo
+      const matchesPerfil = !this.selectedPerfil || (user.perfil && user.perfil.toLowerCase() === this.selectedPerfil.toLowerCase());
       const matchesStatus = !this.selectedStatus || user.status === this.selectedStatus;
 
       return matchesSearch && matchesPerfil && matchesStatus;
@@ -133,7 +119,8 @@ export class UsuariosComponent implements OnInit {
   getPerfilLabel(perfil: string): string {
     const labels: { [key: string]: string } = {
       'admin': 'Administrador',
-      'terapeuta': 'Admin TEA'
+      'user': 'Usuário',
+      'gestor': 'Gestor'
     };
     return labels[perfil] || perfil;
   }
@@ -176,15 +163,60 @@ export class UsuariosComponent implements OnInit {
     this.showUserFormModal = true;
   }
 
-  editUser(user: User): void {
+  editUser(user: UserApi): void {
     this.formMode = 'edit';
-    this.selectedUser = user;
-    this.showUserFormModal = true;
-    this.closeUserDetailsModal();
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    this.http.get<UserApi>(`http://localhost:8081/api/v1/usuarios/${user.id}`, { headers }).subscribe({
+      next: (usuarioCompleto: UserApi) => {
+        // Conversão explícita para UserForm
+        const userForm: UserForm = {
+          id: usuarioCompleto.id,
+          cpf: usuarioCompleto.cpf || '',
+          nome: usuarioCompleto.nome || '',
+          email: usuarioCompleto.email || '',
+          telefone: usuarioCompleto.telefone || '',
+          perfil: this.mapPerfil(usuarioCompleto.perfil),
+          status: typeof usuarioCompleto.status === 'boolean'
+            ? (usuarioCompleto.status ? 'ativo' : 'inativo')
+            : (usuarioCompleto.status || 'ativo'),
+          especialidades: usuarioCompleto.especialidades || [],
+          dataUltimoAcesso: usuarioCompleto.dataUltimoAcesso || '',
+          dataCriacao: usuarioCompleto.dataCriacao || '',
+          permissoes: {},
+          roles: (usuarioCompleto as any).roles || []
+        };
+        this.selectedUser = null;
+        setTimeout(() => {
+          this.selectedUser = userForm;
+          this.showUserFormModal = true;
+        }, 0);
+        this.closeUserDetailsModal();
+      },
+      error: (err) => {
+        console.error('Erro ao buscar usuário:', err);
+      }
+    });
   }
 
-  viewUserDetails(user: User): void {
-    this.selectedUser = user;
+  viewUserDetails(user: UserApi): void {
+    const safeDate = (value: any) => {
+      if (!value) return '';
+      if (typeof value === 'string') return value;
+      try {
+        return new Date(value).toISOString();
+      } catch {
+        return '';
+      }
+    };
+    const userDetails: UserDetails = {
+      ...user,
+      dataUltimoAcesso: safeDate(user.dataUltimoAcesso),
+      dataCriacao: safeDate(user.dataCriacao),
+      roles: (user as any).roles || []
+    };
+    this.selectedUser = userDetails as any;
     this.showUserDetailsModal = true;
   }
 
@@ -200,23 +232,56 @@ export class UsuariosComponent implements OnInit {
   }
 
   onSaveUser(userData: any): void {
-    const userToSave: User = {
-      ...userData,
-      id: userData.id.toString(),
-      dataUltimoAcesso: typeof userData.dataUltimoAcesso === 'string' ? userData.dataUltimoAcesso : userData.dataUltimoAcesso.toISOString(),
-      dataCriacao: typeof userData.dataCriacao === 'string' ? userData.dataCriacao : userData.dataCriacao.toISOString()
-    };
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
 
     if (this.formMode === 'create') {
-      // Adicionar novo usuário
-      this.users.push({
-        ...userToSave,
-        dataUltimoAcesso: new Date().toISOString(),
-        dataCriacao: new Date().toISOString()
+      // Monta objeto apenas com campos esperados pela API
+      const userToSend: any = {
+        nome: userData.nome,
+        email: userData.email,
+        senha: userData.senha,
+        cpf: userData.cpf,
+        perfil: userData.perfil,
+        telefone: userData.telefone,
+        roles: userData.roles || []
+      };
+      this.http.post<UserApi>('http://localhost:8081/api/v1/usuarios', userToSend, { headers }).subscribe({
+        next: (createdUser: UserApi) => {
+          this.users.push({
+            ...createdUser,
+            status: typeof createdUser.status === 'boolean'
+              ? (createdUser.status ? 'ativo' : 'inativo')
+              : (createdUser.status || 'ativo'),
+            dataUltimoAcesso: createdUser.dataUltimoAcesso || new Date().toISOString(),
+            dataCriacao: createdUser.dataCriacao || new Date().toISOString()
+          });
+          this.filteredUsers = [...this.users];
+          this.closeUserFormModal();
+        },
+        error: (err) => {
+          console.error('Erro ao criar usuário:', err);
+        }
       });
-      console.log('Usuário criado:', userToSave);
     } else {
       // Editar usuário existente
+      const userToSave: UserApi = {
+        ...userData,
+        id: userData.id.toString(),
+        dataUltimoAcesso:
+          userData.dataUltimoAcesso
+            ? (typeof userData.dataUltimoAcesso === 'string'
+                ? userData.dataUltimoAcesso
+                : userData.dataUltimoAcesso.toISOString())
+            : new Date().toISOString(),
+        dataCriacao:
+          userData.dataCriacao
+            ? (typeof userData.dataCriacao === 'string'
+                ? userData.dataCriacao
+                : userData.dataCriacao.toISOString())
+            : new Date().toISOString()
+      };
       const index = this.users.findIndex(u => u.id === userToSave.id);
       if (index !== -1) {
         this.users[index] = {
@@ -224,11 +289,28 @@ export class UsuariosComponent implements OnInit {
           dataUltimoAcesso: this.users[index].dataUltimoAcesso,
           dataCriacao: this.users[index].dataCriacao
         };
-        console.log('Usuário atualizado:', userToSave);
+        this.filteredUsers = [...this.users];
       }
+      this.closeUserFormModal();
     }
-    
-    this.closeUserFormModal();
-    // Aqui você implementaria a chamada para a API
+  }
+
+  private mapPerfil(perfilApi: string): 'USER' | 'ADMIN' | 'GESTOR' | 'TERAPEUTA' {
+    switch ((perfilApi || '').toUpperCase()) {
+      case 'ADMIN':
+      case 'admin':
+        return 'ADMIN';
+      case 'USER':
+      case 'usuario':
+        return 'USER';
+      case 'GESTOR':
+      case 'gestor':
+        return 'GESTOR';
+      case 'TERAPEUTA':
+      case 'terapeuta':
+        return 'TERAPEUTA';
+      default:
+        return 'USER';
+    }
   }
 }

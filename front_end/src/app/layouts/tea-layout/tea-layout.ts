@@ -18,9 +18,10 @@ interface MenuItem {
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './tea-layout.html',
-  styleUrl: './tea-layout.css'
+  styleUrls: ['./tea-layout.css']
 })
 export class TeaLayoutComponent implements OnInit, OnDestroy {
+    toast: { title: string; message: string; type: 'error' | 'success' } | null = null;
   collapsed = false;
   profile: any = null;
   logoUrl: string | null = null;
@@ -30,30 +31,30 @@ export class TeaLayoutComponent implements OnInit, OnDestroy {
 
   private allTeaMenuItems: MenuItem[] = [
       { title: "Home", url: "/home", icon: "home" },
-      { title: "Clínicas", url: "/tea/selecao-clinica", icon: "clinic" },
+      { title: "Seleção de Clínica", url: "/tea/selecao-clinica", icon: "clinic" },
 
-      { title: "Dashboard", url: "/tea/dashboard", icon: "dashboard" },
       
-      { title: "TEA Clínica", url: "/tea/clinica", icon: "brain" },
+      { title: "TEA Home", url: "/tea/home", icon: "brain" },
 
 
       { title: "Calendário", url: "/tea/calendario", icon: "calendar", submenu: [
         { title: "Calendário Mensal", url: "/tea/calendario", icon: "" },
         { title: "Por Paciente", url: "/tea/calendario-por-paciente", icon: "" },
-        { title: "Por Profissionais", url: "/tea/calendario-por-profissionais", icon: "" }
+        { title: "Por Profissionais", url: "/tea/calendario-por-terapeutas", icon: "" }
       ] },
 
       { title: "Agendamento", url: "/tea/agendamento", icon: "clock" },
 
 
       { title: "Cadastro", url: "/cadastro", icon: "folder", submenu: [
-        { title: "Usuários", url: "/tea/usuarios", icon: "" },
+        { title: "Usuario TEA", url: "/tea/usuarios", icon: "" },
         { title: "Pacientes", url: "/tea/pacientes", icon: "" },
-        { title: "###", url: "/tea/pesquisar-pacientes", icon: "" },
-        { title: "Profissionais", url: "/tea/profissionais", icon: "" },
-        { title: "Clínicas", url: "/tea/clinicas", icon: "" },
-        { title: "Convênios", url: "/tea/convenios", icon: "" }
+        { title: "Clínicas", url: "/tea/clinicas", icon: "" }
+
       ] },
+
+      { title: "Convênios", url: "/tea/convenios", icon: "convenio" },
+      { title: "Prontuário Eletrônico", url: "/tea/prontuario-eletronico", icon: "prontuario" },
       
 
       { title: "Relatórios", url: "/tea/relatorios", icon: "bar-chart", submenu: [
@@ -63,13 +64,10 @@ export class TeaLayoutComponent implements OnInit, OnDestroy {
 
       
       
-      { title: "Profissionais", url: "/tea/profissionais", icon: "users", submenu: [
-        { title: "Calendário", url: "/tea/profissionais-calendario", icon: "" },
-        { title: "Pacientes", url: "/tea/profissionais-pacientes", icon: "" },
-        { title: "Prontuário", url: "/tea/profissionais-prontuario", icon: "" }
-      ] },
+
+
       { title: "Painel Atendimento", url: "/tea/painel-atendimento", icon: "monitor" },
-      { title: "Prontuário Eletrônico", url: "/tea/prontuario-eletronico", icon: "folder" },
+
       
   ];
 
@@ -100,7 +98,7 @@ export class TeaLayoutComponent implements OnInit, OnDestroy {
   
   checkUrlActive(url: string): boolean {
     // Para submenus do Cadastro, verificar se está em alguma das páginas de cadastro
-    if (url === '/tea/usuarios' || url === '/tea/pacientes' || url === '/tea/profissionais' || url === '/tea/clinicas' || url === '/tea/convenios') {
+    if (url === '/tea/usuarios' || url === '/tea/pacientes' || url === '/tea/clinicas' || url === '/tea/convenios') {
       return this.currentRoute === url;
     }
     
@@ -109,8 +107,15 @@ export class TeaLayoutComponent implements OnInit, OnDestroy {
       return this.currentRoute === '/tea/usuarios' || 
              this.currentRoute === '/tea/pacientes' || 
              this.currentRoute === '/tea/profissionais' || 
-             this.currentRoute === '/tea/clinicas' ||
-             this.currentRoute === '/tea/convenios';
+             this.currentRoute === '/tea/clinicas';
+    }
+
+    if (url === '/tea/convenios') {
+      return this.currentRoute === url;
+    }
+
+    if (url === '/tea/prontuario-eletronico') {
+      return this.currentRoute.startsWith(url);
     }
 
     // Para submenus do Check-in, verificar se está em alguma das páginas de check-in
@@ -139,17 +144,6 @@ export class TeaLayoutComponent implements OnInit, OnDestroy {
              this.currentRoute === '/tea/calendario-por-profissionais';
     }
 
-    // Para submenus de Profissionais
-    if (url === '/tea/profissionais-calendario' || url === '/tea/profissionais-pacientes' || url === '/tea/profissionais-prontuario') {
-      return this.currentRoute === url;
-    }
-
-    // Para o menu Profissionais considerar ativo ao navegar por qualquer submenu
-    if (url === '/tea/profissionais') {
-      return this.currentRoute === '/tea/profissionais-calendario' ||
-             this.currentRoute === '/tea/profissionais-pacientes' ||
-             this.currentRoute === '/tea/profissionais-prontuario';
-    }
     
     // Para submenus de Relatórios
     if (url === '/tea/relatorios/atendimentos' || url === '/tea/relatorios/aniversarios') {
@@ -199,7 +193,9 @@ export class TeaLayoutComponent implements OnInit, OnDestroy {
 
   // Oculta o menu TEA quando estiver no módulo TEA Terapeuta
   isTerapeutaModuleActive(): boolean {
-    return this.currentRoute.startsWith('/tea/terapeuta');
+    // Considera ativo apenas quando a rota é exatamente '/tea/terapeuta'
+    // ou quando está dentro do módulo lazy carregado '/tea/terapeuta/...'
+    return this.currentRoute === '/tea/terapeuta' || this.currentRoute.startsWith('/tea/terapeuta/');
   }
 
 
@@ -231,19 +227,72 @@ export class TeaLayoutComponent implements OnInit, OnDestroy {
     if (path === "/tea/profissionais") return this.router.url === "/tea/profissionais";
     if (path === "/tea/clinicas") return this.router.url === "/tea/clinicas";
     if (path === "/tea/calendario") return this.router.url === "/tea/calendario";
-    if (path === "/tea/dashboard") return this.router.url === "/tea/dashboard";
     
     // Caso padrão - verificar se a URL começa com o caminho (para compatibilidade)
     return this.router.url === path;
   }
 
   signOut() {
-    console.log('Sign out from TEA');
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
 
   navigateTo(url: string) {
+    // Verificar permissões antes de navegar
+    if (!this.hasPermissionForRoute(url)) {
+      // Não faz nada se não tiver permissão
+      return;
+    }
+
+    const clinicaSelecionada = localStorage.getItem('selectedClinica');
+    let isClinicaValida = false;
+    if (clinicaSelecionada && clinicaSelecionada !== 'null' && clinicaSelecionada !== '') {
+      // Se for um número, considera válido
+      isClinicaValida = !isNaN(Number(clinicaSelecionada));
+    }
+    const isHomeOrClinicas = url === '/home' || url === '/tea/selecao-clinica';
+    if (isHomeOrClinicas) {
+      this.router.navigate([url]);
+      return;
+    }
+    if (!isClinicaValida) {
+      this.showToast('Atenção', 'Selecione uma clínica para acessar este menu.', 'error');
+      return;
+    }
     this.router.navigate([url]);
+  }
+
+  /**
+   * Verifica se o usuário tem permissão para acessar uma rota específica
+   */
+  private hasPermissionForRoute(url: string): boolean {
+    // Admin tem acesso a tudo
+    if (this.isAdmin()) return true;
+
+    // Rotas sempre permitidas
+    if (url === '/home' || url === '/tea/home' || url === '/tea/selecao-clinica') return true;
+
+    // Verificar permissões específicas
+    if (url === '/tea/pacientes') return this.authService.hasFeatureAccess('TEA_CADASTRO_PACIENTE');
+    if (url === '/tea/usuarios') return this.authService.hasFeatureAccess('TEA_CADASTRO_USUARIO') || this.authService.hasModuleAccess('TEA_MODULO');
+    if (url === '/tea/clinicas') return this.authService.hasFeatureAccess('TEA_CADASTRO_CLINICA') || this.authService.hasModuleAccess('TEA_MODULO');
+    if (url.startsWith('/tea/calendario')) return this.authService.hasFeatureAccess('TEA_CALENDARIO');
+    if (url === '/tea/agendamento') return this.authService.hasFeatureAccess('TEA_AGENDAMENTO');
+    if (url === '/tea/convenios') return this.authService.hasFeatureAccess('TEA_CONVENIOS') || this.authService.hasModuleAccess('TEA_MODULO');
+    if (url === '/tea/prontuario-eletronico') return this.authService.hasFeatureAccess('TEA_PRONTUARIO_ELETRONICO') || this.authService.hasModuleAccess('TEA_MODULO');
+    if (url.startsWith('/tea/relatorios')) return this.authService.hasModuleAccess('TEA_MODULO');
+    if (url === '/tea/painel-atendimento') return this.authService.hasModuleAccess('TEA_MODULO');
+
+    // Por padrão, permite (para rotas não mapeadas)
+    return true;
+  }
+
+  showToast(title: string, message: string, type: 'error' | 'success') {
+    this.toast = { title, message, type };
+    setTimeout(() => this.closeToast(), 3500);
+  }
+
+  closeToast() {
+    this.toast = null;
   }
 
   // Verifica se o usuário atual é admin
@@ -255,14 +304,73 @@ export class TeaLayoutComponent implements OnInit, OnDestroy {
    * Filtra os itens do menu baseado no perfil do usuário
    */
   private filterMenuItems(): void {
-    if (this.isAdmin()) {
-      // Admin mantém visual original com todos os itens
+    const roles = Array.isArray(this.profile?.roles) ? this.profile.roles : [];
+
+    // Se for admin OU não tiver nenhuma role, mostra todos os itens
+    if (this.isAdmin() || roles.length === 0) {
       this.teaMenuItems = [...this.allTeaMenuItems];
       return;
     }
 
-    // Exibir todos os itens (incluindo Home) para não-admin
-    this.teaMenuItems = [...this.allTeaMenuItems];
+    // Função auxiliar para decidir se pode ver um item
+    const podeVerItem = (item: MenuItem): boolean => {
+      // Home geral só aparece para quem não tem nenhuma role
+      if (item.url === '/home') return roles.length === 0;
+      // TEA Home
+      if (item.url === '/tea/home') return this.authService.hasFeatureAccess('TEA_HOME');
+      // Seleção de Clínica: só mostra se tiver TEA_MODULO e NÃO tiver idClinica vinculado
+      if (item.url === '/tea/selecao-clinica') {
+        const temTeaModulo = this.authService.hasModuleAccess('TEA_MODULO');
+        const temIdClinica = !!this.profile?.idClinica;
+        return temTeaModulo && !temIdClinica;
+      }
+      // Calendário
+      if (item.url === '/tea/calendario') return this.authService.hasFeatureAccess('TEA_CALENDARIO');
+      // Agendamento
+      if (item.url === '/tea/agendamento') return this.authService.hasFeatureAccess('TEA_AGENDAMENTO');
+      // Cadastro (qualquer subitem)
+      if (item.url === '/cadastro') {
+        if (!item.submenu) return false;
+        return item.submenu.some(podeVerItem);
+      }
+      // Submenus do Cadastro
+      if (item.url === '/tea/pacientes') return this.authService.hasFeatureAccess('TEA_CADASTRO_PACIENTE');
+      // Convênios
+      if (item.url === '/tea/convenios') return this.authService.hasFeatureAccess('TEA_CONVENIOS') || this.authService.hasModuleAccess('TEA_MODULO');
+      // Prontuário Eletrônico
+      if (item.url === '/tea/prontuario-eletronico') return this.authService.hasFeatureAccess('TEA_PRONTUARIO_ELETRONICO') || this.authService.hasModuleAccess('TEA_MODULO');
+      // Relatórios
+      if (item.url === '/tea/relatorios') {
+        if (!item.submenu) return false;
+        return item.submenu.some(podeVerItem);
+      }
+      // Painel Atendimento
+      if (item.url === '/tea/painel-atendimento') return true;
+      // Módulo Terapeuta
+      if (item.url && item.url.startsWith('/terapeuta')) return this.authService.hasModuleAccess('TERAPEUTA_MODULO');
+      // Submenus genéricos (caso algum item não mapeado)
+      return true;
+    };
+
+    // Função para filtrar submenus
+    const filtrarSubmenu = (submenu: MenuItem[]): MenuItem[] => {
+      return submenu.filter(podeVerItem);
+    };
+
+    this.teaMenuItems = this.allTeaMenuItems
+      .map(item => {
+        if (item.submenu) {
+          const novoSubmenu = filtrarSubmenu(item.submenu);
+          return { ...item, submenu: novoSubmenu };
+        }
+        return item;
+      })
+      .filter(item => {
+        if (item.submenu) {
+          return item.submenu && item.submenu.length > 0 && podeVerItem(item);
+        }
+        return podeVerItem(item);
+      });
   }
 
   // Abre o submenu que contém a rota atual

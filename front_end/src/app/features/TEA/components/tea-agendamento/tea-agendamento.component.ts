@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TeaAgendamentoFormModalComponent, AgendamentoFormData } from './components/tea-agendamento-form-modal/tea-agendamento-form-modal.component';
-import { TeaAgendaService, SlotHorario as ServiceSlotHorario, Profissional as ServiceProfissional, Especialidade as ServiceEspecialidade } from '../../services/tea-agenda.service';
+import { TeaAgendamentoFormModalComponent, AgendamentoFormData } from './tea-agendamento-form-modal/tea-agendamento-form-modal';
+import { TeaAgendaService, SlotHorario as ServiceSlotHorario, Terapeuta as ServiceTerapeuta, Especialidade as ServiceEspecialidade } from '../../services/tea-agenda.service';
 
 type Especialidade = ServiceEspecialidade;
-type Profissional = ServiceProfissional;
+type Terapeuta = ServiceTerapeuta;
 type SlotHorario = ServiceSlotHorario;
 
 @Component({
@@ -17,12 +17,12 @@ type SlotHorario = ServiceSlotHorario;
 })
 export class TeaAgendamentoComponent implements OnInit {
   especialidades: Especialidade[] = [];
-  profissionais: Profissional[] = [];
+  terapeutas: Terapeuta[] = [];
 
   slots: SlotHorario[] = [];
 
   filtroEspecialidade: string = '';
-  filtroProfissional: string = '';
+  filtroTerapeuta: string = '';
   filtroDataInicio: string = '';
   filtroDataFim: string = '';
   filtroStatus: string = '';
@@ -55,7 +55,7 @@ export class TeaAgendamentoComponent implements OnInit {
   ngOnInit(): void {
     // Carregar dados do serviço compartilhado
     this.especialidades = this.agendaService.especialidades;
-    this.profissionais = this.agendaService.profissionais;
+    this.terapeutas = this.agendaService.terapeutas;
     this.agendaService.slots$.subscribe(slots => {
       this.slots = slots;
       // atualizar contadores/grade quando slots mudarem
@@ -166,7 +166,7 @@ export class TeaAgendamentoComponent implements OnInit {
       s.data === diaISO &&
       s.status === 'agendado' &&
       (!this.filtroEspecialidade || s.especialidadeId === this.filtroEspecialidade) &&
-      (!this.filtroProfissional || s.profissionalId === this.filtroProfissional)
+      (!this.filtroTerapeuta || s.terapeutaId === this.filtroTerapeuta)
     ).length;
   }
 
@@ -174,8 +174,8 @@ export class TeaAgendamentoComponent implements OnInit {
     return this.especialidades;
   }
 
-  get profissionaisFiltrados(): Profissional[] {
-    return this.profissionais.filter(p =>
+  get terapeutasFiltrados(): Terapeuta[] {
+    return this.terapeutas.filter(p =>
       (!this.filtroEspecialidade || p.especialidadeId === this.filtroEspecialidade)
     );
   }
@@ -184,13 +184,13 @@ export class TeaAgendamentoComponent implements OnInit {
     return this.slots.filter(s =>
       s.data === dia &&
       (!this.filtroEspecialidade || s.especialidadeId === this.filtroEspecialidade) &&
-      (!this.filtroProfissional || s.profissionalId === this.filtroProfissional) &&
+      (!this.filtroTerapeuta || s.terapeutaId === this.filtroTerapeuta) &&
       (!this.filtroStatus || s.status === this.filtroStatus)
     ).sort((a, b) => a.hora.localeCompare(b.hora));
   }
 
-  getProfissionalNome(id: string): string {
-    const p = this.profissionais.find(pro => pro.id === id);
+  getTerapeutaNome(id: string): string {
+    const p = this.terapeutas.find(pro => pro.id === id);
     return p ? p.nome : '';
   }
 
@@ -318,7 +318,7 @@ export class TeaAgendamentoComponent implements OnInit {
         ...slot,
         status: 'agendado',
         paciente: data.paciente,
-        profissionalId: data.profissionalId,
+        terapeutaId: (data as any).terapeutaId || (data as any).profissionalId,
         especialidadeId: data.especialidadeId || slot.especialidadeId,
         hora: data.hora,
         data: data.data
@@ -326,7 +326,7 @@ export class TeaAgendamentoComponent implements OnInit {
       this.agendaService.upsertSlot(atualizado);
     } else {
       // Novo agendamento: tenta encontrar slot para o horário; se não existir, cria um novo
-      const match = this.slots.find(s => s.data === data.data && s.hora === data.hora && s.profissionalId === data.profissionalId);
+      const match = this.slots.find(s => s.data === data.data && s.hora === data.hora && s.terapeutaId === ((data as any).terapeutaId || (data as any).profissionalId));
       if (match && match.status === 'agendado') {
         const atualizado: SlotHorario = {
           ...match,
@@ -340,8 +340,8 @@ export class TeaAgendamentoComponent implements OnInit {
           id: 's' + (this.slots.length + 1),
           data: data.data,
           hora: data.hora,
-          profissionalId: data.profissionalId,
-          especialidadeId: data.especialidadeId || (this.profissionais.find(p => p.id === data.profissionalId)?.especialidadeId || ''),
+          terapeutaId: (data as any).terapeutaId || (data as any).profissionalId,
+          especialidadeId: data.especialidadeId || (this.terapeutas.find(p => p.id === ((data as any).terapeutaId || (data as any).profissionalId))?.especialidadeId || ''),
           status: 'agendado',
           paciente: data.paciente
         };

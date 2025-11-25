@@ -25,8 +25,7 @@
       <select class="filter-select" [(ngModel)]="selectedPerfil" (change)="onPerfilChange()">
         <option value="">Todos os Perfis</option>
         <option value="terapeuta">Terapeuta</option>
-        <option value="recepcao">Recepção</option>
-        <option value="supervisor">Supervisor</option>
+        <option value="user">Usuário</option>
       </select>
       
       <select class="filter-select" [(ngModel)]="selectedStatus" (change)="onStatusChange()">
@@ -42,12 +41,15 @@
     </div>
   </div>
 
-  <div class="pacientes-grid">
+  <div *ngIf="isLoading" class="loading-indicator">
+    <div class="custom-spinner"></div>
+    <span style="margin-top: 1rem; color: #64748b; font-weight: 500; font-size: 1.1rem;">Carregando usuários...</span>
+  </div>
+  <div class="pacientes-grid" *ngIf="!isLoading">
     <div *ngFor="let user of filteredUsers" class="paciente-card">
       <div class="paciente-header">
         <div class="paciente-avatar">
-          <img *ngIf="user.avatar" [src]="user.avatar" [alt]="user.nome" class="avatar-image">
-          <div *ngIf="!user.avatar" class="avatar-placeholder">
+          <div class="avatar-placeholder">
             {{user.nome.charAt(0).toUpperCase()}}
           </div>
         </div>
@@ -86,6 +88,7 @@
   </div>
 
   <app-tea-user-form-modal 
+    *ngIf="showUserFormModal"
     [show]="showUserFormModal"
     [mode]="formMode"
     [user]="selectedUser"

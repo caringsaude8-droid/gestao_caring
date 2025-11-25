@@ -31,7 +31,7 @@ interface Faturamento extends InvoiceFormData {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, ButtonComponent, InputComponent],
   templateUrl: './invoice-form.html',
-  styleUrl: './invoice-form.css'
+  styleUrls: ['./invoice-form.css']
 })
 export class InvoiceFormComponent implements OnInit, OnChanges {
   @Input() triggerButtonText: string = 'Novo Faturamento';

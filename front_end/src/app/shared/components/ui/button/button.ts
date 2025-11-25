@@ -9,7 +9,7 @@ type ButtonSize = 'default' | 'sm' | 'lg' | 'icon';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './button.html',
-  styleUrl: './button.css'
+  styleUrls: ['./button.css']
 })
 export class ButtonComponent {
   @Input() variant: ButtonVariant = 'default';

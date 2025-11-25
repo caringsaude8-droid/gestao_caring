@@ -10,7 +10,7 @@ import { LogoService } from '../../../shared/services/logo.service';
   selector: 'app-configuracoes',
   imports: [CommonModule, FormsModule, CardComponent, CardHeaderComponent, CardTitleComponent, CardContentComponent, InputComponent, ButtonComponent],
   templateUrl: './configuracoes.html',
-  styleUrl: './configuracoes.css',
+  styleUrls: ['./configuracoes.css'],
 })
 export class ConfiguracoesComponent implements OnInit {
   activeTab = 'geral';

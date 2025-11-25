@@ -36,13 +36,13 @@ export class TeaCalendarioComponent implements OnInit {
   selectedTherapist = '';
   statusFilter: 'Todos' | 'Agendado' | 'Confirmado' | 'Cancelado' = 'Todos';
   filtroEspecialidade: string = '';
-  filtroProfissional: string = '';
+  filtroTerapeuta: string = '';
   filtroPaciente: string = '';
-  submenuMode: 'pacientes' | 'profissionais' = 'profissionais';
+  submenuMode: 'pacientes' | 'terapeutas' = 'terapeutas';
   filtroDataInicio: string = '';
   filtroDataFim: string = '';
   especialidadesFiltradas: { id: string; nome: string }[] = [];
-  profissionaisFiltrados: { id: string; nome: string; especialidadeId: string }[] = [];
+  terapeutasFiltrados: { id: string; nome: string; especialidadeId: string }[] = [];
   pacientesFiltrados: string[] = [];
   calendarDays: CalendarDay[] = [];
   weekDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -61,7 +61,7 @@ export class TeaCalendarioComponent implements OnInit {
         s.data === targetDay &&
         s.paciente &&
         s.status !== 'cancelado' &&
-        (!this.filtroProfissional || s.profissionalId === this.filtroProfissional) &&
+        (!this.filtroTerapeuta || s.terapeutaId === this.filtroTerapeuta) &&
         (!this.filtroPaciente || s.paciente === this.filtroPaciente) &&
         (!this.filtroEspecialidade || s.especialidadeId === this.filtroEspecialidade)
       )
@@ -84,7 +84,7 @@ export class TeaCalendarioComponent implements OnInit {
     });
     // Inicializa listas de filtros com dados do serviço
     this.especialidadesFiltradas = this.agendaService.especialidades;
-    this.profissionaisFiltrados = this.agendaService.profissionais;
+    this.terapeutasFiltrados = this.agendaService.terapeutas;
   }
 
   onPeriodoChange() {
@@ -113,7 +113,7 @@ export class TeaCalendarioComponent implements OnInit {
         this.slots.filter(s =>
           s.data === iso &&
           s.paciente &&
-          (!this.filtroProfissional || s.profissionalId === this.filtroProfissional) &&
+          (!this.filtroTerapeuta || s.terapeutaId === this.filtroTerapeuta) &&
           (!this.filtroPaciente || s.paciente === this.filtroPaciente) &&
           (!this.filtroEspecialidade || s.especialidadeId === this.filtroEspecialidade)
         )
@@ -165,7 +165,7 @@ export class TeaCalendarioComponent implements OnInit {
     const monthSlots = this.slots.filter(s =>
       // Aplica filtro por data (dia selecionado, se existir) ou mês atual
       (this.selectedDayISO ? s.data === this.selectedDayISO : s.data.startsWith(curKey)) &&
-      (!this.filtroProfissional || s.profissionalId === this.filtroProfissional) &&
+      (!this.filtroTerapeuta || s.terapeutaId === this.filtroTerapeuta) &&
       (!this.filtroPaciente || s.paciente === this.filtroPaciente) &&
       (!this.filtroEspecialidade || s.especialidadeId === this.filtroEspecialidade)
     );
@@ -181,7 +181,7 @@ export class TeaCalendarioComponent implements OnInit {
   // Utilidades
   matchesSelectedTherapist(s: SlotHorario): boolean {
     if (!this.selectedTherapist) return true;
-    const name = this.agendaService.getProfissionalNome(s.profissionalId);
+    const name = this.agendaService.getTerapeutaNome(s.terapeutaId);
     return this.selectedTherapist === name || this.selectedTherapist === `Dr. ${name}`;
   }
 
@@ -191,7 +191,7 @@ export class TeaCalendarioComponent implements OnInit {
       return {
         id: s.id,
         patientName: s.paciente || '',
-        therapistName: this.agendaService.getProfissionalNome(s.profissionalId),
+        therapistName: this.agendaService.getTerapeutaNome(s.terapeutaId),
         type: this.agendaService.especialidades.find(e => e.id === s.especialidadeId)?.nome || '',
         date: s.data,
         time: s.hora,
@@ -207,7 +207,7 @@ export class TeaCalendarioComponent implements OnInit {
     return this.slots
       .filter(s =>
         s.data === this.selectedDayISO &&
-        (!this.filtroProfissional || s.profissionalId === this.filtroProfissional) &&
+        (!this.filtroTerapeuta || s.terapeutaId === this.filtroTerapeuta) &&
         (!this.filtroPaciente || s.paciente === this.filtroPaciente) &&
         (!this.filtroEspecialidade || s.especialidadeId === this.filtroEspecialidade)
       )
@@ -239,8 +239,8 @@ export class TeaCalendarioComponent implements OnInit {
     return this.agendaService.especialidades.find(e => e.id === id)?.nome || '';
   }
 
-  getProfissionalNome(id: string): string {
-    return this.agendaService.getProfissionalNome(id);
+  getTerapeutaNome(id: string): string {
+    return this.agendaService.getTerapeutaNome(id);
   }
 
   getSlotStatusLabel(status: SlotHorario['status']): string {
@@ -268,12 +268,12 @@ export class TeaCalendarioComponent implements OnInit {
     s.status = status;
   }
 
-  setProfissional(id: string) {
-    this.filtroProfissional = id;
+  setTerapeuta(id: string) {
+    this.filtroTerapeuta = id;
     this.onPeriodoChange();
   }
 
-  setSubmenuMode(mode: 'pacientes' | 'profissionais') {
+  setSubmenuMode(mode: 'pacientes' | 'terapeutas') {
     this.submenuMode = mode;
   }
 
@@ -310,7 +310,7 @@ export class TeaCalendarioComponent implements OnInit {
     const iso = day.toISOString().substring(0,10);
     const found = this.slots.find(s =>
       s.data === iso && s.hora === time &&
-      (!this.filtroProfissional || s.profissionalId === this.filtroProfissional) &&
+      (!this.filtroTerapeuta || s.terapeutaId === this.filtroTerapeuta) &&
       (!this.filtroPaciente || s.paciente === this.filtroPaciente) &&
       (!this.filtroEspecialidade || s.especialidadeId === this.filtroEspecialidade)
     );

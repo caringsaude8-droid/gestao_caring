@@ -25,7 +25,7 @@ export interface EmpresaTotal {
   selector: 'app-faturamento',
   imports: [CommonModule, FormsModule],
   templateUrl: './faturamento.html',
-  styleUrl: './faturamento.css',
+  styleUrls: ['./faturamento.css'],
 })
 export class FaturamentoComponent {
   searchTerm = '';

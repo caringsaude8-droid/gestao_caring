@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 interface PainelItem {
   patient: string;
   room: string;
-  professional: string;
+  terapeuta: string;
   specialty: string;
 }
 
@@ -36,28 +36,28 @@ export class TeaPainelAtendimentoComponent implements OnInit {
     // Mock de dados de exemplo, mantendo o layout do projeto
     this.sessionsByTime = {
       '09:30': [
-        { patient: 'Alice Magalhães', room: 'Sala 03', professional: 'Gabriela', specialty: 'Psicopedagogo' },
-        { patient: 'Elizabeth Sophia', room: 'Sala 02', professional: 'Lidja', specialty: 'Psicólogo' },
-        { patient: 'Gabriel', room: 'Sala 06', professional: 'Isaura', specialty: 'Nutricionista' },
-        { patient: 'João Miguel', room: 'Sala 04', professional: 'Kerolayne', specialty: 'Psicomotricidade Funcional' },
-        { patient: 'Nicollas Eduardo', room: 'Sala 05', professional: 'Camila', specialty: 'Terapeuta Ocupacional' },
-        { patient: 'Pedro', room: 'Sala 05', professional: 'Elayne', specialty: 'Integração sensorial' },
-        { patient: 'Teylon', room: 'Sala 01', professional: 'Renata', specialty: 'Fonoaudiólogo' }
+        { patient: 'Alice Magalhães', room: 'Sala 03', terapeuta: 'Gabriela', specialty: 'Psicopedagogo' },
+        { patient: 'Elizabeth Sophia', room: 'Sala 02', terapeuta: 'Lidja', specialty: 'Psicólogo' },
+        { patient: 'Gabriel', room: 'Sala 06', terapeuta: 'Isaura', specialty: 'Nutricionista' },
+        { patient: 'João Miguel', room: 'Sala 04', terapeuta: 'Kerolayne', specialty: 'Psicomotricidade Funcional' },
+        { patient: 'Nicollas Eduardo', room: 'Sala 05', terapeuta: 'Camila', specialty: 'Terapeuta Ocupacional' },
+        { patient: 'Pedro', room: 'Sala 05', terapeuta: 'Elayne', specialty: 'Integração sensorial' },
+        { patient: 'Teylon', room: 'Sala 01', terapeuta: 'Renata', specialty: 'Fonoaudiólogo' }
       ],
       '10:20': [
-        { patient: 'Alice Magalhães', room: 'Sala 01', professional: 'Renata', specialty: 'Fonoaudiólogo' },
-        { patient: 'Elizabeth Sophia', room: 'Sala 04', professional: 'Kerolayne', specialty: 'Psicomotricidade Funcional' },
-        { patient: 'Gabriel', room: 'Sala 08', professional: 'Geo Psi', specialty: 'Terapia ABA' },
-        { patient: 'João Miguel', room: 'Sala 05', professional: 'Heleilane', specialty: 'Terapeuta Ocupacional' },
-        { patient: 'Nicollas Eduardo', room: 'Sala 02', professional: 'Lidja', specialty: 'Terapia ABA' },
-        { patient: 'Pedro', room: 'Sala 01', professional: 'Wedja', specialty: 'Terapia ABA' },
-        { patient: 'Teylon', room: 'Sala 03', professional: 'Gabriela', specialty: 'Psicopedagogo' }
+        { patient: 'Alice Magalhães', room: 'Sala 01', terapeuta: 'Renata', specialty: 'Fonoaudiólogo' },
+        { patient: 'Elizabeth Sophia', room: 'Sala 04', terapeuta: 'Kerolayne', specialty: 'Psicomotricidade Funcional' },
+        { patient: 'Gabriel', room: 'Sala 08', terapeuta: 'Geo Psi', specialty: 'Terapia ABA' },
+        { patient: 'João Miguel', room: 'Sala 05', terapeuta: 'Heleilane', specialty: 'Terapeuta Ocupacional' },
+        { patient: 'Nicollas Eduardo', room: 'Sala 02', terapeuta: 'Lidja', specialty: 'Terapia ABA' },
+        { patient: 'Pedro', room: 'Sala 01', terapeuta: 'Wedja', specialty: 'Terapia ABA' },
+        { patient: 'Teylon', room: 'Sala 03', terapeuta: 'Gabriela', specialty: 'Psicopedagogo' }
       ],
       '11:10': [
-        { patient: 'Diogo Thallys', room: 'Sala 02', professional: 'Ana Carolina', specialty: 'Terapia ABA' }
+        { patient: 'Diogo Thallys', room: 'Sala 02', terapeuta: 'Ana Carolina', specialty: 'Terapia ABA' }
       ],
       '14:00': [
-        { patient: 'Lucas Pereira', room: 'Sala 06', professional: 'Marcos Antônio', specialty: 'Terapia ABA' }
+        { patient: 'Lucas Pereira', room: 'Sala 06', terapeuta: 'Marcos Antônio', specialty: 'Terapia ABA' }
       ]
     };
   }

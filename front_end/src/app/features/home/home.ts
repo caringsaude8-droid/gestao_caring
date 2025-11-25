@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 interface QuickAction {
   title: string;
@@ -27,10 +28,11 @@ interface UserProfile {
     CommonModule
   ],
   templateUrl: './home.html',
-  styleUrl: './home.css'
+  styleUrls: ['./home.css']
 })
 export class HomeComponent implements OnInit {
   userProfile: UserProfile | null = null;
+  constructor(private router: Router, private authService: AuthService) {}
 
   quickActions: QuickAction[] = [
     {
@@ -67,18 +69,20 @@ export class HomeComponent implements OnInit {
     }
   ];
 
-  constructor(private router: Router) {}
-
   ngOnInit() {
     this.loadUserProfile();
   }
 
   private loadUserProfile() {
-    // Mock data - substituir por serviço real de autenticação
-    this.userProfile = {
-      nome: 'Dr. João Silva',
-      perfil: 'Administrador'
-    };
+    const user = this.authService.getCurrentUser();
+    if (user) {
+      this.userProfile = {
+        nome: user.nome || 'Usuário',
+        perfil: user.perfil || 'Usuário'
+      };
+    } else {
+      this.userProfile = null;
+    }
   }
 
   navigateTo(route: string) {

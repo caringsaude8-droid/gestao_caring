@@ -1,0 +1,55 @@
+<div class="modal-backdrop" *ngIf="show">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Novo Agendamento</h3>
+      <button class="close-btn" (click)="onClose()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-row">
+        <label>Paciente</label>
+        <input type="text" [(ngModel)]="form.paciente" placeholder="Nome do paciente" />
+      </div>
+
+      <div class="form-row">
+        <label>Dia</label>
+        <input type="date" [(ngModel)]="form.data" />
+      </div>
+
+      <div class="form-row">
+        <label>Hora</label>
+        <select [(ngModel)]="form.hora">
+          <option *ngFor="let h of horas" [value]="h">{{h}}</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>Terapeuta</label>
+        <select [(ngModel)]="form.terapeutaId">
+          <option *ngFor="let p of terapeutas" [value]="p.id">{{p.nome}}</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>Procedimento</label>
+        <input type="text" [(ngModel)]="form.procedimento" placeholder="Ex.: ABA, Fono..." />
+      </div>
+
+      <div class="grid-row">
+        <div class="form-row">
+          <label>Local</label>
+          <input type="text" [(ngModel)]="form.local" placeholder="Unidade/Clínica" />
+        </div>
+        <div class="form-row">
+          <label>Sala</label>
+          <input type="text" [(ngModel)]="form.sala" placeholder="Sala" />
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="onClose()">Cancelar</button>
+      <button class="btn-primary" (click)="onSave()">Salvar</button>
+    </div>
+  </div>
+</div>

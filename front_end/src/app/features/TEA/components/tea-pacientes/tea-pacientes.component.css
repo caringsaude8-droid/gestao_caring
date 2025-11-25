@@ -1,3 +1,22 @@
+/* Spinner customizado para loading de pacientes TEA */
+.loading-indicator {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin: 2rem 0;
+}
+.custom-spinner {
+	width: 48px;
+	height: 48px;
+	border: 5px solid #e0e0e0;
+	border-top: 5px solid #1e40af;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+	margin-bottom: 0.5rem;
+}
+@keyframes spin {
+	to { transform: rotate(360deg); }
+}
 /* Status Colors para compatibilidade com status-active e status-inactive */
 .status-active {
 	background: #d1fae5;

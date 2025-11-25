@@ -1,0 +1,15 @@
+<div class="pacientes-container">
+  <h2>Meus Pacientes</h2>
+  <div *ngIf="loading" class="loading">Carregando...</div>
+  <div *ngIf="!loading && pacientes.length === 0" class="empty">Nenhum paciente encontrado.</div>
+  <div *ngIf="!loading && pacientes.length > 0" class="pacientes-list">
+    <div *ngFor="let paciente of pacientes" class="paciente-card">
+      <div class="paciente-nome">{{ paciente.nome }}</div>
+      <div class="paciente-info">Email: {{ paciente.email }}</div>
+      <div class="paciente-info">Telefone: {{ paciente.telefone }}</div>
+      <div class="paciente-info">CPF: {{ paciente.cpf }}</div>
+      <div class="paciente-info">Convênio: {{ paciente.convenio }}</div>
+      <div class="paciente-info">Status: {{ paciente.status }}</div>
+    </div>
+  </div>
+</div>

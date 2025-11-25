@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 export interface AuthUser {
   id?: string;
@@ -11,6 +13,34 @@ export interface AuthUser {
   providedIn: 'root'
 })
 export class AuthService {
+  private apiUrl = 'http://localhost:8081/api/v1/usuarios';
+
+  constructor(private http: HttpClient) {}
+    /**
+     * Realiza login via API e armazena o token JWT e refresh_token no localStorage
+     */
+    login(email: string, senha: string): Observable<any> {
+      return new Observable(observer => {
+        this.http.post<any>('http://localhost:8081/api/v1/usuarios/login', { email, senha }).subscribe({
+          next: (response) => {
+            if (response.token) {
+              localStorage.setItem('auth_token', response.token);
+            }
+            if (response.refreshToken) {
+              localStorage.setItem('refresh_token', response.refreshToken);
+            }
+            if (response.user) {
+              localStorage.setItem('auth', JSON.stringify(response.user));
+            }
+            observer.next(response);
+            observer.complete();
+          },
+          error: (err) => {
+            observer.error(err);
+          }
+        });
+      });
+    }
   // Lê roles da query string para facilitar testes: ?role=admin ou ?roles=a,b
   private getQueryRoles(): { perfil?: string; roles: string[] } {
     try {
@@ -42,16 +72,6 @@ export class AuthService {
   // Obtém o usuário atual do localStorage. Se vazio, aplica um mock seguro.
   getCurrentUser(): AuthUser {
     try {
-      // Override por query string (para testes rápidos)
-      const query = this.getQueryRoles();
-      if (query.perfil || (query.roles && query.roles.length)) {
-        return {
-          nome: 'Usuário (query)',
-          perfil: query.perfil || 'usuario',
-          roles: query.roles || []
-        };
-      }
-
       const raw = typeof localStorage !== 'undefined' ? localStorage.getItem('auth') : null;
       if (raw) {
         const parsed = JSON.parse(raw);
@@ -64,15 +84,11 @@ export class AuthService {
         };
       }
     } catch (_) {
-      // Ignora erros de parse e cai no mock
+      // Ignora erros de parse e retorna null
     }
 
-    // Mock quando não há auth configurado
-    return {
-      nome: 'Usuário (mock)',
-      perfil: 'usuario',
-      roles: ['tea:clinica', 'tea:calendario']
-    };
+    // Sem usuário autenticado
+    return null as any;
   }
 
   // Define o usuário atual em localStorage (útil para testes via UI)
@@ -112,10 +128,65 @@ export class AuthService {
     return (user.perfil === 'admin') || (user.roles || []).includes('admin');
   }
 
+  // Verifica se possui acesso ao módulo (ex: TEA_MODULO)
+  hasModuleAccess(module: string): boolean {
+    const user = this.getCurrentUser();
+    // Admin sem roles: acesso total ao sistema
+    if (user?.perfil === 'admin' && (!user.roles || user.roles.length === 0)) return true;
+    // Admin com apenas roles de módulo: acesso total ao módulo
+    if (user?.perfil === 'admin' && user.roles?.includes(`${module}_MODULO`)) return true;
+    return this.getRoles().includes(`${module}_MODULO`);
+  }
+
+  // Verifica se possui acesso à funcionalidade específica ou ao módulo inteiro
+  hasFeatureAccess(feature: string): boolean {
+    const user = this.getCurrentUser();
+    // Admin sem roles: acesso total ao sistema
+    if (user?.perfil === 'admin' && (!user.roles || user.roles.length === 0)) return true;
+    // Admin com apenas roles de módulo: acesso total ao módulo
+    const module = feature.split('_')[0];
+    if (user?.perfil === 'admin' && user.roles?.includes(`${module}_MODULO`)) return true;
+    return this.getRoles().includes(feature) || this.hasModuleAccess(module);
+  }
+
+  /**
+   * Solicita novo access token usando o refresh token
+   */
+  refreshToken(refreshToken: string): Observable<string> {
+    return new Observable(observer => {
+      this.http.post<any>('http://localhost:8081/api/v1/auth/refresh', { refreshToken }).subscribe({
+        next: (response) => {
+          if (response.token) {
+            localStorage.setItem('auth_token', response.token);
+          }
+          if (response.refreshToken) {
+            localStorage.setItem('refresh_token', response.refreshToken);
+          }
+          observer.next(response.token);
+          observer.complete();
+        },
+        error: (err) => {
+          observer.error(err);
+        }
+      });
+    });
+  }
+
+  /**
+   * Realiza logout removendo tokens do localStorage
+   */
+  logout() {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('auth');
+    window.location.href = '/login';
+  }
+
   signOut() {
     try {
       if (typeof localStorage !== 'undefined') {
         localStorage.removeItem('auth');
+        localStorage.removeItem('auth_token');
       }
     } catch (_) {
       // ignore

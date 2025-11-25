@@ -38,7 +38,7 @@ interface Cliente {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule, ButtonComponent, InputComponent],
   templateUrl: './task-form.component.html',
-  styleUrl: './task-form.component.css'
+  styleUrls: ['./task-form.component.css']
 })
 export class TaskFormComponent implements OnInit {
   @Input() triggerButtonText: string = 'Nova Tarefa';

@@ -1,0 +1,94 @@
+<div class="tea-terapeuta-layout">
+  <!-- Header horizontal no topo -->
+  <header class="tea-terapeuta-header">
+    <div class="header-left">
+      <div class="logo-section">
+        <div class="logo-container">
+          <div class="logo-placeholder" *ngIf="!logoUrl">
+            <i class="icon-brain"></i>
+          </div>
+          <img *ngIf="logoUrl" [src]="logoUrl" alt="Logo da empresa" class="logo-image" />
+        </div>
+        <div class="brand">
+          <h1>TEA</h1>
+          <p>Terapeuta</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation horizontal com carrossel -->
+    <nav class="horizontal-navigation" [class.mobile-hidden]="mobileMenuOpen === false">
+      <button class="nav-scroll-btn nav-scroll-left" (click)="scrollNavLeft()" [class.hidden]="!canScrollLeft">
+        <i class="icon-chevron-left"></i>
+      </button>
+      
+      <div class="nav-items-container" #navContainer>
+        <ng-container *ngFor="let item of teaMenuItems; let i = index">
+          <div *ngIf="!item.submenu" class="nav-item-wrapper">
+            <a *ngIf="item.title !== 'Home'"
+               [routerLink]="item.url"
+               class="nav-item"
+               routerLinkActive="active"
+               [routerLinkActiveOptions]="{ exact: true }">
+              <i [class]="'icon-' + item.icon"></i>
+              <span class="nav-text">{{item.title}}</span>
+            </a>
+            <a *ngIf="item.title === 'Home'"
+               (click)="navigateTo('/home')"
+               class="nav-item"
+               routerLinkActive="active"
+               [routerLinkActiveOptions]="{ exact: true }">
+              <i [class]="'icon-' + item.icon"></i>
+              <span class="nav-text">{{item.title}}</span>
+            </a>
+          </div>
+          <div *ngIf="item.submenu" class="nav-item-wrapper submenu-wrapper">
+            <button class="nav-item submenu-trigger" 
+                    (click)="toggleSubmenu(i)">
+              <i [class]="'icon-' + item.icon"></i>
+              <span class="nav-text">{{item.title}}</span>
+              <i class="icon-chevron-down submenu-icon" 
+                 [class.rotated]="openSubmenuIndex === i"></i>
+            </button>
+            
+            <div *ngIf="openSubmenuIndex === i" class="horizontal-submenu">
+              <a *ngFor="let sub of item.submenu" 
+                 [routerLink]="sub.url"
+                 class="submenu-item"
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{ exact: true }">
+                <i [class]="'icon-' + sub.icon"></i>
+                <span>{{sub.title}}</span>
+              </a>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      
+      <button class="nav-scroll-btn nav-scroll-right" (click)="scrollNavRight()" [class.hidden]="!canScrollRight">
+        <i class="icon-chevron-right"></i>
+      </button>
+    </nav>
+
+    <!-- Header direita com usuário e botões -->
+    <div class="header-right">
+      <div *ngIf="profile" class="user-info-header">
+        <span class="user-name-header">{{profile.nome}}</span>
+      </div>
+      
+      <button class="logout-btn-header" (click)="signOut()" title="Sair">
+        <i class="icon-logout"></i>
+      </button>
+      
+      <!-- Botão mobile menu -->
+      <button class="mobile-menu-toggle" (click)="toggleMobileMenu()">
+        <i [class]="mobileMenuOpen ? 'icon-close' : 'icon-menu'"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="tea-terapeuta-main-content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

@@ -4,6 +4,8 @@ import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { LogoService } from '../../services/logo.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { Inject } from '@angular/core';
 
 interface MenuItem {
   title: string;
@@ -20,9 +22,20 @@ interface SubMenuItem {
   selector: 'app-sidebar',
   imports: [CommonModule, RouterModule],
   templateUrl: './sidebar.html',
-  styleUrl: './sidebar.css',
+  styleUrls: ['./sidebar.css'],
 })
 export class Sidebar implements OnInit, OnDestroy {
+    hasRole(role: string): boolean {
+      return Array.isArray(this.profile?.roles) && this.profile.roles.includes(role);
+    }
+
+    // Exemplo: retorna se pode ver Home
+    canShowHome(): boolean {
+      // Só mostra Home se tiver permissão global ou específica
+      return this.hasRole('HOME') || this.hasRole('ADMIN') || this.hasRole('TEA_MODULO');
+    }
+
+    // Adicione métodos semelhantes para outros menus conforme suas regras de permissão
   collapsed = false;
   cadastrosOpen = false;
   relatoriosOpen = false;
@@ -73,15 +86,26 @@ export class Sidebar implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private logoService: LogoService
+    private logoService: LogoService,
+    @Inject(AuthService) private authService: AuthService
   ) {}
 
   ngOnInit() {
-    // Mock data for now - replace with actual auth service later
-    this.profile = {
-      nome: "Usuário Teste",
-      perfil: "admin"
-    };
+    // Busca usuário real do AuthService
+    try {
+      const authService = (window as any).ng?.injector?.get?.('AuthService') || null;
+      if (authService && typeof authService.getCurrentUser === 'function') {
+        this.profile = authService.getCurrentUser();
+      } else {
+        // fallback: busca direto do localStorage
+        const raw = typeof localStorage !== 'undefined' ? localStorage.getItem('auth') : null;
+        if (raw) {
+          this.profile = JSON.parse(raw);
+        }
+      }
+    } catch {
+      this.profile = null;
+    }
 
     // Subscribe to logo changes
     this.logoSubscription = this.logoService.logoUrl$.subscribe(logoUrl => {
@@ -180,17 +204,19 @@ export class Sidebar implements OnInit, OnDestroy {
   // Retorna os itens do menu baseado na rota atual
   getMenuItems(): MenuItem[] {
     if (this.isUsuariosPage()) {
-      return this.usuariosMenuItems;
+      // Sempre mostra Home na página de usuários
+      return [...this.usuariosMenuItems];
+    } else if (this.isBasicMenuPage()) {
+      let items = [...this.basicMenuItems];
+      return items.filter(item => item.title !== 'Home' || this.canShowHome());
+    } else {
+      let items = [...this.fullMenuItems];
+      return items.filter(item => item.title !== 'Home' || this.canShowHome());
     }
-    if (this.isBasicMenuPage()) {
-      return this.basicMenuItems;
-    }
-    return this.fullMenuItems;
   }
 
   signOut() {
-    console.log('Sign out');
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
 
   navigateTo(url: string) {

@@ -1,3 +1,35 @@
+/* Toast customizado para mensagens */
+.toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  min-width: 260px;
+  max-width: 350px;
+  background: #fff;
+  color: #c2111a;
+  border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(194, 17, 26, 0.15);
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-left: 6px solid #c2111a;
+  animation: fadeInToast 0.3s;
+  text-align: center;
+}
+.toast.success {
+  color: #176c3a;
+  border-left-color: #176c3a;
+}
+.toast.error {
+  color: #c2111a;
+  border-left-color: #c2111a;
+}
+@keyframes fadeInToast {
+  from { opacity: 0; transform: translate(-50%, calc(-50% - 20px)); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
 .tea-layout {
   display: flex;
   height: 100vh;
@@ -460,6 +492,8 @@
 /* Ícones adicionais */
 .icon-bar-chart:before { content: "📈"; }
 .icon-clock:before { content: "🕒"; }
+.icon-convenio:before { content: "🤝"; }
+.icon-prontuario:before { content: "📋"; }
 /* Responsive */
 @media (max-width: 768px) {
   .tea-sidebar {

@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+// ...existing code...
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PatientFormModalComponent, Patient } from './components/patient-form-modal/patient-form-modal.component';
-import { PatientDetailsModalComponent } from './components/patient-details-modal/patient-details-modal.component';
+import { PatientFormModalComponent } from './patient-form-modal/patient-form-modal.component';
+import { Patient } from '../../models/patient.model';
+import { PatientDetailsModalComponent } from './patient-details-modal/patient-details-modal.component';
+import { PatientService } from '../../services/patient.service';
 
 @Component({
 	selector: 'app-tea-pacientes',
@@ -12,6 +15,9 @@ import { PatientDetailsModalComponent } from './components/patient-details-modal
 	styleUrls: ['./tea-pacientes.component.css']
 })
 export class TeaPacientesComponent implements OnInit {
+	public isLoading = false;
+	private patientService = inject(PatientService);
+	clinicaSelecionada: { nome: string } | null = null;
 	searchTerm: string = '';
 	selectedStatus: string = '';
 	showPatientDetailsModal: boolean = false;
@@ -19,47 +25,39 @@ export class TeaPacientesComponent implements OnInit {
 	formMode: 'create' | 'edit' = 'create';
 	selectedPatient: Patient | null = null;
 
-	patients: Patient[] = [
-		{
-			id: '1',
-			nome: 'Ana Souza',
-			cpf: '123.456.789-00',
-			email: 'ana.souza@caring.com',
-			telefone: '(11) 99999-0001',
-			birthDate: '2015-05-10',
-			age: 10,
-			spectrum: 'Moderado',
-			therapist: 'Dr. Pedro Lima Costa',
-			status: 'active',
-			lastSession: '2024-10-20',
-			progressLevel: 3,
-			dataNascimento: '2015-05-10',
-			dataCriacao: '2023-03-20'
-		},
-		{
-			id: '2',
-			nome: 'Lucas Pereira',
-			cpf: '987.654.321-00',
-			email: 'lucas.pereira@caring.com',
-			telefone: '(11) 99999-0002',
-			birthDate: '2012-08-15',
-			age: 13,
-			spectrum: 'Leve',
-			therapist: 'Julia Ferreira',
-			status: 'inactive',
-			lastSession: '2024-09-10',
-			progressLevel: 2,
-			dataNascimento: '2012-08-15',
-			dataCriacao: '2023-04-10'
-		}
-	];
+	patients: Patient[] = [];
 
 	filteredPatients: Patient[] = [];
 
 	constructor() {}
 
 	ngOnInit() {
-		this.filteredPatients = [...this.patients];
+		this.isLoading = true;
+		// Busca a clínica selecionada do localStorage
+		const selectedClinicaId = localStorage.getItem('selectedClinica');
+		if (selectedClinicaId) {
+			// Simula busca das clínicas (pode ser via service real)
+			const clinicas = [
+				{ id: '1', nome: 'Clínica Esperança' },
+				{ id: '2', nome: 'Centro de Terapia Integrada' },
+				{ id: '3', nome: 'Instituto Desenvolvimento' }
+			];
+			const clinica = clinicas.find(c => String(c.id) === String(selectedClinicaId));
+			if (clinica) this.clinicaSelecionada = clinica;
+		}
+		// Busca pacientes da API filtrando por clínica
+		this.patientService.getAll(selectedClinicaId ? String(selectedClinicaId) : undefined).subscribe({
+			next: (patients) => {
+				this.patients = patients;
+				this.filteredPatients = [...this.patients];
+				this.isLoading = false;
+			},
+			error: (err) => {
+				this.patients = [];
+				this.filteredPatients = [];
+				this.isLoading = false;
+			}
+		});
 	}
 
 	onSearch(): void {
@@ -137,23 +135,26 @@ export class TeaPacientesComponent implements OnInit {
 	}
 
 	onSavePatient(patientData: Patient): void {
-		if (this.formMode === 'create') {
-			this.patients.push({
-				...patientData,
-				id: Date.now().toString(),
-				dataCriacao: new Date().toISOString(),
-				dataNascimento: patientData.birthDate
-			});
-		} else {
-			const index = this.patients.findIndex(p => p.id === patientData.id);
-			if (index !== -1) {
-				this.patients[index] = {
-					...patientData,
-					dataCriacao: this.patients[index].dataCriacao,
-					dataNascimento: patientData.birthDate
-				};
-			}
-		}
+		   const clinica = this.clinicaSelecionada?.nome || 'Clínica Não Informada';
+		   if (this.formMode === 'create') {
+			   this.patients.push({
+				   ...patientData,
+				   clinica,
+				   id: Date.now().toString(),
+				   dataCriacao: new Date().toISOString(),
+				   dataNascimento: patientData.birthDate
+			   });
+		   } else {
+			   const index = this.patients.findIndex(p => p.id === patientData.id);
+			   if (index !== -1) {
+				   this.patients[index] = {
+					   ...patientData,
+					   clinica,
+					   dataCriacao: this.patients[index].dataCriacao,
+					   dataNascimento: patientData.birthDate
+				   };
+			   }
+		   }
 		this.closePatientFormModal();
 		this.filterPatients();
 		// Aqui você implementaria a chamada para a API
