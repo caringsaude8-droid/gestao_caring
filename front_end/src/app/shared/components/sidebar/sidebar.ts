@@ -32,7 +32,7 @@ export class Sidebar implements OnInit, OnDestroy {
     // Exemplo: retorna se pode ver Home
     canShowHome(): boolean {
       // Só mostra Home se tiver permissão global ou específica
-      return this.hasRole('HOME') || this.hasRole('ADMIN') || this.hasRole('TEA_MODULO');
+      return this.hasRole('HOME') || this.isAdmin() || this.hasRole('TEA_MODULO');
     }
 
     // Adicione métodos semelhantes para outros menus conforme suas regras de permissão
@@ -170,7 +170,8 @@ export class Sidebar implements OnInit, OnDestroy {
   }
 
   isAdmin(): boolean {
-    return this.profile?.perfil === 'admin' || this.profile?.perfil === 'administrador';
+    const perfil = this.profile?.perfil?.toLowerCase();
+    return perfil === 'admin' || perfil === 'administrador';
   }
 
   // Verifica se está nas páginas que devem mostrar menu básico

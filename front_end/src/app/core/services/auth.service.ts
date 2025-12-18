@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface AuthUser {
   id?: string;
@@ -13,7 +14,7 @@ export interface AuthUser {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8081/api/v1/usuarios';
+  private apiUrl = `${environment.apiUrl}/usuarios`;
 
   constructor(private http: HttpClient) {}
     /**
@@ -21,7 +22,7 @@ export class AuthService {
      */
     login(email: string, senha: string): Observable<any> {
       return new Observable(observer => {
-        this.http.post<any>('http://localhost:8081/api/v1/usuarios/login', { email, senha }).subscribe({
+        this.http.post<any>(`${this.apiUrl}/login`, { email, senha }).subscribe({
           next: (response) => {
             if (response.token) {
               localStorage.setItem('auth_token', response.token);

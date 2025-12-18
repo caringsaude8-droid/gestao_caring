@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
 @Entity
 @NoArgsConstructor
@@ -50,4 +53,12 @@ public class Usuario {
     @JoinColumn(name = "TEA_CLI_ID", referencedColumnName = "TEA_CLI_ID")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private TeaClinica teaClinica;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "SGI_USUARIO_PERMISSAO",
+        joinColumns = @JoinColumn(name = "USU_ID"),
+        inverseJoinColumns = @JoinColumn(name = "PERM_ID")
+    )
+    private Set<Permissao> permissoes = new HashSet<>();
 }

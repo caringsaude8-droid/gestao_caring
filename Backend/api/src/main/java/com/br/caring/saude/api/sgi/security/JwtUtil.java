@@ -44,11 +44,11 @@ public class JwtUtil {
 
     // Agora propaga excecoes (JwtException) para que o caller possa logar o motivo
     public Claims getClaimsFromToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
+        return Jwts.parser()
+                .verifyWith(secretKey)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     public String getSubject(String token) {

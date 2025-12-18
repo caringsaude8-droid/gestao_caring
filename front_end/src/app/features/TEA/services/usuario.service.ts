@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
   constructor(private http: HttpClient) {}
 
   create(payload: any): Observable<any> {
-    return this.http.post('http://localhost:8081/api/v1/usuarios', payload);
+    return this.http.post(`${environment.apiUrl}/usuarios`, payload);
   }
 
   getAll(clinicaId?: string): Observable<any[]> {
-    let url = 'http://localhost:8081/api/v1/usuarios';
+    let url = `${environment.apiUrl}/usuarios`;
     if (clinicaId) {
       url += `?clinicaId=${clinicaId}`;
     }
@@ -19,6 +20,6 @@ export class UsuarioService {
   }
 
   getById(id: string): Observable<any> {
-    return this.http.get(`http://localhost:8081/api/v1/usuarios/${id}`);
+    return this.http.get(`${environment.apiUrl}/usuarios/${id}`);
   }
 }

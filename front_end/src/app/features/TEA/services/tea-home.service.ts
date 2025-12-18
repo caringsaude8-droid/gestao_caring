@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Patient } from '../models/patient.model';
 import { Terapeuta, SlotHorario } from './tea-agenda.service';
+import { environment } from '../../../../environments/environment';
 
 export interface Clinica {
   id: string;
@@ -54,7 +55,7 @@ export class TeaHomeService {
   ];
 
   getClinicas(): Observable<Clinica[]> {
-    return this.http.get<Clinica[]>('http://localhost:8081/api/v1/clinicas');
+    return this.http.get<Clinica[]>(`${environment.apiUrl}/clinicas`);
   }
 
 }

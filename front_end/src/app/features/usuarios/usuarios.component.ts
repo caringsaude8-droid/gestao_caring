@@ -5,6 +5,9 @@ import { UserDetailsModalComponent } from './user-details-modal/user-details-mod
 import { UserFormModalComponent, UserForm } from './user-form-modal/user-form-modal.component';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UserDetails } from './user-details-modal/user-details-modal.component';
+import { environment } from '../../../environments/environment';
+
+
 
 interface UserApi {
   id: string;
@@ -58,7 +61,7 @@ export class UsuariosComponent implements OnInit {
       return;
     }
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    this.http.get<any[]>('http://localhost:8081/api/v1/usuarios', { headers }).subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/usuarios`, { headers }).subscribe({
       next: (data: any[]) => {
         this.users = data.map((u: any) => ({
           ...u,

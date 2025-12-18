@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 export interface Terapeuta {
   id: string;
@@ -22,7 +23,7 @@ export class TerapeutaService {
   constructor(private http: HttpClient) { }
 
   create(payload: any): Observable<any> {
-    return this.http.post('http://localhost:8081/api/v1/terapeutas', payload);
+    return this.http.post(`${environment.apiUrl}/terapeutas`, payload);
   }
 
   getTerapeutas(clinicaId?: string): Observable<Terapeuta[]> {
@@ -30,10 +31,10 @@ export class TerapeutaService {
     if (clinicaId) {
       params = params.set('clinicaId', clinicaId);
     }
-    return this.http.get<Terapeuta[]>('http://localhost:8081/api/v1/terapeutas', { params });
+    return this.http.get<Terapeuta[]>(`${environment.apiUrl}/terapeutas`, { params });
   }
 
   getTerapeutaById(id: string): Observable<any> {
-    return this.http.get(`http://localhost:8081/api/v1/terapeutas/${id}`);
+    return this.http.get(`${environment.apiUrl}/terapeutas/${id}`);
   }
 }

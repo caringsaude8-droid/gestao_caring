@@ -2,13 +2,14 @@ package com.br.caring.saude.api.sgi.domain.service;
 
 import com.br.caring.saude.api.sgi.domain.entity.Usuario;
 import com.br.caring.saude.api.sgi.domain.entity.Perfil;
+import com.br.caring.saude.api.sgi.domain.entity.Permissao;
 import com.br.caring.saude.api.sgi.domain.entity.TeaClinica;
 import com.br.caring.saude.api.sgi.domain.entity.TeaTerapeuta;
 import com.br.caring.saude.api.sgi.domain.entity.TeaPaciente;
 import com.br.caring.saude.api.sgi.domain.repository.PerfilRepository;
-import com.br.caring.saude.api.sgi.domain.repository.UsuarioPermissaoRepository;
-import com.br.caring.saude.api.sgi.domain.repository.UsuarioRepository;
 import com.br.caring.saude.api.sgi.domain.repository.PermissaoRepository;
+import com.br.caring.saude.api.sgi.domain.repository.UsuarioRepository;
+
 import com.br.caring.saude.api.sgi.domain.repository.TeaClinicaRepository;
 import com.br.caring.saude.api.sgi.domain.repository.TeaTerapeutaRepository;
 import com.br.caring.saude.api.sgi.domain.repository.TeaPacienteRepository;
@@ -47,8 +48,8 @@ public class UsuarioService {
     @Autowired
     private PermissaoRepository permissaoRepository;
 
-    @Autowired
-    private UsuarioPermissaoRepository usuarioPermissaoRepository;
+
+
 
     @Autowired
     private TeaClinicaRepository teaClinicaRepository;
@@ -108,19 +109,16 @@ public class UsuarioService {
             usuario.setTeaClinica(null);
         }
 
-        usuario = usuarioRepository.save(usuario);
-
         // Vincular permissões enviadas pelo frontend (roles)
         if (requestDTO.getRoles() != null && !requestDTO.getRoles().isEmpty()) {
-            List<Long> permissoesIds = permissaoRepository.findAll().stream()
+            List<Permissao> permissoes = permissaoRepository.findAll().stream()
                 .filter(p -> requestDTO.getRoles().contains(p.getNome()))
-                .map(com.br.caring.saude.api.sgi.domain.entity.Permissao::getId)
                 .toList();
-            usuarioPermissaoRepository.deleteByUsuId(usuario.getId());
-            for (Long permId : permissoesIds) {
-                usuarioPermissaoRepository.save(new com.br.caring.saude.api.sgi.domain.entity.UsuarioPermissao(usuario.getId(), permId));
-            }
+            usuario.getPermissoes().clear();
+            usuario.getPermissoes().addAll(permissoes);
         }
+
+        usuario = usuarioRepository.save(usuario);
 
         return converterParaDTO(usuario);
     }
@@ -205,19 +203,16 @@ public class UsuarioService {
             usuario.setTeaClinica(null);
         }
 
-        usuario = usuarioRepository.save(usuario);
-
         // Vincular permissões enviadas pelo frontend (roles)
         if (requestDTO.getRoles() != null && !requestDTO.getRoles().isEmpty()) {
-            List<Long> permissoesIds = permissaoRepository.findAll().stream()
+            List<Permissao> permissoes = permissaoRepository.findAll().stream()
                 .filter(p -> requestDTO.getRoles().contains(p.getNome()))
-                .map(com.br.caring.saude.api.sgi.domain.entity.Permissao::getId)
                 .toList();
-            usuarioPermissaoRepository.deleteByUsuId(usuario.getId());
-            for (Long permId : permissoesIds) {
-                usuarioPermissaoRepository.save(new com.br.caring.saude.api.sgi.domain.entity.UsuarioPermissao(usuario.getId(), permId));
-            }
+            usuario.getPermissoes().clear();
+            usuario.getPermissoes().addAll(permissoes);
         }
+
+        usuario = usuarioRepository.save(usuario);
 
         return converterParaDTO(usuario);
     }
@@ -357,9 +352,12 @@ public class UsuarioService {
             userDto.setTelefone(usuario.getTelefone());
             userDto.setTeaCliId(usuario.getTeaClinica() != null ? usuario.getTeaClinica().getId() : null);
             // Buscar permissões do usuário
-            var permissoes = permissaoRepository.findByUsuId(usuario.getId());
-            var roles = permissoes.stream().map(com.br.caring.saude.api.sgi.domain.entity.Permissao::getNome).toList();
-            userDto.setRoles((java.util.List<String>) roles);
+            if (usuario.getPermissoes() != null) {
+                var roles = usuario.getPermissoes().stream()
+                    .map(Permissao::getNome)
+                    .toList();
+                userDto.setRoles(roles);
+            }
             response.setUser(userDto);
             // Gerar token JWT e retorna no response esses dados
             Map<String, Object> claims = new HashMap<>();
@@ -393,9 +391,10 @@ public class UsuarioService {
         dto.setTelefone(usuario.getTelefone());
         dto.setTeaCliId(usuario.getTeaClinica() != null ? usuario.getTeaClinica().getId() : null);
 
-        if (permissaoRepository != null && usuario.getId() != null) {
-            var permissoes = permissaoRepository.findByUsuId(usuario.getId());
-            var roles = permissoes.stream().map(com.br.caring.saude.api.sgi.domain.entity.Permissao::getNome).toList();
+        if (usuario.getPermissoes() != null) {
+            var roles = usuario.getPermissoes().stream()
+                .map(Permissao::getNome)
+                .toList();
             dto.setRoles(roles);
         }
         return dto;
