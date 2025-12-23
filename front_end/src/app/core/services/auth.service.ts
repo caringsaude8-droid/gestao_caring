@@ -126,7 +126,8 @@ export class AuthService {
   // Verifica se usuário é admin
   isAdmin(): boolean {
     const user = this.getCurrentUser();
-    return (user.perfil === 'admin') || (user.roles || []).includes('admin');
+    const perfil = user?.perfil?.toLowerCase();
+    return (perfil === 'admin') || (perfil === 'administrador') || (user.roles || []).includes('admin');
   }
 
   // Verifica se possui acesso ao módulo (ex: TEA_MODULO)
